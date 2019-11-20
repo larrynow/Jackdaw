@@ -7,11 +7,14 @@
     <Filter Include="Common">
       <UniqueIdentifier>{8bd1d959-4755-43f8-9b39-7a8f4434f1e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rebderer">
-      <UniqueIdentifier>{89d3e6b3-00e8-4393-90ad-1e49bad666e0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Thread">
       <UniqueIdentifier>{84e567d7-c6fa-454b-afe2-a9b33a4ed358}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{89d3e6b3-00e8-4393-90ad-1e49bad666e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Input">
+      <UniqueIdentifier>{37c4dc7e-631d-43a8-980a-bf164d12a8c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -22,16 +25,16 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="FrontendRenderer.h">
-      <Filter>Rebderer</Filter>
+      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="BackendRenderer.h">
-      <Filter>Rebderer</Filter>
+      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="BackendRendererWin32.h">
-      <Filter>Rebderer</Filter>
+      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="FrontendRendererWin32.h">
-      <Filter>Rebderer</Filter>
+      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>Core</Filter>
@@ -45,22 +48,38 @@
     <ClInclude Include="JobList.h">
       <Filter>Thread</Filter>
     </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="WinInput.h" />
+    <ClInclude Include="Input.h">
+      <Filter>Core\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Content.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="FrontendRenderer.cpp">
-      <Filter>Rebderer</Filter>
+      <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="BackendRenderer.cpp">
-      <Filter>Rebderer</Filter>
+      <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="BackendRendererWin32.cpp">
-      <Filter>Rebderer</Filter>
+      <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="FrontendRendererWin32.cpp">
-      <Filter>Rebderer</Filter>
+      <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Map.cpp">
       <Filter>Core</Filter>
@@ -70,6 +89,16 @@
     </ClCompile>
     <ClCompile Include="JobList.cpp">
       <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="WinInput.cpp" />
+    <ClCompile Include="Input.cpp">
+      <Filter>Core\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

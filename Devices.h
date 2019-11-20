@@ -4,7 +4,7 @@
 
 enum class jkFrontendDevice
 {
-	WIN32
+	WIN_32
 };
 
 enum class jkBackendDevice

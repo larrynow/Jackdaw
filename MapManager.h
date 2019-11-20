@@ -3,6 +3,7 @@
 #define MAPMANAGER_H_
 
 #include<vector>
+#include<string>
 #include"Map.h"
 
 /*
@@ -12,7 +13,7 @@ Load maps for game.
 class jkMapManager
 {
 public:
-	static bool LoadMaps(const char* path);
+	static bool LoadMaps(std::string path);
 	static jkMap* NextMap();
 
 private:

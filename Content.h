@@ -24,13 +24,18 @@ public:
 	inline void SelectFrontendDevice(jkFrontendDevice ftDevice = jkFrontendDevice::WIN32) { contentFrontendDevice = ftDevice; };
 	inline void SelectBackendDevice(jkBackendDevice bkDevice = jkBackendDevice::OPENGL) { contentBackendDevice = bkDevice; };
 
-	inline void SelectMap(jkMap* map) { currentMap = map; };
+	inline void SelectMap(const jkMap* map) { currentMap = map; };
 
-	void StartUp();
+	void Init();
 
 	void Display();
 
+	void StartUp();
+
 private:
+
+	//////////////////////////////////
+	// Devices
 
 	jkFrontendDevice contentFrontendDevice;
 	jkBackendDevice contentBackendDevice;
@@ -38,8 +43,9 @@ private:
 	jkFrontendRenderer* frontendRenderer;
 	jkBackendRenderer* backendRenderer;
 
-	jkMap* currentMap;
+	const jkMap* currentMap;
 	
+	bool ShouldFinish() { return false; };
 };
 
 jkContent::jkContent()

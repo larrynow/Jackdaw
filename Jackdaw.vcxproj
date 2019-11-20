@@ -130,10 +130,16 @@
     <ClInclude Include="Devices.h" />
     <ClInclude Include="FrontendRenderer.h" />
     <ClInclude Include="FrontendRendererWin32.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="JobList.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapManager.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Thread.h" />
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="WinInput.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BackendRenderer.cpp" />
@@ -141,9 +147,13 @@
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="FrontendRenderer.cpp" />
     <ClCompile Include="FrontendRendererWin32.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="JobList.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="WinInput.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
