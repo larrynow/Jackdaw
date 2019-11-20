@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{eed9b9cb-0e0a-4b80-b4a0-1a306224472c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{8bd1d959-4755-43f8-9b39-7a8f4434f1e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rebderer">
+      <UniqueIdentifier>{89d3e6b3-00e8-4393-90ad-1e49bad666e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Thread">
+      <UniqueIdentifier>{84e567d7-c6fa-454b-afe2-a9b33a4ed358}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Content.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Devices.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="FrontendRenderer.h">
+      <Filter>Rebderer</Filter>
+    </ClInclude>
+    <ClInclude Include="BackendRenderer.h">
+      <Filter>Rebderer</Filter>
+    </ClInclude>
+    <ClInclude Include="BackendRendererWin32.h">
+      <Filter>Rebderer</Filter>
+    </ClInclude>
+    <ClInclude Include="FrontendRendererWin32.h">
+      <Filter>Rebderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="MapManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="JobList.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Content.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="FrontendRenderer.cpp">
+      <Filter>Rebderer</Filter>
+    </ClCompile>
+    <ClCompile Include="BackendRenderer.cpp">
+      <Filter>Rebderer</Filter>
+    </ClCompile>
+    <ClCompile Include="BackendRendererWin32.cpp">
+      <Filter>Rebderer</Filter>
+    </ClCompile>
+    <ClCompile Include="FrontendRendererWin32.cpp">
+      <Filter>Rebderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="JobList.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
