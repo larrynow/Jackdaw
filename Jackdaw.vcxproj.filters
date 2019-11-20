@@ -30,9 +30,6 @@
     <ClInclude Include="BackendRenderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="BackendRendererWin32.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="FrontendRendererWin32.h">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -60,9 +57,14 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="WinInput.h" />
-    <ClInclude Include="Input.h">
+    <ClInclude Include="InputManager.h">
       <Filter>Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="WinInputManager.h">
+      <Filter>Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="BackendRendererGL.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +75,6 @@
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="BackendRenderer.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="BackendRendererWin32.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="FrontendRendererWin32.cpp">
@@ -96,9 +95,15 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="WinInput.cpp" />
-    <ClCompile Include="Input.cpp">
+    <ClCompile Include="InputManager.cpp">
       <Filter>Core\Input</Filter>
     </ClCompile>
+    <ClCompile Include="WinInputManager.cpp">
+      <Filter>Core\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="BackendRendererGL.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
 </Project>

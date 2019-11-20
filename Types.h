@@ -7,12 +7,6 @@
 
 using namespace jkMath;
 
-struct RECT
-{
-	UINT X;
-	UINT Y;
-};
-
 //////////////////////////////////////////
 // Types for rendering.
 
@@ -56,7 +50,4 @@ struct Texture
 	UINT Width, Height;
 };
 
-struct jkMap {
-
-};
 #endif // !JKTYPES_H_

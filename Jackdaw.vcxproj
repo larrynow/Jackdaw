@@ -125,12 +125,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BackendRenderer.h" />
-    <ClInclude Include="BackendRendererWin32.h" />
+    <ClInclude Include="BackendRendererGL.h" />
     <ClInclude Include="Content.h" />
     <ClInclude Include="Devices.h" />
     <ClInclude Include="FrontendRenderer.h" />
     <ClInclude Include="FrontendRendererWin32.h" />
-    <ClInclude Include="Input.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="JobList.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapManager.h" />
@@ -139,21 +139,22 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="Types.h" />
-    <ClInclude Include="WinInput.h" />
+    <ClInclude Include="WinInputManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BackendRenderer.cpp" />
-    <ClCompile Include="BackendRendererWin32.cpp" />
+    <ClCompile Include="BackendRendererGL.cpp" />
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="FrontendRenderer.cpp" />
     <ClCompile Include="FrontendRendererWin32.cpp" />
-    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="JobList.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Thread.cpp" />
-    <ClCompile Include="WinInput.cpp" />
+    <ClCompile Include="WinInputManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

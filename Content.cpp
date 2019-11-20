@@ -1,31 +1,43 @@
 #include"Content.h"
 #include"FrontendRendererWin32.h"
-#include"BackendRendererWin32.h"
+#include"BackendRendererGL.h"
+#include"WinInputManager.h"
 #include"MapManager.h"
 #include<assert.h>
 
-void jkContent::Init()
+void jkContent::Init(UINT width, UINT height)
 {
 	// Start up renderers.
-	switch (contentFrontendDevice)
+	switch (mContentFrontendDevice)
 	{
 	case jkFrontendDevice::WIN_32:
-		frontendRenderer = new jkFrontendRendererWin32();
+		m_pFrontendRenderer = new jkFrontendRendererWin32();
+		m_pInputManager = new jkWinInputManager();
 		break;
 	default:
-		frontendRenderer = new jkFrontendRendererWin32();
+		m_pFrontendRenderer = new jkFrontendRendererWin32();
+		m_pInputManager = new jkWinInputManager();
 		break;
 	}
 
-	switch (contentBackendDevice)
+	switch (mContentBackendDevice)
 	{
 	case jkBackendDevice::OPENGL:
-		backendRenderer = new jkBackendRendererWin32();
+		m_pBackendRenderer = new jkBackendRendererGL();
 		break;
 	default:
-		backendRenderer = new jkBackendRendererWin32();
+		m_pBackendRenderer = new jkBackendRendererGL();
 		break;
 	}
+
+	m_pFrontendRenderer->Init(width, height);
+
+	// Choose a controll actor then bind input on it.
+
+	// Note, the BindInput should be excuted in actor(or controller) class.
+	//m_pInputManager->RegisterInput(BFInput::KEY_W, "forward");
+	//m_pInputManager->BindInput("forward", [content]() {if (content->m_pControlledActor) content->m_pControlledActor->MoveForward(); });
+
 
 	//jkMapManager::LoadMaps("");
 	//SelectMap(jkMapManager::NextMap());
@@ -42,38 +54,33 @@ void jkContent::StartUp()
 {
 	while (!ShouldFinish())
 	{
-		screen_dispatch();
-		curTime = timeGetTime();
-		float fps = 1 * 1000 / float(curTime - lastTime);
-		//if (fps > max_fps) max_fps = fps;
-		std::string fpsStr = std::to_string(fps);
-		lastTime = curTime;
-		::SetConsoleTitleA(fpsStr.c_str());
-		//std::cout << fpsStr << '\r';
-		renderer->Clear();
+		assert(m_pInputManager);
+		m_pInputManager->Listen();
+		
+		/*::SetConsoleTitleA(fpsStr.c_str());
+		renderer->Clear();*/
 
 		// Input.
-		for (auto it = content->input_name_map.begin(); it != content->input_name_map.end(); ++it)
+		for (auto it = m_pInputManager->input_name_map.begin(); it != m_pInputManager->input_name_map.end(); ++it)
 		{
-			auto key = (*it).first;
-			auto key_id = BFContent::MapKey(key);
-			if (key_id != -1 && BFContent::screen_keys[key_id] == 1)
+			auto input = (*it).first;
+			auto input_id = m_pInputManager->GetInputId(input);
+			if (input_id != -1 && *(m_pInputManager->KeyStatus+input_id) == 1)
 			{
-				//std::cout << key_id << std::endl;
 				auto input = (*it).second;
-				auto op = content->input_op_map.at(input);
+				auto op = m_pInputManager->input_op_map.at(input);
 				op();
 			}
 		}
-		//cubeMesh->RotateWithY(1.f);
-		//renderer->RenderMesh(cubeMesh);
 
-		cuteMesh->RotateWithY(1.f);
-		renderer->RenderMesh(cuteMesh);
-
-		renderer->Display();
+		m_pBackendRenderer->Display();
 
 	}
+}
+
+bool jkContent::ShouldFinish()
+{
+	return jkInputManager::ExitStatus;
 }
 
 

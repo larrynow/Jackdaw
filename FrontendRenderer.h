@@ -4,6 +4,7 @@
 
 #include"Types.h"
 #include"Mesh.h"
+#include"InputManager.h"
 
 /*
 jkFrontRenderer : device renderer, sharing buffers with BackendRenderer.
@@ -15,9 +16,10 @@ public:
 
 	virtual ~jkFrontendRenderer() {};
 
+	// Init a window.
 	virtual void Init(UINT bufferWidth, UINT bufferHeight)=0;
 
-	void RenderMap(jkMap* map) {};
+	//void RenderMap(jkMap* map) {};
 
 	void RenderMesh(jkMesh* mesh);
 
@@ -28,6 +30,8 @@ protected:
 	UINT bufferSize;
 
 	unsigned char* m_pFrameBuffer;
+
+	jkInputManager* m_pInputManager;
 
 };
 

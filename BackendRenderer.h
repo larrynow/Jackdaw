@@ -12,6 +12,8 @@ public:
 
 	inline void SetClearColor(COLOR3 clearColor) { mClearColor = clearColor; };
 
+	virtual void Display() = 0;
+
 private:
 
 	COLOR3 mClearColor;

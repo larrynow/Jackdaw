@@ -2,11 +2,13 @@
 #ifndef JKCONTENT_H_
 #define JKCONTENT_H_
 
+#include"Types.h"
 #include"Devices.h"
 #include"Map.h"
 
 class jkFrontendRenderer;
 class jkBackendRenderer;
+class jkInputManager;
 
 /*
 jkContent : a content for engine modules.
@@ -17,16 +19,17 @@ Select both frontend and backend devices.
 
 class jkContent
 {
+
 public:
-	jkContent();
-	~jkContent();
+	jkContent() {};
+	~jkContent() {};
 
-	inline void SelectFrontendDevice(jkFrontendDevice ftDevice = jkFrontendDevice::WIN32) { contentFrontendDevice = ftDevice; };
-	inline void SelectBackendDevice(jkBackendDevice bkDevice = jkBackendDevice::OPENGL) { contentBackendDevice = bkDevice; };
+	inline void SelectFrontendDevice(jkFrontendDevice ftDevice = jkFrontendDevice::WIN_32) { mContentFrontendDevice = ftDevice; };
+	inline void SelectBackendDevice(jkBackendDevice bkDevice = jkBackendDevice::OPENGL) { mContentBackendDevice = bkDevice; };
 
-	inline void SelectMap(const jkMap* map) { currentMap = map; };
+	inline void SelectMap(const jkMap* map) { m_pCurrentMap = map; };
 
-	void Init();
+	void Init(UINT width, UINT height);
 
 	void Display();
 
@@ -37,23 +40,17 @@ private:
 	//////////////////////////////////
 	// Devices
 
-	jkFrontendDevice contentFrontendDevice;
-	jkBackendDevice contentBackendDevice;
+	jkFrontendDevice mContentFrontendDevice;
+	jkBackendDevice mContentBackendDevice;
 
-	jkFrontendRenderer* frontendRenderer;
-	jkBackendRenderer* backendRenderer;
+	jkFrontendRenderer* m_pFrontendRenderer;
+	jkBackendRenderer* m_pBackendRenderer;
 
-	const jkMap* currentMap;
+	const jkMap* m_pCurrentMap;
 	
-	bool ShouldFinish() { return false; };
+	jkInputManager* m_pInputManager;
+	//m_pControllActor.
+
+	bool ShouldFinish();
 };
-
-jkContent::jkContent()
-{
-}
-
-jkContent::~jkContent()
-{
-}
-
 #endif	

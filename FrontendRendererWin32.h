@@ -22,6 +22,9 @@ private:
 	UINT mWindowWidth;
 	UINT mWindowHeight;
 	HDC m_hScreenDC;// The DC to draw into.
+
+	// Events handler for created window.
+	static LRESULT mEventsHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };
 
 #endif // !JKFRONTRENDERERWIN32_H_

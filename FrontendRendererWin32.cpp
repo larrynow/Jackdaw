@@ -1,30 +1,26 @@
 #include "FrontendRendererWin32.h"
+#include"InputManager.h"
+#include<assert.h>
 
-static LRESULT screen_events(HWND hWnd, UINT msg,
-	WPARAM wParam, LPARAM lParam) {
-	switch (msg) {
+LRESULT jkFrontendRendererWin32::mEventsHandler(HWND hWnd, UINT msg,
+	WPARAM wParam, LPARAM lParam) 
+{
+	switch (msg) 
+	{
 	case WM_CLOSE: 
-		//BFContent::screen_exit = 1; break;
+		jkInputManager::ExitStatus = 1;
+		break;
 	case WM_KEYDOWN:
-		//BFContent::screen_keys[wParam & 511] = 1;
+		jkInputManager::KeyStatus[wParam & 511] = 1;
 		break;
 	case WM_KEYUP:
-		//BFContent::screen_keys[wParam & 511] = 0;
+		jkInputManager::KeyStatus[wParam & 511] = 0;
 		break;
 	default: 
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
-	return 0;
-}
 
-void screen_dispatch(void) {
-	MSG msg;
-	while (1) 
-	{
-		if (!PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) break;
-		if (!GetMessage(&msg, NULL, 0, 0)) break;
-		DispatchMessage(&msg);
-	}
+	return 0;
 }
 
 void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight)
@@ -32,9 +28,9 @@ void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight)
 	{
 		////////////////////////////////
 		// Initialize window.
-
+		
 		// Create window class.
-		WNDCLASS wc = { CS_BYTEALIGNCLIENT, (WNDPROC)screen_events, 0, 0, 0,
+		WNDCLASS wc = { CS_BYTEALIGNCLIENT, (WNDPROC)this->mEventsHandler, 0, 0, 0,
 			NULL, NULL, NULL, NULL, "JackdawWindow" };
 		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 		wc.hInstance = GetModuleHandle(NULL);
@@ -93,9 +89,7 @@ void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight)
 
 		ShowWindow(hWindowHandle, SW_NORMAL);
 
-		ImmDisableIME(0);// Disable IME.
-
-		screen_dispatch();// Deal with message before rendering.
+		//ImmDisableIME(0);// Disable IME.
 
 	}
 }
