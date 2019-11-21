@@ -3,6 +3,7 @@
 #define FRONTENDRENDERER_H_
 
 #include"Types.h"
+#include"Devices.h"
 #include"Mesh.h"
 #include"InputManager.h"
 
@@ -17,7 +18,9 @@ public:
 	virtual ~jkFrontendRenderer() {};
 
 	// Init a window.
-	virtual void Init(UINT bufferWidth, UINT bufferHeight)=0;
+	virtual void Init(UINT bufferWidth, UINT bufferHeight, jkBackendDevice backendDevice)=0;
+
+	virtual void Display() = 0;
 
 	//void RenderMap(jkMap* map) {};
 

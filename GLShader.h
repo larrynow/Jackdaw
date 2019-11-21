@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef GLSHADER_H
+#define GLSHADER_H
 
 #include"Math.h"
 #include<glad/glad.h>
@@ -12,19 +12,20 @@
 
 using namespace jkMath;
 
-class Shader
+class glShader
 {
 public:
 	//program ID;
 	unsigned int ID;
 
 	//construct Shader;
-	Shader(const char* vertexShaderPath, const char* fragmentShaderPath, const char* geometryShaderPath = nullptr)
+	glShader(const char* vertexShaderPath, const char* fragmentShaderPath, const char* geometryShaderPath = nullptr)
 	{
 		//step 1. get shader code in file path.
 		std::string vertexCode;
 		std::string fragmentCode;
 		std::string geometryCode;
+
 		std::ifstream vShaderFile;
 		std::ifstream fShaderFile;
 		std::ifstream gShaderFile;
@@ -169,4 +170,4 @@ private:
 		}
 	}
 };
-#endif // !SHADER_H
+#endif // !GLSHADER_H

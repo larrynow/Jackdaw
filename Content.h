@@ -27,7 +27,7 @@ public:
 	inline void SelectFrontendDevice(jkFrontendDevice ftDevice = jkFrontendDevice::WIN_32) { mContentFrontendDevice = ftDevice; };
 	inline void SelectBackendDevice(jkBackendDevice bkDevice = jkBackendDevice::OPENGL) { mContentBackendDevice = bkDevice; };
 
-	inline void SelectMap(const jkMap* map) { m_pCurrentMap = map; };
+	inline void SelectMap(jkMap* map) { m_pCurrentMap = map; };
 
 	void Init(UINT width, UINT height);
 

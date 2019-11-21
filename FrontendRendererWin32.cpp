@@ -1,6 +1,9 @@
 #include "FrontendRendererWin32.h"
 #include"InputManager.h"
 #include<assert.h>
+#include<glad/glad.h>
+
+#pragma comment (lib, "opengl32.lib")
 
 LRESULT jkFrontendRendererWin32::mEventsHandler(HWND hWnd, UINT msg,
 	WPARAM wParam, LPARAM lParam) 
@@ -23,7 +26,7 @@ LRESULT jkFrontendRendererWin32::mEventsHandler(HWND hWnd, UINT msg,
 	return 0;
 }
 
-void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight)
+void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight, jkBackendDevice backendDevice)
 {
 	{
 		////////////////////////////////
@@ -52,29 +55,14 @@ void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight)
 		mWindowWidth = bufferWidth;
 		mWindowHeight = bufferHeight;
 
-		// Get window DC.
-		HDC hDC = GetDC(hWindowHandle);
-		m_hScreenDC = CreateCompatibleDC(hDC);
-		ReleaseDC(hWindowHandle, hDC);
+		/////////////////////////////////////////////////////
+		// Create OPENGL context.
 
-		// Configure bitmap info.
-		BITMAPINFO bi = { {sizeof(BITMAPINFOHEADER), bufferWidth, bufferHeight, 1, 24, BI_RGB,
-			(LONG)(bufferWidth * bufferHeight * 3), 0, 0, 0, 0 } };// 24 bits color, 3 channels RGB for 3 byte : /R:8/G:8/B:8.
-
-		// Create bitmap.
-		HBITMAP hBmpNew = NULL;
-		HBITMAP hBmpOld = NULL;
-		LPVOID values;// bitmap's pixel values.
-
-		// Allocate spaces for bmp pixels.
-		hBmpNew = CreateDIBSection(m_hScreenDC, &bi, DIB_RGB_COLORS, &values, 0, 0);
-		if (hBmpNew == NULL) return;
-		m_pFrameBuffer = (unsigned char*)values;
-		memset(m_pFrameBuffer, 0, bufferWidth * bufferHeight * 3);
-
-		// Select created bitmap.
-		hBmpOld = (HBITMAP)SelectObject(m_hScreenDC, hBmpNew);
-
+		if (backendDevice == jkBackendDevice::OPENGL)
+		{
+			assert(mCreateGLContext(m_hWindowHandle));
+			assert(gladLoadGL());
+		}
 		// Adjust window shape, position.
 		RECT rect = { 0, 0, (LONG)bufferWidth, (LONG)bufferHeight };
 		AdjustWindowRect(&rect, GetWindowLong(hWindowHandle, GWL_STYLE), 0);
@@ -91,5 +79,72 @@ void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight)
 
 		//ImmDisableIME(0);// Disable IME.
 
+	}
+}
+
+void jkFrontendRendererWin32::Display()
+{
+	SwapBuffers(GetDC(m_hWindowHandle));
+}
+
+bool jkFrontendRendererWin32::mCreateGLContext(HWND hWnd)
+{
+	// Get window DC.
+	HDC hDC = GetDC(hWnd);
+	if (!hDC) return false;
+
+	// Set window pixel format.
+	static	PIXELFORMATDESCRIPTOR pfd =
+	{
+		sizeof(PIXELFORMATDESCRIPTOR),	// 上述格式描述符的大小
+		1,								// 版本号
+		PFD_DRAW_TO_WINDOW |			// 格式支持窗口
+		PFD_SUPPORT_OPENGL |			// 格式必须支持OpenGL
+		PFD_DOUBLEBUFFER,				// 必须支持双缓冲
+		PFD_TYPE_RGBA,					// 申请 RGBA 格式
+		24,							// 选定色彩深度
+		0, 0, 0, 0, 0, 0,				// 忽略的色彩位
+		0,								// 无Alpha缓存
+		0,								// 忽略Shift Bit
+		0,								// 无累加缓存
+		0, 0, 0, 0,						// 忽略聚集位
+		16,								// 16位 Z-缓存 (深度缓存)
+		0,								// 无蒙板缓存
+		0,								// 无辅助缓存
+		PFD_MAIN_PLANE,					// 主绘图层
+		0,								// Reserved
+		0, 0, 0							// 忽略层遮罩
+	};
+
+	// Check if pixel format is matched with window DC.
+	int pixelFormat = ChoosePixelFormat(hDC, &pfd);
+	if (!pixelFormat) return false;
+
+	// Set pixel format.
+	if (!SetPixelFormat(hDC, pixelFormat, &pfd)) return false;
+
+	// Create render context.
+	m_hGLRC = wglCreateContext(hDC);
+	if (!m_hGLRC) return false;
+
+	// Connect.
+	if (!wglMakeCurrent(hDC, m_hGLRC)) return false;
+
+	return true;
+}
+
+void jkFrontendRendererWin32::mDestroyGLContext()
+{
+	if (m_hGLRC)
+	{
+		// Realease device context hRC.
+		if (wglMakeCurrent(NULL, NULL))
+		{
+			// Delete device context hRC.
+			if (wglDeleteContext(m_hGLRC))
+			{
+				m_hGLRC = NULL;
+			}
+		}
 	}
 }

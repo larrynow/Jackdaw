@@ -30,15 +30,17 @@ void jkContent::Init(UINT width, UINT height)
 		break;
 	}
 
-	m_pFrontendRenderer->Init(width, height);
+	m_pFrontendRenderer->Init(width, height, mContentBackendDevice);
 
-	jkMapManager::LoadMaps("");
-	m_pCurrentMap = jkMapManager::NextMap();
+	m_pBackendRenderer->SetClearColor({0.7f, 0.0f, 0.0f});
 
-	m_pControlledCharacter = m_pCurrentMap->GetControlledCharacter();
+	//jkMapManager::LoadMaps("");
+	//m_pCurrentMap = jkMapManager::NextMap();
 
-	//TODO : register input from a inpout table.
-	m_pInputManager->RegisterInput(jkInput::KEY_W, "forward");
+	//m_pControlledCharacter = m_pCurrentMap->GetControlledCharacter();
+
+	////TODO : register input from a inpout table.
+	//m_pInputManager->RegisterInput(jkInput::KEY_W, "forward");
 
 
 }
@@ -59,6 +61,8 @@ void jkContent::StartUp()
 		/*::SetConsoleTitleA(fpsStr.c_str());
 		renderer->Clear();*/
 
+		m_pBackendRenderer->Clear();
+
 		// Input.
 		for (auto it = m_pInputManager->input_name_map.begin(); it != m_pInputManager->input_name_map.end(); ++it)
 		{
@@ -73,7 +77,7 @@ void jkContent::StartUp()
 			}
 		}
 
-		m_pBackendRenderer->Display();
+		m_pFrontendRenderer->Display();
 
 	}
 }

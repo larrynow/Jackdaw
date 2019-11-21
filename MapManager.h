@@ -13,8 +13,8 @@ Load maps for game.
 class jkMapManager
 {
 public:
-	static bool LoadMaps(std::string path);
-	static jkMap* NextMap();
+	static bool LoadMaps(std::string path) {};
+	static jkMap* NextMap() { return nullptr; };
 
 private:
 	std::vector<jkMap*> maps;

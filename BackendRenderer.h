@@ -8,11 +8,12 @@ class jkBackendRenderer
 {
 public:
 
-	void Clear();
+	virtual void Clear() = 0;
 
-	inline void SetClearColor(COLOR3 clearColor) { mClearColor = clearColor; };
+	virtual inline void SetClearColor(COLOR3 clearColor = { 0.7f, 0.7f, 0.7f }) { mClearColor = clearColor; };
 
-	virtual void Display() = 0;
+	virtual void StartUp() = 0;
+	//virtual void Display() = 0;
 
 private:
 
