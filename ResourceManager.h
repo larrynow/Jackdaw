@@ -8,7 +8,7 @@
 class jkResourceManager
 {
 	static inline bool ImportMeshFromOBJ(const std::string& objFilePath, jkMesh* mesh) { return ImportFileOBJ(objFilePath, *mesh->m_pVertexBuffer, *mesh->m_pIndexBuffer); };
-	static inline bool ImportTexture_BMP(const std::string& bmpFilePath, Texture* tex) { return ImportFile_BMP(bmpFilePath, tex->Width, tex->Height, *tex->pColorBuffer); };
+	static inline bool ImportTexture_BMP(const std::string& bmpFilePath, Texture* tex) { return ImportFile_BMP(bmpFilePath, tex->width, tex->height, *tex->pColorBuffer); };
 
 
 private:

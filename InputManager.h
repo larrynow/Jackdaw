@@ -28,11 +28,11 @@ public:
 private:
 
 	std::unordered_map<jkInput, std::string> input_name_map;// From a user input to a input name.
-	std::unordered_map<std::string, std::function<void()>> input_op_map;// From a input to a operation.
+	//std::unordered_map<std::string, std::function<void()>> input_op_map;// From a input to a operation.
 
 	// Input setting before start up.
 	inline void RegisterInput(jkInput input, std::string input_name) { input_name_map.insert(std::make_pair(input, input_name)); };
-	inline void BindInput(std::string input_name, std::function<void()> operation) { input_op_map.insert(std::make_pair(input_name, operation)); };
+	//inline void BindInput(std::string input_name, std::function<void()> operation) { input_op_map.insert(std::make_pair(input_name, operation)); };
 	// Note, the BindInput should be excuted in actor(or controller) class.
 
 

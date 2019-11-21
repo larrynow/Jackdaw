@@ -68,8 +68,8 @@ void jkContent::StartUp()
 			if (input_id != -1 && *(m_pInputManager->KeyStatus+input_id) == 1)
 			{
 				auto input = (*it).second;
-				auto op = m_pInputManager->input_op_map.at(input);
-				op();
+				//auto op = m_pInputManager->input_op_map.at(input);
+				//op();
 			}
 		}
 

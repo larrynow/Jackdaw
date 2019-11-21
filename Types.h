@@ -30,14 +30,14 @@ struct RenderData
 
 struct Texture
 {
-	Texture() : Width(0), Height(0) { pColorBuffer = new std::vector<COLOR3>; };
+	Texture() : width(0), height(0) { pColorBuffer = new std::vector<COLOR3>; };
 	~Texture() { delete pColorBuffer; };
 
 	COLOR3 GetPixel(UINT x, UINT y) const
 	{
-		if (x < Width && y < Height)
+		if (x < width && y < height)
 		{
-			UINT index = y * Width + x;
+			UINT index = y * width + x;
 			return pColorBuffer->at(index);
 
 		}
@@ -47,7 +47,20 @@ struct Texture
 	}
 
 	std::vector<COLOR3>* pColorBuffer;
-	UINT Width, Height;
+	UINT width, height;
+};
+
+////////////////////////////////////////////////
+// Types for entity.
+
+struct Transform
+{
+	VEC3 position;
+	float scaleX;
+	float scaleY;
+	float scaleZ;
+
+	//TODO: Latter for rotation
 };
 
 #endif // !JKTYPES_H_

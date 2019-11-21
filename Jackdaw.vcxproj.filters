@@ -66,6 +66,12 @@
     <ClInclude Include="BackendRendererGL.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="Actor.h" />
+    <ClInclude Include="Character.h" />
+    <ClInclude Include="EntityFactory.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Content.cpp">
@@ -105,5 +111,8 @@
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="Character.cpp" />
   </ItemGroup>
 </Project>
