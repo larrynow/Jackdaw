@@ -7,7 +7,7 @@
 
 enum class jkInput
 {
-
+	KEY_W,
 };
 
 class jkInputManager

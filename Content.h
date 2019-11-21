@@ -46,7 +46,9 @@ private:
 	jkFrontendRenderer* m_pFrontendRenderer;
 	jkBackendRenderer* m_pBackendRenderer;
 
-	const jkMap* m_pCurrentMap;
+	jkMap* m_pCurrentMap;
+
+	jkCharacter* m_pControlledCharacter;
 	
 	jkInputManager* m_pInputManager;
 	//m_pControllActor.

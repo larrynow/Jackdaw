@@ -32,15 +32,14 @@ void jkContent::Init(UINT width, UINT height)
 
 	m_pFrontendRenderer->Init(width, height);
 
-	// Choose a controll actor then bind input on it.
+	jkMapManager::LoadMaps("");
+	m_pCurrentMap = jkMapManager::NextMap();
 
-	// Note, the BindInput should be excuted in actor(or controller) class.
-	//m_pInputManager->RegisterInput(BFInput::KEY_W, "forward");
-	//m_pInputManager->BindInput("forward", [content]() {if (content->m_pControlledActor) content->m_pControlledActor->MoveForward(); });
+	m_pControlledCharacter = m_pCurrentMap->GetControlledCharacter();
 
+	//TODO : register input from a inpout table.
+	m_pInputManager->RegisterInput(jkInput::KEY_W, "forward");
 
-	//jkMapManager::LoadMaps("");
-	//SelectMap(jkMapManager::NextMap());
 
 }
 
@@ -68,8 +67,9 @@ void jkContent::StartUp()
 			if (input_id != -1 && *(m_pInputManager->KeyStatus+input_id) == 1)
 			{
 				auto input = (*it).second;
-				//auto op = m_pInputManager->input_op_map.at(input);
-				//op();
+				auto op = m_pControlledCharacter->input_op_map.at(input);
+				if(m_pControlledCharacter)
+					op();
 			}
 		}
 

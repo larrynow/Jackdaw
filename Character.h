@@ -11,6 +11,7 @@ Class jkCharacter : A character is controlled by player thus with a Input_OP map
 
 class jkCharacter : public jkActor
 {
+	friend class jkContent;
 public:
 
 	inline void BindInput(std::string input_name, std::function<void()> operation)
