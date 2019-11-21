@@ -16,37 +16,55 @@
     <Filter Include="Core\Input">
       <UniqueIdentifier>{37c4dc7e-631d-43a8-980a-bf164d12a8c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\GameObject">
+      <UniqueIdentifier>{e5321753-40b7-4d0e-867f-125551244aac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{76a53cf5-ddd6-40d1-916f-c67af51357bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actor.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="BackendRenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="BackendRendererGL.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
     <ClInclude Include="Content.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Devices.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="FrontendRenderer.h">
-      <Filter>Renderer</Filter>
+    <ClInclude Include="Entity.h">
+      <Filter>Core\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="BackendRenderer.h">
+    <ClInclude Include="EntityFactory.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="FrontendRenderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="FrontendRendererWin32.h">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="JobList.h">
+      <Filter>Thread</Filter>
     </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="MapManager.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Thread.h">
-      <Filter>Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="JobList.h">
-      <Filter>Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="Types.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Common</Filter>
@@ -57,43 +75,56 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Core\Input</Filter>
+    <ClInclude Include="Shader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="WinInputManager.h">
       <Filter>Core\Input</Filter>
     </ClInclude>
-    <ClInclude Include="BackendRendererGL.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="Actor.h" />
-    <ClInclude Include="Character.h" />
-    <ClInclude Include="EntityFactory.h">
-      <Filter>Core</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Core\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="BackendRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="BackendRendererGL.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Core\GameObject</Filter>
+    </ClCompile>
     <ClCompile Include="Content.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="FrontendRenderer.cpp">
-      <Filter>Renderer</Filter>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Core\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="BackendRenderer.cpp">
+    <ClCompile Include="FrontendRenderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="FrontendRendererWin32.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Map.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="glad.c">
+      <Filter>Lib</Filter>
     </ClCompile>
-    <ClCompile Include="Thread.cpp">
-      <Filter>Thread</Filter>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Core\Input</Filter>
     </ClCompile>
     <ClCompile Include="JobList.cpp">
       <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Map.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Renderer</Filter>
@@ -101,18 +132,11 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Core\Input</Filter>
+    <ClCompile Include="Thread.cpp">
+      <Filter>Thread</Filter>
     </ClCompile>
     <ClCompile Include="WinInputManager.cpp">
       <Filter>Core\Input</Filter>
     </ClCompile>
-    <ClCompile Include="BackendRendererGL.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="Character.cpp" />
   </ItemGroup>
 </Project>

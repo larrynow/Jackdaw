@@ -3,6 +3,6 @@
 class jkBackendRendererGL : public jkBackendRenderer
 {
 public:
-	virtual void Display() override {};
+	void Display() override;
 };
 

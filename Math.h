@@ -163,7 +163,10 @@ namespace jkMath
 			return os << _vec.x << "," << _vec.y << "," << _vec.z << std::endl;
 		}
 
-		float x, y, z;
+		union {
+			struct { float x, y, z; };
+			float m[3];
+		};
 	};
 
 	struct VEC4
@@ -249,7 +252,11 @@ namespace jkMath
 			return VEC4(x / scaleFactor, y / scaleFactor, z / scaleFactor, w / scaleFactor);
 		}
 
-		float x, y, z, w;
+		union {
+			struct{ float x, y, z, w; };
+			float m[4];
+		};
+
 	};
 
 	struct MAT4
