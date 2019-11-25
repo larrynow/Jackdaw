@@ -6,7 +6,7 @@ class jkBackendRendererGL : public jkBackendRenderer
 {
 public:
 
-	void SetClearColor(COLOR3 clearColor = { 0.7f, 0.7f, 0.7f });
+	void SetClearColor(COLOR3 clearColor = { 0.27f, 0.27f, 0.27f });
 
 	void Clear() override;
 

@@ -7,7 +7,11 @@
 
 enum class jkInput
 {
-	KEY_W,
+	// Keyboard inputs.
+	KEY_A, KEY_B, KEY_C, KEY_D, KEY_E, KEY_F, KEY_G, KEY_H, KEY_I, KEY_J, KEY_K, KEY_L, KEY_M, KEY_N,
+	KEY_O, KEY_P, KEY_Q, KEY_R, KEY_S, KEY_T, KEY_U, KEY_V, KEY_W, KEY_X, KEY_Y, KEY_Z,
+	KEY_TAB, KEY_SHIFT, KEY_CTRL, KEY_SPACE, KEY_ENTER,
+	KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 };
 
 class jkInputManager
@@ -20,7 +24,9 @@ public:
 
 	virtual void Listen() = 0;
 
-	virtual int GetInputId(jkInput) = 0;
+	void LoadInputTable(const std::string inputTablePath) {};
+
+	virtual int MapKey(jkInput input) = 0;// Map a jkInput(key) to a device key id.
 
 	static unsigned int KeyStatus[512];
 	static unsigned int ExitStatus;

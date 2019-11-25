@@ -32,7 +32,7 @@ void jkContent::Init(UINT width, UINT height)
 
 	m_pFrontendRenderer->Init(width, height, mContentBackendDevice);
 
-	m_pBackendRenderer->SetClearColor({0.7f, 0.0f, 0.0f});
+	m_pBackendRenderer->SetClearColor();
 
 	//jkMapManager::LoadMaps("");
 	//m_pCurrentMap = jkMapManager::NextMap();
@@ -67,13 +67,16 @@ void jkContent::StartUp()
 		for (auto it = m_pInputManager->input_name_map.begin(); it != m_pInputManager->input_name_map.end(); ++it)
 		{
 			auto input = (*it).first;
-			auto input_id = m_pInputManager->GetInputId(input);
+			auto input_id = m_pInputManager->MapKey(input);// Note only key.
+
 			if (input_id != -1 && *(m_pInputManager->KeyStatus+input_id) == 1)
 			{
 				auto input = (*it).second;
 				auto op = m_pControlledCharacter->input_op_map.at(input);
-				if(m_pControlledCharacter)
-					op();
+				if (m_pControlledCharacter)// Check if character is still exist in content.
+				{
+					op(); PRINT(input);
+				}
 			}
 		}
 

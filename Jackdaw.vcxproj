@@ -129,6 +129,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="GLShader.h" />
     <ClInclude Include="Actor.h" />
     <ClInclude Include="BackendRenderer.h" />
@@ -155,6 +157,7 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="BackendRenderer.cpp" />
     <ClCompile Include="BackendRendererGL.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="Entity.cpp" />

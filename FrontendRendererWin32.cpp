@@ -3,7 +3,9 @@
 #include<assert.h>
 #include<glad/glad.h>
 
-#pragma comment (lib, "opengl32.lib")
+//#pragma comment (lib, "opengl32.lib")
+#include "imm.h"
+#pragma comment(lib, "imm32.lib")
 
 LRESULT jkFrontendRendererWin32::mEventsHandler(HWND hWnd, UINT msg,
 	WPARAM wParam, LPARAM lParam) 
@@ -77,7 +79,7 @@ void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight, jkBacken
 
 		ShowWindow(hWindowHandle, SW_NORMAL);
 
-		//ImmDisableIME(0);// Disable IME.
+		ImmDisableIME(0);// Disable IME.
 
 	}
 }

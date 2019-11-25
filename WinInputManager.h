@@ -13,7 +13,7 @@ public:
 
 	void Listen(void) override;
 
-	int GetInputId(jkInput) override;
+	int MapKey(jkInput input) override;
 
 };
 

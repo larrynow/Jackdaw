@@ -87,6 +87,12 @@
     <ClInclude Include="GLShader.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeCamera.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -137,6 +143,9 @@
     </ClCompile>
     <ClCompile Include="WinInputManager.cpp">
       <Filter>Core\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Core\GameObject</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,11 +4,14 @@
 
 #include"Types.h"
 #include"Devices.h"
+#include"InputManager.h"
 #include"Map.h"
 
 class jkFrontendRenderer;
 class jkBackendRenderer;
 class jkInputManager;
+
+#define PRINT(msg) std::cout<<msg<<std::endl;
 
 /*
 jkContent : a content for engine modules.
@@ -27,13 +30,15 @@ public:
 	inline void SelectFrontendDevice(jkFrontendDevice ftDevice = jkFrontendDevice::WIN_32) { mContentFrontendDevice = ftDevice; };
 	inline void SelectBackendDevice(jkBackendDevice bkDevice = jkBackendDevice::OPENGL) { mContentBackendDevice = bkDevice; };
 
-	inline void SelectMap(jkMap* map) { m_pCurrentMap = map; };
+	inline void SelectMap(jkMap* map) { m_pCurrentMap = map; m_pControlledCharacter = map->GetControlledCharacter(); };
 
 	void Init(UINT width, UINT height);
 
 	void Display();
 
 	void StartUp();
+
+	inline void RegisterInput(jkInput input, std::string input_name) { m_pInputManager->RegisterInput(input, input_name); };
 
 private:
 

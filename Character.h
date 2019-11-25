@@ -19,6 +19,8 @@ public:
 		input_op_map.insert(std::make_pair(input_name, operation));
 	};
 
+	virtual void SetUpInput() = 0; // Excute BindInputs in SetInput.
+
 private:
 
 	std::unordered_map<std::string, std::function<void()>> input_op_map;
