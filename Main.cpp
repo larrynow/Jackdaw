@@ -15,7 +15,14 @@ int main()
 	content.RegisterInput(jkInput::KEY_SPACE, "up");
 	content.RegisterInput(jkInput::KEY_CTRL, "down");
 
+	//content.
+
 	auto pMap = new jkMap();
+
+	auto pEntity = new jkEntity({0.f, 0.f, 100.f});
+	pEntity->MeshPath = "./Asset/model-triangulated.obj";
+	pMap->AddEntity(pEntity);
+
 	auto pFreeCamera = new jkFreeCamera();
 	pMap->AddEntity(pFreeCamera);
 	pMap->ControllCharacter(pFreeCamera);

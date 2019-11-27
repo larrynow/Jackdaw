@@ -10,6 +10,7 @@
 class jkFrontendRenderer;
 class jkBackendRenderer;
 class jkInputManager;
+class jkResourceManager;
 
 #define PRINT(msg) std::cout<<msg<<std::endl;
 
@@ -30,7 +31,7 @@ public:
 	inline void SelectFrontendDevice(jkFrontendDevice ftDevice = jkFrontendDevice::WIN_32) { mContentFrontendDevice = ftDevice; };
 	inline void SelectBackendDevice(jkBackendDevice bkDevice = jkBackendDevice::OPENGL) { mContentBackendDevice = bkDevice; };
 
-	inline void SelectMap(jkMap* map) { m_pCurrentMap = map; m_pControlledCharacter = map->GetControlledCharacter(); };
+	void SelectMap(jkMap* map);
 
 	void Init(UINT width, UINT height);
 
@@ -56,8 +57,14 @@ private:
 	jkCharacter* m_pControlledCharacter;
 	
 	jkInputManager* m_pInputManager;
+
 	//m_pControllActor.
 
 	bool ShouldFinish();
+
+	void mUpdateBackendRenderer();
+
+	UINT mWidth;
+	UINT mHeight;
 };
 #endif	

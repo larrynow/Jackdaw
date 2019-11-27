@@ -14,6 +14,7 @@ class jkCharacter : public jkActor
 	friend class jkContent;
 public:
 
+	jkCharacter() : jkActor() {}
 	inline void BindInput(std::string input_name, std::function<void()> operation)
 	{
 		input_op_map.insert(std::make_pair(input_name, operation));

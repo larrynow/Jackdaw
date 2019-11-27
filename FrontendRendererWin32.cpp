@@ -2,6 +2,7 @@
 #include"InputManager.h"
 #include<assert.h>
 #include<glad/glad.h>
+#include<wingdi.h>
 
 //#pragma comment (lib, "opengl32.lib")
 #include "imm.h"
@@ -79,6 +80,9 @@ void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight, jkBacken
 
 		ShowWindow(hWindowHandle, SW_NORMAL);
 
+		if (backendDevice == jkBackendDevice::OPENGL)
+			glViewport(0, 0, mWindowWidth, mWindowHeight);// TODO : Resize.
+
 		ImmDisableIME(0);// Disable IME.
 
 	}
@@ -104,7 +108,7 @@ bool jkFrontendRendererWin32::mCreateGLContext(HWND hWnd)
 		PFD_SUPPORT_OPENGL |			// 格式必须支持OpenGL
 		PFD_DOUBLEBUFFER,				// 必须支持双缓冲
 		PFD_TYPE_RGBA,					// 申请 RGBA 格式
-		24,							// 选定色彩深度
+		32,							// 选定色彩深度
 		0, 0, 0, 0, 0, 0,				// 忽略的色彩位
 		0,								// 无Alpha缓存
 		0,								// 忽略Shift Bit

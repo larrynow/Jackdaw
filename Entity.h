@@ -18,9 +18,20 @@ jkEntity have a mesh and a transform.
 class jkEntity
 {
 public:
-	Transform transform;
-private:
+
+	jkEntity(const VEC3& position) : mPosition(position){ mMesh = new jkMesh(mPosition); }
+
+	jkEntity() : jkEntity({0.f, 0.f, 0.f}) {}
+
+	//Transform transform;
+	inline jkMesh* GetMesh() { return mMesh; }
+	std::string MeshPath;
+
+protected:
+
 	jkMesh* mMesh;
+
+	VEC3 mPosition;
 };
 
 #ifndef REG_ENTITY(jkEntity)

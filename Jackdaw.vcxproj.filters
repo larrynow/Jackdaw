@@ -148,4 +148,8 @@
       <Filter>Core\GameObject</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\shader.fs" />
+    <None Include="Shaders\shader.vs" />
+  </ItemGroup>
 </Project>

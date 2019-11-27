@@ -13,11 +13,18 @@ public:
 	virtual inline void SetClearColor(COLOR3 clearColor = { 0.7f, 0.7f, 0.7f }) { mClearColor = clearColor; };
 
 	virtual void StartUp() = 0;
-	//virtual void Display() = 0;
 
-private:
+	virtual void Render(RenderData data) = 0;
+
+	inline void SetViewMatrix(MAT4&& view) { mViewMatrix = view; };
+	inline void SetProjMatrix(MAT4&& proj) { mProjMatrix = proj; };
+
+protected:
 
 	COLOR3 mClearColor;
+
+	MAT4 mViewMatrix;
+	MAT4 mProjMatrix;
 };
 
 #endif // !JKBACKENDRENDERER_H_

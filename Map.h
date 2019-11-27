@@ -11,6 +11,7 @@ A jkMap indicates all the actors and models at this time.
 
 class jkMap
 {
+	friend class jkContent;
 public:
 
 	jkMap() : m_pControlledCharacter(nullptr) { mEntities.clear(); };
@@ -30,6 +31,8 @@ private:
 	jkCharacter* m_pControlledCharacter;
 
 	std::vector<jkEntity*> mEntities;
+
+	//std::unordered_map<std::string, jkEntity*> mEntityPtrMap;// From an entity name to an entity.
 };
 
 #endif // !JKMAP_H_

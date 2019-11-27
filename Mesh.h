@@ -7,6 +7,7 @@
 class jkMesh
 {
 	friend class jkFrontendRenderer;
+	//friend class jkBackendRenderer;
 	friend class jkResourceManager;
 
 public:
@@ -57,7 +58,7 @@ public:
 	///////////////////////////////////////////////////////////////////
 	// Use mRotateMatrix, mScaleMatrix, mTranslateMatrix to get mWorldMatrix.
 
-	void GetWorldMatrx(MAT4& outMat) { mFunction_UpdateWorldMatrix(); outMat = mWorldMatrix; };// Update when world Matrix is needed. Can be improved by NOT update when transform is not changed.
+	MAT4 GetWorldMatrx() { mFunction_UpdateWorldMatrix(); return mWorldMatrix; };// Update when world Matrix is needed. Can be improved by NOT update when transform is not changed.
 
 private:
 

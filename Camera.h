@@ -57,7 +57,7 @@ public:
 	inline float GetFarPlane() { return mFarPlane; };
 
 	// Get current View Matrix by mCameraFront vector.
-	void GetViewMatrix(MAT4& outMat) const;
+	MAT4 GetViewMatrix() const;
 
 private:
 

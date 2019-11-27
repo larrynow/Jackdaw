@@ -3,10 +3,14 @@
 #include"BackendRendererGL.h"
 #include"WinInputManager.h"
 #include"MapManager.h"
+#include"ResourceManager.h"
 #include<assert.h>
-
+#include"GLShader.h"
 void jkContent::Init(UINT width, UINT height)
 {
+	mWidth = width;
+	mHeight = height;
+
 	// Start up renderers.
 	switch (mContentFrontendDevice)
 	{
@@ -55,12 +59,9 @@ void jkContent::StartUp()
 {
 	while (!ShouldFinish())
 	{
-		assert(m_pInputManager);
-		m_pInputManager->Listen();
 		
 		/*::SetConsoleTitleA(fpsStr.c_str());
 		renderer->Clear();*/
-
 		m_pBackendRenderer->Clear();
 
 		// Input.
@@ -75,12 +76,26 @@ void jkContent::StartUp()
 				auto op = m_pControlledCharacter->input_op_map.at(input);
 				if (m_pControlledCharacter)// Check if character is still exist in content.
 				{
-					op(); PRINT(input);
+					op(); 
+					//PRINT(input);
 				}
 			}
 		}
 
+		// Update renderer matrices.
+		mUpdateBackendRenderer();
+
+		// Rendering.
+		for (auto entity : m_pCurrentMap->mEntities)
+		{
+			RenderData&& data = m_pFrontendRenderer->DrawMesh(entity->GetMesh());
+			m_pBackendRenderer->Render(data);
+		}
+
 		m_pFrontendRenderer->Display();
+
+		assert(m_pInputManager);
+		m_pInputManager->Listen();
 
 	}
 }
@@ -90,4 +105,22 @@ bool jkContent::ShouldFinish()
 	return jkInputManager::ExitStatus;
 }
 
+void jkContent::mUpdateBackendRenderer()
+{
+	m_pBackendRenderer->SetViewMatrix(m_pControlledCharacter->GetViewMatrix());
+	auto pCamera = m_pControlledCharacter->GetCamera();
+	m_pBackendRenderer->SetProjMatrix(GetPerspectiveMatrix(pCamera->GetFOV(), float(mWidth) / float(mHeight), pCamera->GetNearPlane(), pCamera->GetFarPlane()));
 
+}
+
+void jkContent::SelectMap(jkMap* map)
+{
+	m_pCurrentMap = map; 
+	m_pControlledCharacter = map->GetControlledCharacter();
+
+	for (auto entity : map->mEntities)
+	{
+		jkResourceManager::ImportMeshFromOBJ(entity->MeshPath, entity->GetMesh());
+	}
+
+}

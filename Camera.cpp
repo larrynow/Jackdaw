@@ -17,7 +17,7 @@ void jkCamera::LookAt(const VEC3& lookAtPoint)
 	mFunction_UpdateRotations();
 };
 
-void jkCamera::GetViewMatrix(MAT4& mat) const
+MAT4 jkCamera::GetViewMatrix() const
 {
 	// First a shift matrix.
 	MAT4 shiftMat;
@@ -35,7 +35,7 @@ void jkCamera::GetViewMatrix(MAT4& mat) const
 	transMat.SetRow(2, { mCameraFront.x, mCameraFront.y, mCameraFront.z, 0 });
 	transMat.SetRow(3, { 0, 0, 0, 1 });
 
-	mat = transMat * shiftMat;
+	return transMat * shiftMat;
 }
 
 void jkCamera::mFunction_MakeDirections()

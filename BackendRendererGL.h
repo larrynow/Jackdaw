@@ -1,6 +1,7 @@
 #pragma once
 #include "BackendRenderer.h"
 #include"glad/glad.h"
+#include"Mesh.h"
 
 class jkBackendRendererGL : public jkBackendRenderer
 {
@@ -12,6 +13,13 @@ public:
 
 	void StartUp() override;
 
-	//void Display() override;
+	void Render(RenderData data) override;
+
+private:
+
+	void mPrepareRenderData(RenderData data);
+
+	unsigned int VAO, VBO, EBO;
+
 };
 

@@ -24,7 +24,9 @@ public:
 
 	//void RenderMap(jkMap* map) {};
 
-	void RenderMesh(jkMesh* mesh);
+	RenderData DrawMesh(jkMesh* mesh);
+
+	void PushToBackend(class BackendRenderer*);
 
 protected:
 
@@ -33,6 +35,8 @@ protected:
 	UINT bufferSize;
 
 	unsigned char* m_pFrameBuffer;
+
+	std::vector<RenderData> mRenderDataList;
 
 	jkInputManager* m_pInputManager;
 
