@@ -150,6 +150,7 @@
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="RenderTypes.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="Types.h" />

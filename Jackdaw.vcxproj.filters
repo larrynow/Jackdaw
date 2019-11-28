@@ -10,9 +10,6 @@
     <Filter Include="Thread">
       <UniqueIdentifier>{84e567d7-c6fa-454b-afe2-a9b33a4ed358}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Renderer">
-      <UniqueIdentifier>{89d3e6b3-00e8-4393-90ad-1e49bad666e0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Input">
       <UniqueIdentifier>{37c4dc7e-631d-43a8-980a-bf164d12a8c4}</UniqueIdentifier>
     </Filter>
@@ -22,16 +19,19 @@
     <Filter Include="Lib">
       <UniqueIdentifier>{76a53cf5-ddd6-40d1-916f-c67af51357bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render">
+      <UniqueIdentifier>{89d3e6b3-00e8-4393-90ad-1e49bad666e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h">
       <Filter>Core\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="BackendRenderer.h">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="BackendRendererGL.h">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
       <Filter>Core\GameObject</Filter>
@@ -49,10 +49,10 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="FrontendRenderer.h">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="FrontendRendererWin32.h">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>Core\Input</Filter>
@@ -70,7 +70,7 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>Core</Filter>
@@ -85,7 +85,7 @@
       <Filter>Core\Input</Filter>
     </ClInclude>
     <ClInclude Include="GLShader.h">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Core\GameObject</Filter>
@@ -94,16 +94,19 @@
       <Filter>Core\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Geometry.h" />
+    <ClInclude Include="RenderTypes.h">
+      <Filter>Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
       <Filter>Core\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="BackendRenderer.cpp">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="BackendRendererGL.cpp">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>Core\GameObject</Filter>
@@ -115,10 +118,10 @@
       <Filter>Core\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="FrontendRenderer.cpp">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="FrontendRendererWin32.cpp">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
       <Filter>Lib</Filter>
@@ -134,7 +137,7 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>Renderer</Filter>
+      <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Core</Filter>
