@@ -388,16 +388,21 @@ namespace jkMath
 		color.z = Clamp(color.z, 0.f, 1.0f);
 	}
 
-	inline MAT4 GetPerspectiveMatrix(const float viewRadianY, const float aspectRatio, const float nearPlane, const float farPlane)
+	inline void MakePerspectiveMatrix_DX(MAT4& mat, const float viewRadianY, const float aspectRatio, const float nearPlane, const float farPlane)
 	{
 		// Get a perspective matrix. return Z is LINEAR.
-		MAT4 retMat;
-		retMat.SetRow(0, { 1.0f / (aspectRatio * tan(viewRadianY)), 0, 0, 0 });// Aspect Ratio : x/y.
-		retMat.SetRow(1, { 0, 1.0f / tan(viewRadianY), 0, 0 });
-		retMat.SetRow(2, { 0, 0, farPlane / (farPlane - nearPlane), -nearPlane * farPlane / (farPlane - nearPlane) });
-		retMat.SetRow(3, { 0, 0, 1, 0 });
+		mat.SetRow(0, { 1.0f / (aspectRatio * tan(viewRadianY)), 0, 0, 0 });// Aspect Ratio : x/y.
+		mat.SetRow(1, { 0, 1.0f / tan(viewRadianY), 0, 0 });
+		mat.SetRow(2, { 0, 0, farPlane / (farPlane - nearPlane), -nearPlane * farPlane / (farPlane - nearPlane) });
+		mat.SetRow(3, { 0, 0, 1, 0 });
+	}
 
-		return retMat;
+	inline void MakePerspectiveMatrix_GL(MAT4& mat, const float viewRadianY, const float aspectRatio, const float nearPlane, const float farPlane)
+	{
+		mat.SetRow(0, { 1.0f / (aspectRatio * tan(viewRadianY)), 0, 0, 0 });// Aspect Ratio : x/y.
+		mat.SetRow(1, { 0, 1.0f / tan(viewRadianY), 0, 0 });
+		mat.SetRow(2, { 0, 0, -1.f * (farPlane + nearPlane) / (farPlane - nearPlane), -2.f * nearPlane * farPlane / (farPlane - nearPlane) });
+		mat.SetRow(3, { 0, 0, -1.f, 0 });
 	}
 
 	/////////////////////////////////////////////////////////////

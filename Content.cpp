@@ -5,7 +5,7 @@
 #include"MapManager.h"
 #include"ResourceManager.h"
 #include<assert.h>
-#include"GLShader.h"
+
 void jkContent::Init(UINT width, UINT height)
 {
 	mWidth = width;
@@ -64,6 +64,7 @@ void jkContent::StartUp()
 		renderer->Clear();*/
 		m_pBackendRenderer->Clear();
 
+		//////////////////////////////////
 		// Input.
 		for (auto it = m_pInputManager->input_name_map.begin(); it != m_pInputManager->input_name_map.end(); ++it)
 		{
@@ -82,21 +83,22 @@ void jkContent::StartUp()
 			}
 		}
 
-		// Update renderer matrices.
-		mUpdateBackendRenderer();
-
+		////////////////////////////////
 		// Rendering.
+
+		// Update renderer matrices.
+		mPrepareBackendRenderer();
+
 		for (auto entity : m_pCurrentMap->mEntities)
 		{
-			RenderData&& data = m_pFrontendRenderer->DrawMesh(entity->GetMesh());
-			m_pBackendRenderer->Render(data);
+			m_pBackendRenderer->DrawMesh(entity->GetMesh());
 		}
+
 
 		m_pFrontendRenderer->Display();
 
 		assert(m_pInputManager);
 		m_pInputManager->Listen();
-
 	}
 }
 
@@ -105,12 +107,14 @@ bool jkContent::ShouldFinish()
 	return jkInputManager::ExitStatus;
 }
 
-void jkContent::mUpdateBackendRenderer()
+void jkContent::mPrepareBackendRenderer()
 {
-	m_pBackendRenderer->SetViewMatrix(m_pControlledCharacter->GetViewMatrix());
+	// Set View and projection matrices.
+	m_pControlledCharacter->MakeViewMatrix(m_pBackendRenderer->GetViewMatrix());
 	auto pCamera = m_pControlledCharacter->GetCamera();
-	m_pBackendRenderer->SetProjMatrix(GetPerspectiveMatrix(pCamera->GetFOV(), float(mWidth) / float(mHeight), pCamera->GetNearPlane(), pCamera->GetFarPlane()));
-
+	if(mContentBackendDevice == jkBackendDevice::OPENGL)
+		MakePerspectiveMatrix_GL(m_pBackendRenderer->GetProjMatrix(), GetRadian(pCamera->GetFOV()/2), float(mWidth) / float(mHeight), pCamera->GetNearPlane(), pCamera->GetFarPlane());
+	
 }
 
 void jkContent::SelectMap(jkMap* map)

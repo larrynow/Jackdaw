@@ -90,7 +90,8 @@ void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight, jkBacken
 
 void jkFrontendRendererWin32::Display()
 {
-	SwapBuffers(GetDC(m_hWindowHandle));
+	auto hdc = GetDC(m_hWindowHandle);
+	SwapBuffers(hdc);
 }
 
 bool jkFrontendRendererWin32::mCreateGLContext(HWND hWnd)

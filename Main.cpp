@@ -19,7 +19,7 @@ int main()
 
 	auto pMap = new jkMap();
 
-	auto pEntity = new jkEntity({0.f, 0.f, 100.f});
+	auto pEntity = new jkEntity({0.f, 0.f, 50.f});
 	pEntity->MeshPath = "./Asset/model-triangulated.obj";
 	pMap->AddEntity(pEntity);
 
@@ -28,7 +28,7 @@ int main()
 	pMap->ControllCharacter(pFreeCamera);
 
 	content.SelectMap(pMap);
-
+	
 	content.StartUp();
 
 	return 0;

@@ -17,7 +17,7 @@ void jkCamera::LookAt(const VEC3& lookAtPoint)
 	mFunction_UpdateRotations();
 };
 
-MAT4 jkCamera::GetViewMatrix() const
+void jkCamera::MakeViewMatrix(MAT4& mat) const
 {
 	// First a shift matrix.
 	MAT4 shiftMat;
@@ -27,15 +27,15 @@ MAT4 jkCamera::GetViewMatrix() const
 	shiftMat.SetRow(3, { 0, 0, 0, 1 });
 
 	// Then made a vector space tans matrix.
-	VEC3 rightVector = mCameraFront.CrossProduct({ 0.f, 1.0f, 0.f });
-	VEC3 upVector = mCameraFront.CrossProduct(rightVector);
+	VEC3 leftVector = -mCameraFront.CrossProduct({ 0.f, 1.0f, 0.f });
+	VEC3 upVector = mCameraFront.CrossProduct(leftVector);
 	MAT4 transMat;
-	transMat.SetRow(0, { rightVector.x, rightVector.y, rightVector.z, 0 });
+	transMat.SetRow(0, { leftVector.x, leftVector.y, leftVector.z, 0 });
 	transMat.SetRow(1, { upVector.x, upVector.y, upVector.z, 0 });
 	transMat.SetRow(2, { mCameraFront.x, mCameraFront.y, mCameraFront.z, 0 });
 	transMat.SetRow(3, { 0, 0, 0, 1 });
 
-	return transMat * shiftMat;
+	mat = transMat * shiftMat;
 }
 
 void jkCamera::mFunction_MakeDirections()

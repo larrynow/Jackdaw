@@ -22,12 +22,13 @@ struct Vertex
 
 struct RenderData
 {
-	RenderData() :pVertexBuffer(nullptr), pIndexBuffer(nullptr), offset(0), vertexCount(0) {}
+	RenderData() :pVertexBuffer(nullptr), pIndexBuffer(nullptr), offset(0) {}
+
+	~RenderData() {}
 
 	std::vector<Vertex>* pVertexBuffer;
 	std::vector<UINT>* pIndexBuffer;
 	UINT offset;
-	UINT vertexCount;
 
 	MAT4 modelMatrix;
 

@@ -7,7 +7,8 @@
 class jkMesh
 {
 	friend class jkFrontendRenderer;
-	//friend class jkBackendRenderer;
+	friend class jkBackendRenderer;
+	friend class jkBackendRendererGL;
 	friend class jkResourceManager;
 
 public:
@@ -16,7 +17,8 @@ public:
 		mRotationPitch(0.f), mRotationYaw(0.f), mRotationRoll(0.f),
 		m_pTexture(nullptr)
 	{
-		m_pVertexBuffer = new std::vector<Vertex>; m_pIndexBuffer = new std::vector<UINT>;
+		//m_pVertexBuffer = new std::vector<Vertex>; m_pIndexBuffer = new std::vector<UINT>;
+
 	};
 	jkMesh(const VEC3& _pos) : jkMesh() { mPosition = _pos; };
 	jkMesh(const VEC3& _pos, const VEC3& _scales, const VEC3& _rotations) :
@@ -24,10 +26,14 @@ public:
 		mRotationPitch(_rotations.x), mRotationYaw(_rotations.y), mRotationRoll(_rotations.z),
 		m_pTexture(nullptr)
 	{
-		m_pVertexBuffer = new std::vector<Vertex>; m_pIndexBuffer = new std::vector<UINT>;
+		//m_pVertexBuffer = new std::vector<Vertex>; m_pIndexBuffer = new std::vector<UINT>;
+
 	};
 
-	inline UINT GetVertexCount() const { return m_pVertexBuffer->size(); };
+	inline UINT GetVertexCount() const { 
+		//return m_pVertexBuffer->size(); 
+		return mVertexBuffer.size(); 
+	};
 
 	inline void BindTexture(Texture* _p_texture) { m_pTexture = _p_texture; };
 
@@ -87,8 +93,11 @@ private:
 	////////////////////////////////////////////////////////////////
 	// Buffers.
 
-	std::vector<Vertex>* m_pVertexBuffer;// Can be updated in BFResourceManager.
-	std::vector<UINT>* m_pIndexBuffer;
+	//std::vector<Vertex>* m_pVertexBuffer;// Can be updated in BFResourceManager.
+	//std::vector<UINT>* m_pIndexBuffer;
+
+	std::vector<Vertex> mVertexBuffer;
+	std::vector<UINT> mIndexBuffer;
 
 	Texture* m_pTexture;
 };

@@ -3,6 +3,7 @@
 #define JKBACKENDRENDERER_H_
 
 #include"Types.h"
+#include"Mesh.h"
 
 class jkBackendRenderer
 {
@@ -14,15 +15,19 @@ public:
 
 	virtual void StartUp() = 0;
 
-	virtual void Render(RenderData data) = 0;
+	//virtual void Render(RenderData& data) = 0;
 
-	inline void SetViewMatrix(MAT4&& view) { mViewMatrix = view; };
-	inline void SetProjMatrix(MAT4&& proj) { mProjMatrix = proj; };
+	virtual void DrawMesh(jkMesh* mesh) = 0;
+
+	inline MAT4& GetModelMatrix() { return mModelMatrix; };
+	inline MAT4& GetViewMatrix() { return mViewMatrix; };
+	inline MAT4& GetProjMatrix() { return mProjMatrix; };
 
 protected:
 
 	COLOR3 mClearColor;
 
+	MAT4 mModelMatrix;
 	MAT4 mViewMatrix;
 	MAT4 mProjMatrix;
 };

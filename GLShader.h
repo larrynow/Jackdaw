@@ -134,11 +134,11 @@ public:
 	}
 	void setMat4(const std::string& name, const MAT4& mat) const
 	{
-		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat.m[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_TRUE, &(mat.m[0][0]));// For GL column major, transpose.
 	}
 	void setVec3(const std::string& name, const VEC3& vec) const
 	{
-		glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &vec.m[0]);
+		glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, vec.m);
 	}
 	void setVec3(const std::string& name, const float x, const float y, const float z)
 	{

@@ -17,7 +17,7 @@ public:
 	jkActor(const VEC3& actorPosition, const VEC3& cameraPosition, float moveSpeed = 1.0f) : jkEntity(actorPosition),
 		m_pCamera(new jkCamera(cameraPosition)), mMoveSpeed(moveSpeed) {};
 
-	jkActor() : jkActor({ 0.f, 0.f, 0.f }, { 0.f, 0.f, -50.f }) {};// Default actor camera position is behind.
+	jkActor() : jkActor({ 0.f, 0.f, 0.f }, { 0.f, 0.f, 10.f }) {};// Default actor camera position is behind.
 	~jkActor() { delete m_pCamera; };
 
 	virtual void AddMovement(const VEC3& direction, float movement);
@@ -29,7 +29,7 @@ public:
 	inline virtual void MoveDown() { AddMovement(-m_pCamera->GetUp(), mMoveSpeed); };
 
 	inline jkCamera* GetCamera() { return m_pCamera; };
-	inline MAT4 GetViewMatrix() { return m_pCamera->GetViewMatrix(); };
+	inline void MakeViewMatrix(MAT4& mat) { m_pCamera->MakeViewMatrix(mat); };
 
 private:
 

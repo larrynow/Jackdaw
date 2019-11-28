@@ -58,11 +58,9 @@ private:
 	
 	jkInputManager* m_pInputManager;
 
-	//m_pControllActor.
-
 	bool ShouldFinish();
 
-	void mUpdateBackendRenderer();
+	void mPrepareBackendRenderer();
 
 	UINT mWidth;
 	UINT mHeight;

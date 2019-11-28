@@ -22,9 +22,6 @@ public:
 
 	virtual void Display() = 0;
 
-	//void RenderMap(jkMap* map) {};
-
-	RenderData DrawMesh(jkMesh* mesh);
 
 	void PushToBackend(class BackendRenderer*);
 

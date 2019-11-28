@@ -13,11 +13,14 @@ public:
 
 	void StartUp() override;
 
-	void Render(RenderData data) override;
+	//void Render(RenderData& data) override;
+
+	virtual void DrawMesh(jkMesh* mesh) override;
+
 
 private:
 
-	void mPrepareRenderData(RenderData data);
+	//void mPrepareRenderData(RenderData& data);
 
 	unsigned int VAO, VBO, EBO;
 

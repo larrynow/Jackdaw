@@ -7,9 +7,9 @@
 class jkCamera
 {
 public:
-	jkCamera() : mCameraPos(0.f, 0.f, -200.f), pitch(0.f), yaw(0.f), roll(0.f), bIsPitchRestricted(true),
-		mCameraFront(0.f, 0.f, 1.0f), mCameraRight(1.f, 0.f, 0.f), mCameraUp(0.f, 1.f, 0.f),
-		mFOV(45.f), mNearPlane(0.1f), mFarPlane(1000.f) {};
+	jkCamera() : mCameraPos(0.f, 0.f, 10.f), pitch(0.f), yaw(90.f), roll(0.f), bIsPitchRestricted(true),
+		mCameraFront(0.f, 0.f, -1.0f), mCameraRight(1.f, 0.f, 0.f), mCameraUp(0.f, 1.f, 0.f),
+		mFOV(45.f), mNearPlane(0.1f), mFarPlane(100.f) {};
 	jkCamera(const VEC3& _pos) : jkCamera() { mCameraPos = _pos; };// Use default directions.
 	jkCamera(const VEC3& _pos, const VEC3& _rotations, const float _FOV, const float _nearPlane, const float _farPlane) :
 		mCameraPos(_pos), pitch(_rotations.x), yaw(_rotations.y), roll(_rotations.z), mFOV(_FOV), mNearPlane(_nearPlane), mFarPlane(_farPlane)
@@ -57,7 +57,7 @@ public:
 	inline float GetFarPlane() { return mFarPlane; };
 
 	// Get current View Matrix by mCameraFront vector.
-	MAT4 GetViewMatrix() const;
+	void MakeViewMatrix(MAT4& mat) const;
 
 private:
 
