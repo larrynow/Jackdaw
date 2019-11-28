@@ -93,6 +93,7 @@
     <ClInclude Include="FreeCamera.h">
       <Filter>Core\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Geometry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -147,6 +148,7 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Core\GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="Geometry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\shader.fs" />

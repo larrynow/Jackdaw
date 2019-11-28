@@ -10,6 +10,7 @@ class jkMesh
 	friend class jkBackendRenderer;
 	friend class jkBackendRendererGL;
 	friend class jkResourceManager;
+	friend class jkGeometry;
 
 public:
 
@@ -20,7 +21,7 @@ public:
 		//m_pVertexBuffer = new std::vector<Vertex>; m_pIndexBuffer = new std::vector<UINT>;
 
 	};
-	jkMesh(const VEC3& _pos) : jkMesh() { mPosition = _pos; };
+	jkMesh(const VEC3& _pos) : jkMesh() { mPosition = _pos; mFunction_UpdateTranslateMatrix(); };
 	jkMesh(const VEC3& _pos, const VEC3& _scales, const VEC3& _rotations) :
 		mPosition(_pos), mScaleX(_scales.x), mScaleY(_scales.y), mScaleZ(_scales.z),
 		mRotationPitch(_rotations.x), mRotationYaw(_rotations.y), mRotationRoll(_rotations.z),

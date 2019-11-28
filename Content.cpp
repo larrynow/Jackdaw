@@ -4,6 +4,7 @@
 #include"WinInputManager.h"
 #include"MapManager.h"
 #include"ResourceManager.h"
+#include"Geometry.h"
 #include<assert.h>
 
 void jkContent::Init(UINT width, UINT height)
@@ -59,7 +60,7 @@ void jkContent::StartUp()
 {
 	while (!ShouldFinish())
 	{
-		
+
 		/*::SetConsoleTitleA(fpsStr.c_str());
 		renderer->Clear();*/
 		m_pBackendRenderer->Clear();
@@ -71,13 +72,13 @@ void jkContent::StartUp()
 			auto input = (*it).first;
 			auto input_id = m_pInputManager->MapKey(input);// Note only key.
 
-			if (input_id != -1 && *(m_pInputManager->KeyStatus+input_id) == 1)
+			if (input_id != -1 && *(m_pInputManager->KeyStatus + input_id) == 1)
 			{
 				auto input = (*it).second;
 				auto op = m_pControlledCharacter->input_op_map.at(input);
 				if (m_pControlledCharacter)// Check if character is still exist in content.
 				{
-					op(); 
+					op();
 					//PRINT(input);
 				}
 			}
@@ -94,6 +95,9 @@ void jkContent::StartUp()
 			m_pBackendRenderer->DrawMesh(entity->GetMesh());
 		}
 
+		jkMesh* mesh = new jkMesh(VEC3(1.f, 1.0f, -1.f));
+		jkGeometry::MakeCubeMesh(mesh, 1.f);
+		m_pBackendRenderer->DrawMesh(mesh);
 
 		m_pFrontendRenderer->Display();
 

@@ -16,6 +16,7 @@ typedef VEC4 COLOR4;
 struct Vertex
 {
 	VEC3 pos;
+	COLOR4 color;
 	VEC3 normal;
 	VEC2 texcoord;
 };
