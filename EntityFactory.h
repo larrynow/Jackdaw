@@ -10,27 +10,24 @@
 jkEntityRegisterAction jkRegisterAction##entityClassName\
 (#entityClassName, [](){return new entityClassName();})
 
-typedef class jkEntity* (*EntityCreateFunc)(void);
+class jkEntity;
+typedef jkEntity* (*EntityCreateFunc)(void);
 
 class jkEntityFactory
 {
 public:
-	static class jkEntity* GetEntity(const std::string entityName);
-	inline static void RegisterEntity(const std::string entityClassName, EntityCreateFunc func)
-	{
-		mEntityMap.insert(std::make_pair(entityClassName, func));
-	};
+	static jkEntity* GetEntity(const std::string entityName);
+	static void RegisterEntity(std::string entityClassName, EntityCreateFunc func);
+	static std::unordered_map<std::string, EntityCreateFunc>* GetEntityMapPtr();
 
 private:
-	static std::unordered_map<std::string, EntityCreateFunc> mEntityMap;
+	static std::unordered_map<std::string, EntityCreateFunc>* m_pEntityMap;
 };
 
 class jkEntityRegisterAction
 {
 public:
-	jkEntityRegisterAction(const std::string entityClassname, EntityCreateFunc func)
-	{
-		jkEntityFactory::RegisterEntity(entityClassname, func);
-	}
+	jkEntityRegisterAction(std::string entityClassname, EntityCreateFunc func);
+	
 };
 #endif // JKENTITYFACTORY_H_

@@ -1,15 +1,34 @@
 #include"EntityFactory.h"
-std::unordered_map<std::string, EntityCreateFunc>jkEntityFactory::mEntityMap;
+
+std::unordered_map<std::string, EntityCreateFunc>* jkEntityFactory::m_pEntityMap = nullptr;
 
 jkEntity* jkEntityFactory::GetEntity(const std::string entityName)
 {
-	if (mEntityMap.find(entityName) != mEntityMap.end())
+	if (m_pEntityMap->find(entityName) != m_pEntityMap->end())
 	{
-		return mEntityMap.at(entityName)();
+		return m_pEntityMap->at(entityName)();
 	}
 	else
 	{
-		// Don't registe first, return null.
+		// Have not registe yet, return null.
 		return nullptr;
 	}
 }
+
+void jkEntityFactory::RegisterEntity(std::string entityClassName, EntityCreateFunc func)
+{
+	jkEntityFactory::GetEntityMapPtr()->insert({entityClassName, func});
+};
+
+std::unordered_map<std::string, EntityCreateFunc>* jkEntityFactory::GetEntityMapPtr()
+{
+	if (!m_pEntityMap)
+		m_pEntityMap = new std::unordered_map<std::string, EntityCreateFunc>;
+
+	return m_pEntityMap;
+}
+
+jkEntityRegisterAction::jkEntityRegisterAction(std::string entityClassName, EntityCreateFunc func)
+{
+	jkEntityFactory::RegisterEntity(entityClassName, func);
+};

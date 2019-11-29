@@ -152,6 +152,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="RenderTypes.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="WinInputManager.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="WinInputManager.cpp" />
   </ItemGroup>

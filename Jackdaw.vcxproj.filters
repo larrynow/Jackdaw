@@ -97,6 +97,7 @@
     <ClInclude Include="RenderTypes.h">
       <Filter>Render</Filter>
     </ClInclude>
+    <ClInclude Include="Singleton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -153,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="EntityFactory.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Singleton.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
