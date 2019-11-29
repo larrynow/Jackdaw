@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\Administrator\Desktop\Jackdaw\Libraries\Includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Libraries\Includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\Users\Administrator\Desktop\Jackdaw\Libraries\Includes;$(IncludePath)</IncludePath>
@@ -164,6 +164,7 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EntityFactory.cpp" />
     <ClCompile Include="FrontendRenderer.cpp" />
     <ClCompile Include="FrontendRendererWin32.cpp" />
     <ClCompile Include="Geometry.cpp" />

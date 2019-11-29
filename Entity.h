@@ -6,10 +6,6 @@
 #include"Mesh.h"
 #include"EntityFactory.h"
 
-#define REG_ENTITY(entityClassName)\
-jkEntityRegisterAction jkRegisterAction##entityClassName\
-(#entityClassName, [](){return new entityClassName();})
-
 /*
 Class jkEntity : An entity is object that exist in a map.
 jkEntity have a mesh and a transform.
@@ -34,9 +30,10 @@ protected:
 	VEC3 mPosition;
 };
 
-#ifndef REG_ENTITY(jkEntity)
-REG_ENTITY(jkEntity);
-#endif // !REG_ENTITY(jkEntity)
+//#ifndef REG_ENTITY(jkEntity);
+
+
+//#endif // !REG_ENTITY(jkEntity)
 
 #endif // !JKENTITY_H_
 

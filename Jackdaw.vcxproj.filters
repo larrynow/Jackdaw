@@ -152,6 +152,9 @@
       <Filter>Core\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="EntityFactory.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\shader.fs" />
