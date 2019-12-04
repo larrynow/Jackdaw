@@ -97,9 +97,14 @@ void jkContent::StartUp()
 
 		jkMesh* mesh = new jkMesh(VEC3(1.f, 1.0f, -1.f));
 		jkGeometry::MakeCubeMesh(mesh, 1.f);
+		Texture* texure = new Texture();
+		jkResourceManager::ImportTexture("./Asset/awesomeface.bmp", texure);
+		mesh->BindTexture(texure);
 		m_pBackendRenderer->DrawMesh(mesh);
 
 		m_pFrontendRenderer->Display();
+		delete texure;
+		delete mesh;
 
 		assert(m_pInputManager);
 		m_pInputManager->Listen();

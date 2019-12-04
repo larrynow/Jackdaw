@@ -14,6 +14,8 @@ class jkMapManager
 {
 public:
 	static bool LoadMaps(std::string path) {};
+	// TODO : when from map load mesh, should load mesh's textures also.
+
 	static jkMap* NextMap() { return nullptr; };
 
 private:

@@ -16,6 +16,7 @@ typedef jkEntity* (*EntityCreateFunc)(void);
 class jkEntityFactory
 {
 public:
+	~jkEntityFactory() { delete m_pEntityMap; }
 	static jkEntity* GetEntity(const std::string entityName);
 	static void RegisterEntity(std::string entityClassName, EntityCreateFunc func);
 	static std::unordered_map<std::string, EntityCreateFunc>* GetEntityMapPtr();

@@ -37,24 +37,13 @@ struct RenderData
 
 struct Texture
 {
-	Texture() : width(0), height(0) { pColorBuffer = new std::vector<COLOR3>; };
-	~Texture() { delete pColorBuffer; };
+	Texture() : width(0), height(0), channels(0), pImageData(nullptr) {};
 
-	COLOR3 GetPixel(UINT x, UINT y) const
-	{
-		if (x < width && y < height)
-		{
-			UINT index = y * width + x;
-			return pColorBuffer->at(index);
+	~Texture() { delete pImageData; };
 
-		}
-		else
-			return COLOR3();
-
-	}
-
-	std::vector<COLOR3>* pColorBuffer;
+	unsigned char* pImageData;
 	UINT width, height;
+	UINT channels;
 };
 
 ////////////////////////////////////////////////

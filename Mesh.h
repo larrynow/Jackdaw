@@ -15,8 +15,7 @@ class jkMesh
 public:
 
 	jkMesh() : mPosition(0.f, 0.f, 0.f), mScaleX(1.f), mScaleY(1.f), mScaleZ(1.f),
-		mRotationPitch(0.f), mRotationYaw(0.f), mRotationRoll(0.f),
-		m_pTexture(nullptr)
+		mRotationPitch(0.f), mRotationYaw(0.f), mRotationRoll(0.f)
 	{
 		//m_pVertexBuffer = new std::vector<Vertex>; m_pIndexBuffer = new std::vector<UINT>;
 
@@ -24,8 +23,7 @@ public:
 	jkMesh(const VEC3& _pos) : jkMesh() { mPosition = _pos; mFunction_UpdateTranslateMatrix(); };
 	jkMesh(const VEC3& _pos, const VEC3& _scales, const VEC3& _rotations) :
 		mPosition(_pos), mScaleX(_scales.x), mScaleY(_scales.y), mScaleZ(_scales.z),
-		mRotationPitch(_rotations.x), mRotationYaw(_rotations.y), mRotationRoll(_rotations.z),
-		m_pTexture(nullptr)
+		mRotationPitch(_rotations.x), mRotationYaw(_rotations.y), mRotationRoll(_rotations.z)
 	{
 		//m_pVertexBuffer = new std::vector<Vertex>; m_pIndexBuffer = new std::vector<UINT>;
 
@@ -36,7 +34,7 @@ public:
 		return mVertexBuffer.size(); 
 	};
 
-	inline void BindTexture(Texture* _p_texture) { m_pTexture = _p_texture; };
+	inline void BindTexture(Texture* pTexture) { mTextures.push_back(pTexture); };
 
 	/////////////////////////////////////////////////////////////////////
 	// Move and get position.
@@ -94,13 +92,10 @@ private:
 	////////////////////////////////////////////////////////////////
 	// Buffers.
 
-	//std::vector<Vertex>* m_pVertexBuffer;// Can be updated in BFResourceManager.
-	//std::vector<UINT>* m_pIndexBuffer;
-
 	std::vector<Vertex> mVertexBuffer;
 	std::vector<UINT> mIndexBuffer;
 
-	Texture* m_pTexture;
+	std::vector<Texture*> mTextures;
 };
 
 

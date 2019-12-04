@@ -1,9 +1,18 @@
 #include "ResourceManager.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include"stb_image.h"
+
 #include<fstream>
 #include<sstream>
 
-// From obj loading.
+unsigned char* jkResourceManager::ImportImage(const std::string& imageFilePath, int* width, int* height, int* channels)
+{
+	stbi_set_flip_vertically_on_load(true);
+	return stbi_load(imageFilePath.c_str(), width, height, channels, 0);
+}
+
+// For obj loading.
 struct OBJVertexIndex
 {
 	inline bool operator ==(const OBJVertexIndex& _OV)const
