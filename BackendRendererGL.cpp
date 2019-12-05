@@ -20,22 +20,23 @@ void jkBackendRendererGL::StartUp()
 	
 }
 
-void jkBackendRendererGL::DrawMesh(jkMesh* mesh)
+void jkBackendRendererGL::LoadMesh(jkMesh* mesh)
 {
-	if (mesh->mIndexBuffer.size() == 0)
-		return;
+	if (mesh->mIndexBuffer.size()==0) return;
 
-	//glGen for VAO, VBO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	GLRenderData* pRenderData = new GLRenderData();
+	pRenderData->pOriginMesh = mesh;
 
-	glBindVertexArray(VAO);
+	glGenVertexArrays(1, &pRenderData->VAO);
+	glGenBuffers(1, &pRenderData->VBO);
+	glGenBuffers(1, &pRenderData->EBO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindVertexArray(pRenderData->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, pRenderData->VBO);
 	glBufferData(GL_ARRAY_BUFFER, mesh->mVertexBuffer.size() * sizeof(Vertex), &mesh->mVertexBuffer[0], GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pRenderData->EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->mIndexBuffer.size() * sizeof(UINT), &mesh->mIndexBuffer[0], GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);//Vertex coords.
@@ -52,37 +53,102 @@ void jkBackendRendererGL::DrawMesh(jkMesh* mesh)
 
 	glBindVertexArray(0);//UnBind.
 
-	if(!m_pCurrentShader)
-		m_pCurrentShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs");
+	mRenderDatas.push_back(pRenderData);
+}
 
-	m_pCurrentShader->use();
-
-	mModelMatrix = mesh->GetWorldMatrx();
-
-	m_pCurrentShader->setMat4("model", mModelMatrix);
-	m_pCurrentShader->setMat4("view", mViewMatrix);
-	m_pCurrentShader->setMat4("projection", mProjMatrix);
-
-	int tex_step = 0;
-	unsigned int texID = 0;
-	for (auto tex : mesh->mTextures)
+void jkBackendRendererGL::StartRender()
+{
+	int i = 0;
+	while (i < mRenderDatas.size())
+	//for (auto it = mRenderDatas.begin(); it!=mRenderDatas.end();++it)
 	{
-		texID = CreateTexture(tex);
-		glActiveTexture(GL_TEXTURE0+ tex_step);
-		glBindTexture(GL_TEXTURE_2D, texID);
-		m_pCurrentShader->setInt((std::string("texture")+std::to_string(tex_step)).c_str(), tex_step++);
+		GLRenderData* p_glRenderData = static_cast<GLRenderData*>(mRenderDatas.at(i));
+
+		if (!p_glRenderData->pOriginMesh)// Origin mesh is deleted already.
+		{
+			delete p_glRenderData;
+			mRenderDatas.at(i) = nullptr;
+
+			// TODO : If mesh is sort with z values(from near to fa), the swap will destroy the order.
+			std::swap(mRenderDatas.at(i), mRenderDatas.at(mRenderDatas.size()-1));
+			mRenderDatas.pop_back();
+		}
+		else
+		{
+			if (p_glRenderData->pOriginMesh->m_bRenderable)
+			{
+				mRender(p_glRenderData);
+			}
+		}
+		i++;
 	}
 
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, mesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
 
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-
-	glDeleteTextures(1, &texID);
 }
+
+//void jkBackendRendererGL::DrawMesh(jkMesh* mesh)
+//{
+	//if (mesh->mIndexBuffer.size() == 0)
+	//	return;
+
+	////glGen for VAO, VBO, EBO;
+	//glGenVertexArrays(1, &VAO);
+	//glGenBuffers(1, &VBO);
+	//glGenBuffers(1, &EBO);
+
+	//glBindVertexArray(VAO);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//glBufferData(GL_ARRAY_BUFFER, mesh->mVertexBuffer.size() * sizeof(Vertex), &mesh->mVertexBuffer[0], GL_STATIC_DRAW);
+
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->mIndexBuffer.size() * sizeof(UINT), &mesh->mIndexBuffer[0], GL_STATIC_DRAW);
+
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);//Vertex coords.
+	//glEnableVertexAttribArray(0);
+
+	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));//Vertex normals.
+	//glEnableVertexAttribArray(1);
+
+	//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));//Vertex normals.
+	//glEnableVertexAttribArray(2);
+
+	//glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
+	//glEnableVertexAttribArray(3);
+
+	//glBindVertexArray(0);//UnBind.
+
+	//if(!m_pCurrentShader)
+	//	m_pCurrentShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs");
+
+	//m_pCurrentShader->use();
+
+	//mModelMatrix = mesh->GetWorldMatrx();
+
+	//m_pCurrentShader->setMat4("model", mModelMatrix);
+	//m_pCurrentShader->setMat4("view", mViewMatrix);
+	//m_pCurrentShader->setMat4("projection", mProjMatrix);
+
+	//int tex_step = 0;
+	//unsigned int texID = 0;
+	//for (auto tex : mesh->mTextures)
+	//{
+	//	texID = CreateTexture(tex);
+	//	glActiveTexture(GL_TEXTURE0+ tex_step);
+	//	glBindTexture(GL_TEXTURE_2D, texID);
+	//	m_pCurrentShader->setInt((std::string("texture")+std::to_string(tex_step)).c_str(), tex_step++);
+	//}
+
+	//glBindVertexArray(VAO);
+	//glDrawElements(GL_TRIANGLES, mesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0);
+	//glBindVertexArray(0);
+
+	//glDeleteVertexArrays(1, &VAO);
+	//glDeleteBuffers(1, &VBO);
+	//glDeleteBuffers(1, &EBO);
+
+	//glDeleteTextures(1, &texID);
+//}
 
 void jkBackendRendererGL::DrawSkyBox(jkMesh* skyBoxMesh)
 {
@@ -114,6 +180,35 @@ UINT jkBackendRendererGL::CreateTexture(Texture* pTexture)
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	return textureID;
+}
+
+void jkBackendRendererGL::mRender(GLRenderData* pData)
+{
+	if(!m_pCurrentShader)
+		m_pCurrentShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs");
+
+	m_pCurrentShader->use();
+
+	mModelMatrix = pData->pOriginMesh->GetWorldMatrx();
+
+	m_pCurrentShader->setMat4("model", mModelMatrix);
+	m_pCurrentShader->setMat4("view", mViewMatrix);
+	m_pCurrentShader->setMat4("projection", mProjMatrix);
+
+	int tex_step = 0;
+	unsigned int texID = 0;
+	for (auto tex : pData->pOriginMesh->mTextures)
+	{
+		texID = CreateTexture(tex);
+		glActiveTexture(GL_TEXTURE0+ tex_step);
+		glBindTexture(GL_TEXTURE_2D, texID);
+		m_pCurrentShader->setInt((std::string("texture")+std::to_string(tex_step)).c_str(), tex_step++);
+	}
+
+	glBindVertexArray(pData->VAO);
+	glDrawElements(GL_TRIANGLES, pData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
 }
 
 

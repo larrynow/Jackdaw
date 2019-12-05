@@ -4,11 +4,26 @@
 #include"glad/glad.h"
 #include"Mesh.h"
 
+struct GLRenderData : public RenderData
+{
+	GLRenderData() : RenderData(), VAO(0), VBO(0), EBO(0) {}
+	~GLRenderData() 
+	{
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
+		glDeleteBuffers(1, &EBO);
+
+		// TODO : texture is not delete yet.
+	}
+
+	unsigned int VAO, VBO, EBO;
+};
+
 class jkBackendRendererGL : public jkBackendRenderer
 {
 public:
 
-	jkBackendRendererGL():VAO(0), VBO(0), EBO(0), m_pCurrentShader(nullptr){}
+	jkBackendRendererGL(): m_pCurrentShader(nullptr){}
 
 	void SetClearColor(COLOR3 clearColor = { 0.27f, 0.27f, 0.27f });
 
@@ -16,9 +31,9 @@ public:
 
 	void StartUp() override;
 
-	//void Render(RenderData& data) override;
+	void LoadMesh(jkMesh* mesh) override;
 
-	virtual void DrawMesh(jkMesh* mesh) override;
+	void StartRender() override;
 
 	void DrawSkyBox(jkMesh* skyBoxMesh);
 
@@ -29,7 +44,7 @@ private:
 
 	//void mPrepareRenderData(RenderData& data);
 
-	unsigned int VAO, VBO, EBO;
+	void mRender(GLRenderData* pData);
 
 	glShader* m_pCurrentShader;
 };

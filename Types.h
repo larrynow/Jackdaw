@@ -21,18 +21,15 @@ struct Vertex
 	VEC2 texcoord;
 };
 
+class jkMesh;
+
 struct RenderData
 {
-	RenderData() :pVertexBuffer(nullptr), pIndexBuffer(nullptr), offset(0) {}
+	// Backend Renderer load Mesh as RenderData.
+	RenderData() : pOriginMesh(nullptr){}
+	virtual ~RenderData() {}
 
-	~RenderData() {}
-
-	std::vector<Vertex>* pVertexBuffer;
-	std::vector<UINT>* pIndexBuffer;
-	UINT offset;
-
-	MAT4 modelMatrix;
-
+	jkMesh* pOriginMesh;
 };
 
 struct Texture

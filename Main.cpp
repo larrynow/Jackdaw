@@ -28,7 +28,7 @@ int main()
 	pMap->ControllCharacter(pFreeCamera);
 
 	content.SelectMap(pMap);
-	
+
 	content.StartUp();
 
 	return 0;

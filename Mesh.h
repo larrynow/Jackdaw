@@ -14,23 +14,25 @@ class jkMesh
 
 public:
 
-	jkMesh() : mPosition(0.f, 0.f, 0.f), mScaleX(1.f), mScaleY(1.f), mScaleZ(1.f),
-		mRotationPitch(0.f), mRotationYaw(0.f), mRotationRoll(0.f)
-	{
-		//m_pVertexBuffer = new std::vector<Vertex>; m_pIndexBuffer = new std::vector<UINT>;
-
-	};
+	jkMesh() : m_bRenderable(true),
+		mPosition(0.f, 0.f, 0.f), 
+		mScaleX(1.f), mScaleY(1.f), mScaleZ(1.f),
+		mRotationPitch(0.f), mRotationYaw(0.f), mRotationRoll(0.f){};
 	jkMesh(const VEC3& _pos) : jkMesh() { mPosition = _pos; mFunction_UpdateTranslateMatrix(); };
-	jkMesh(const VEC3& _pos, const VEC3& _scales, const VEC3& _rotations) :
-		mPosition(_pos), mScaleX(_scales.x), mScaleY(_scales.y), mScaleZ(_scales.z),
+	jkMesh(const VEC3& _pos, const VEC3& _scales, const VEC3& _rotations, bool _renderable = true) :
+		m_bRenderable(_renderable),
+		mPosition(_pos), 
+		mScaleX(_scales.x), mScaleY(_scales.y), mScaleZ(_scales.z),
 		mRotationPitch(_rotations.x), mRotationYaw(_rotations.y), mRotationRoll(_rotations.z)
 	{
-		//m_pVertexBuffer = new std::vector<Vertex>; m_pIndexBuffer = new std::vector<UINT>;
-
+		mFunction_UpdateTranslateMatrix();
+		mFunction_UpdateScaleMatrix();
+		mFunction_UpdateRotateMatrix();
 	};
 
+	~jkMesh() { for (auto pTex : mTextures) { delete pTex; pTex = nullptr; } }
+
 	inline UINT GetVertexCount() const { 
-		//return m_pVertexBuffer->size(); 
 		return mVertexBuffer.size(); 
 	};
 
@@ -67,6 +69,8 @@ public:
 
 private:
 
+	bool m_bRenderable;
+
 	//////////////////////////////////////////////////////////////////
 	// Mesh transforms.
 
@@ -82,7 +86,7 @@ private:
 	MAT4 mWorldMatrix;
 
 	////////////////////////////////////////////////////////////////
-	// Helper functions.
+	// Matrix helper functions.
 
 	void mFunction_UpdateRotateMatrix();
 	void mFunction_UpdateScaleMatrix();
@@ -90,11 +94,10 @@ private:
 	void mFunction_UpdateWorldMatrix();
 
 	////////////////////////////////////////////////////////////////
-	// Buffers.
+	// Buffers and textures.
 
 	std::vector<Vertex> mVertexBuffer;
 	std::vector<UINT> mIndexBuffer;
-
 	std::vector<Texture*> mTextures;
 };
 

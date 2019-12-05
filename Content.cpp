@@ -89,22 +89,9 @@ void jkContent::StartUp()
 
 		// Update renderer matrices.
 		mPrepareBackendRenderer();
-
-		for (auto entity : m_pCurrentMap->mEntities)
-		{
-			m_pBackendRenderer->DrawMesh(entity->GetMesh());
-		}
-
-		jkMesh* mesh = new jkMesh(VEC3(1.f, 1.0f, -1.f));
-		jkGeometry::MakeCubeMesh(mesh, 1.f);
-		Texture* texure = new Texture();
-		jkResourceManager::ImportTexture("./Asset/awesomeface.bmp", texure);
-		mesh->BindTexture(texure);
-		m_pBackendRenderer->DrawMesh(mesh);
+		m_pBackendRenderer->StartRender();
 
 		m_pFrontendRenderer->Display();
-		delete texure;
-		delete mesh;
 
 		assert(m_pInputManager);
 		m_pInputManager->Listen();
@@ -131,9 +118,31 @@ void jkContent::SelectMap(jkMap* map)
 	m_pCurrentMap = map; 
 	m_pControlledCharacter = map->GetControlledCharacter();
 
+	////////////////////////////////////////////////
+	// Load Resources.
+
 	for (auto entity : map->mEntities)
 	{
 		jkResourceManager::ImportMeshFromOBJ(entity->MeshPath, entity->GetMesh());
 	}
+
+	//////////////////////////////////////////////
+	// Load mesh into renderer.
+
+	//for (auto entity : m_pCurrentMap->mEntities)
+	//{
+	//	m_pBackendRenderer->LoadMesh(entity->GetMesh());
+	//}
+
+	// A test cube mesh.
+	jkMesh* mesh = new jkMesh(VEC3(1.f, 1.0f, -1.f));
+	jkGeometry::MakeCubeMesh(mesh, 1.f);
+	Texture* texure = new Texture();
+	jkResourceManager::ImportTexture("./Asset/awesomeface.bmp", texure);
+	mesh->BindTexture(texure);
+	m_pBackendRenderer->LoadMesh(mesh);
+
+	//delete mesh;
+	// TODO : Warning! mesh should delete latter.
 
 }

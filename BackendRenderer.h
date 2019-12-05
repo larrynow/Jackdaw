@@ -15,9 +15,9 @@ public:
 
 	virtual void StartUp() = 0;
 
-	//virtual void Render(RenderData& data) = 0;
+	virtual void LoadMesh(jkMesh* mesh) = 0;// Load a mesh as renderData.
 
-	virtual void DrawMesh(jkMesh* mesh) = 0;
+	virtual void StartRender() = 0;
 
 	inline MAT4& GetModelMatrix() { return mModelMatrix; };
 	inline MAT4& GetViewMatrix() { return mViewMatrix; };
@@ -30,6 +30,8 @@ protected:
 	MAT4 mModelMatrix;
 	MAT4 mViewMatrix;
 	MAT4 mProjMatrix;
+
+	std::vector<RenderData*> mRenderDatas;
 };
 
 #endif // !JKBACKENDRENDERER_H_
