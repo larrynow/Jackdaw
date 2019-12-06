@@ -142,7 +142,15 @@ void jkContent::SelectMap(jkMap* map)
 	mesh->BindTexture(texure);
 	m_pBackendRenderer->LoadMesh(mesh);
 
-	//delete mesh;
 	// TODO : Warning! mesh should delete latter.
+
+	///////////////////////////////////////////////
+	// Load skybox.
+
+	std::vector<unsigned char*> skyBoxFaces;
+	ImageFormat skyboxTexFormat;
+	jkResourceManager::ImportCubeMap(skyBoxFaces, skyboxTexFormat, "./Asset/skyBox/blue_nebular", ".jpg");
+	m_pBackendRenderer->SetUpSkybox(skyBoxFaces, skyboxTexFormat);
+	// After setUp, skybox data is clear already.
 
 }

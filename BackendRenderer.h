@@ -15,9 +15,14 @@ public:
 
 	virtual void StartUp() = 0;
 
-	virtual void LoadMesh(jkMesh* mesh) = 0;// Load a mesh as renderData.
+	inline void LoadMesh(jkMesh* mesh) { mRenderDatas.push_back(mProcessMesh(mesh)); };
+
+	inline void SetUpSkybox(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) 
+	{ mSkybox = mProcessCubeMap(faces, textureFormat); };
 
 	virtual void StartRender() = 0;
+
+	virtual void RenderSkybox() = 0;
 
 	inline MAT4& GetModelMatrix() { return mModelMatrix; };
 	inline MAT4& GetViewMatrix() { return mViewMatrix; };
@@ -26,6 +31,12 @@ public:
 protected:
 
 	COLOR3 mClearColor;
+
+	virtual RenderData* mProcessMesh(jkMesh* mesh) = 0;
+
+	virtual CubeMapData* mProcessCubeMap(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) = 0;
+
+	CubeMapData* mSkybox;
 
 	MAT4 mModelMatrix;
 	MAT4 mViewMatrix;

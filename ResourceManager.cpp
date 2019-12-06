@@ -6,10 +6,20 @@
 #include<fstream>
 #include<sstream>
 
-unsigned char* jkResourceManager::ImportImage(const std::string& imageFilePath, int* width, int* height, int* channels)
+void jkResourceManager::ImportCubeMap(std::vector<unsigned char*>& faces, ImageFormat& textureFormat,
+	const std::string& cubeMapFolder, const std::string& formatName)
 {
-	stbi_set_flip_vertically_on_load(true);
-	return stbi_load(imageFilePath.c_str(), width, height, channels, 0);
+	std::vector<std::string> faceNames = { "right", "left", "top", "bottom", "front", "back" };
+	for (auto face : faceNames)
+	{
+		faces.push_back(ImportImage(cubeMapFolder+"/"+face+formatName, textureFormat, false));
+	}
+}
+
+unsigned char* jkResourceManager::ImportImage(const std::string& imageFilePath, ImageFormat& textureFormat, bool flip)
+{
+	stbi_set_flip_vertically_on_load(flip);
+	return stbi_load(imageFilePath.c_str(), &textureFormat.width, &textureFormat.height, &textureFormat.channels, 0);
 }
 
 // For obj loading.

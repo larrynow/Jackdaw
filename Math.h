@@ -262,6 +262,7 @@ namespace jkMath
 	struct MAT4
 	{
 		MAT4() : MAT4(1.0f) {};
+		MAT4(const MAT4& mat) { memcpy(m, mat.m, sizeof(float)*16); }
 
 		MAT4(const float I)
 		{
@@ -356,6 +357,7 @@ namespace jkMath
 
 			return retMat;
 		}
+
 		union {
 			struct { float _11, _12, _13, _14, _21, _22, _23, _24, _31, _32, _33, _34, _41, _42, _43, _44; };
 			float m[4][4];
@@ -403,6 +405,18 @@ namespace jkMath
 		mat.SetRow(1, { 0, 1.0f / tan(viewRadianY), 0, 0 });
 		mat.SetRow(2, { 0, 0, -1.f * (farPlane + nearPlane) / (farPlane - nearPlane), -2.f * nearPlane * farPlane / (farPlane - nearPlane) });
 		mat.SetRow(3, { 0, 0, -1.f, 0 });
+	}
+
+	inline MAT4 RemoveTranslation(const MAT4& mat)
+	{
+		MAT4 retMat(mat);
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			retMat.m[i][3] = retMat.m[3][i] = 0.f;
+		}
+
+		return retMat;
 	}
 
 	/////////////////////////////////////////////////////////////

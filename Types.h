@@ -32,15 +32,24 @@ struct RenderData
 	jkMesh* pOriginMesh;
 };
 
+struct CubeMapData {};
+
+struct ImageFormat
+{
+	ImageFormat(int w, int h, int c) : width(w), height(h), channels(c) {};
+	ImageFormat() : ImageFormat(0, 0, 0) {};
+
+	int width, height, channels;
+};
+
 struct Texture
 {
-	Texture() : width(0), height(0), channels(0), pImageData(nullptr) {};
+	Texture() : TextureFormat(), pImageData(nullptr) {};
 
 	~Texture() { delete pImageData; };
 
 	unsigned char* pImageData;
-	UINT width, height;
-	UINT channels;
+	ImageFormat TextureFormat;
 };
 
 ////////////////////////////////////////////////

@@ -3,6 +3,7 @@
 #include "GLShader.h"
 #include"glad/glad.h"
 #include"Mesh.h"
+#include"Geometry.h"
 
 struct GLRenderData : public RenderData
 {
@@ -21,6 +22,8 @@ struct GLRenderData : public RenderData
 	glShader* pShader;
 };
 
+struct GLCubeMapData : public CubeMapData, public GLRenderData{};
+
 class jkBackendRendererGL : public jkBackendRenderer
 {
 public:
@@ -33,15 +36,15 @@ public:
 
 	void StartUp() override;
 
-	void LoadMesh(jkMesh* mesh) override;
-
 	void StartRender() override;
 
-	void DrawSkyBox(jkMesh* skyBoxMesh);
+	void RenderSkybox() override;
 
 private:
 
-	//void mPrepareRenderData(RenderData& data);
+	RenderData* mProcessMesh(jkMesh* mesh) override;
+
+	CubeMapData* mProcessCubeMap(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) override;
 
 	UINT mCreateTexture(Texture* pTexture);// Create texture  on GPU.
 

@@ -11,7 +11,7 @@ void jkBackendRendererGL::SetClearColor(COLOR3 color)
 
 void jkBackendRendererGL::Clear()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void jkBackendRendererGL::StartUp()
@@ -20,9 +20,9 @@ void jkBackendRendererGL::StartUp()
 	
 }
 
-void jkBackendRendererGL::LoadMesh(jkMesh* mesh)
+RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
 {
-	if (mesh->mIndexBuffer.size()==0) return;
+	if (mesh->mIndexBuffer.size()==0) return nullptr;
 
 	GLRenderData* pRenderData = new GLRenderData();
 	pRenderData->pOriginMesh = mesh;
@@ -54,7 +54,7 @@ void jkBackendRendererGL::LoadMesh(jkMesh* mesh)
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
 	glEnableVertexAttribArray(3);
 
-	glBindVertexArray(0);//UnBind.
+	glBindVertexArray(0);
 
 	int tex_step = 0;
 	unsigned int texID = 0;
@@ -66,12 +66,14 @@ void jkBackendRendererGL::LoadMesh(jkMesh* mesh)
 		pRenderData->pShader->setInt((std::string("texture") + std::to_string(tex_step)).c_str(), tex_step++);
 	}
 
-	mRenderDatas.push_back(pRenderData);
+	return pRenderData;
 }
 
 void jkBackendRendererGL::StartRender()
 {
-	int i = 0;
+	glEnable(GL_DEPTH_TEST);
+
+	UINT i = 0;
 	while (i < mRenderDatas.size())
 	//for (auto it = mRenderDatas.begin(); it!=mRenderDatas.end();++it)
 	{
@@ -95,11 +97,93 @@ void jkBackendRendererGL::StartRender()
 		}
 		i++;
 	}
+
+	if (mSkybox)
+	{
+		RenderSkybox();
+	}
 }
 
-void jkBackendRendererGL::DrawSkyBox(jkMesh* skyBoxMesh)
+void jkBackendRendererGL::RenderSkybox()
 {
-	//auto cubeMap = CreateTexture(skyBoxMesh);
+	auto skybox = static_cast<GLCubeMapData*>(mSkybox);
+
+	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+	skybox->pShader->use();
+
+	skybox->pShader->setMat4("view", RemoveTranslation(mViewMatrix));
+	skybox->pShader->setMat4("projection", mProjMatrix);
+
+	glBindVertexArray(skybox->VAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->TEXTURES.at(0));
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+	glDepthFunc(GL_LESS); // set depth function back to default
+}
+
+CubeMapData* jkBackendRendererGL::mProcessCubeMap(std::vector<unsigned char*>& faces, 
+	const ImageFormat& textureFormat)
+{
+	GLCubeMapData* glCmData = new GLCubeMapData();
+
+	////////////////////////////////////////////////
+	// Shader.
+
+	glCmData->pShader = new glShader("./Shaders/skybox.vs", "./Shaders/skybox.fs");
+
+	////////////////////////////////////////////////
+	// Datas.
+
+	float* cubeMapVertices = jkGeometry::CreateCubeVertices();
+	unsigned int cubeMapVAO, cubeMapVBO;
+	glGenVertexArrays(1, &cubeMapVAO);
+	glGenBuffers(1, &cubeMapVBO);
+	glBindVertexArray(cubeMapVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, cubeMapVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*108, cubeMapVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glBindVertexArray(0);
+
+	glCmData->VBO = cubeMapVBO;
+	glCmData->VAO = cubeMapVAO;
+
+	//delete cubeMapVertices;
+
+	///////////////////////////////////////////////
+	// Texture.
+
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+	GLenum format;
+	if (textureFormat.channels == 1)
+		format = GL_RED;
+	else if (textureFormat.channels == 3)
+		format = GL_RGB;
+	else if (textureFormat.channels == 4)
+		format = GL_RGBA;
+
+	for (unsigned int i = 0; i < faces.size(); i++)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, textureFormat.width, textureFormat.height, 0, format, GL_UNSIGNED_BYTE, faces.at(i));
+		stbi_image_free(faces.at(i));
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	glCmData->TEXTURES.push_back(textureID);
+
+	glCmData->pShader->use();
+	glCmData->pShader->setInt("skybox", 0);
+
+	return glCmData;
 }
 
 UINT jkBackendRendererGL::mCreateTexture(Texture* pTexture)
@@ -114,14 +198,14 @@ UINT jkBackendRendererGL::mCreateTexture(Texture* pTexture)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	GLenum format;
-	if (pTexture->channels == 1)
+	if (pTexture->TextureFormat.channels == 1)
 		format = GL_RED;
-	else if (pTexture->channels == 3)
+	else if (pTexture->TextureFormat.channels == 3)
 		format = GL_RGB;
-	else if (pTexture->channels == 4)
+	else if (pTexture->TextureFormat.channels == 4)
 		format = GL_RGBA;
 
-	glTexImage2D(GL_TEXTURE_2D, 0, format, pTexture->width, pTexture->height, 0, format, 
+	glTexImage2D(GL_TEXTURE_2D, 0, format, pTexture->TextureFormat.width, pTexture->TextureFormat.height, 0, format,
 		GL_UNSIGNED_BYTE, pTexture->pImageData);
 
 	glGenerateMipmap(GL_TEXTURE_2D);
