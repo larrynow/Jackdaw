@@ -92,6 +92,7 @@ void jkFrontendRendererWin32::Display()
 {
 	auto hdc = GetDC(m_hWindowHandle);
 	SwapBuffers(hdc);
+	ReleaseDC(m_hWindowHandle, hdc);
 }
 
 bool jkFrontendRendererWin32::mCreateGLContext(HWND hWnd)
@@ -136,6 +137,8 @@ bool jkFrontendRendererWin32::mCreateGLContext(HWND hWnd)
 
 	// Connect.
 	if (!wglMakeCurrent(hDC, m_hGLRC)) return false;
+
+	ReleaseDC(hWnd, hDC);
 
 	return true;
 }
