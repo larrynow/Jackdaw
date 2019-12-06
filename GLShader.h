@@ -15,6 +15,7 @@ using namespace jkMath;
 class glShader
 {
 public:
+
 	//program ID;
 	unsigned int ID;
 

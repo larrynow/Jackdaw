@@ -6,7 +6,7 @@
 
 struct GLRenderData : public RenderData
 {
-	GLRenderData() : RenderData(), VAO(0), VBO(0), EBO(0) {}
+	GLRenderData() : RenderData(), VAO(0), VBO(0), EBO(0), pShader(nullptr){}
 	~GLRenderData() 
 	{
 		glDeleteVertexArrays(1, &VAO);
@@ -16,14 +16,16 @@ struct GLRenderData : public RenderData
 		// TODO : texture is not delete yet.
 	}
 
-	unsigned int VAO, VBO, EBO;
+	UINT VAO, VBO, EBO;
+	std::vector<UINT> TEXTURES;
+	glShader* pShader;
 };
 
 class jkBackendRendererGL : public jkBackendRenderer
 {
 public:
 
-	jkBackendRendererGL(): m_pCurrentShader(nullptr){}
+	jkBackendRendererGL(){}
 
 	void SetClearColor(COLOR3 clearColor = { 0.27f, 0.27f, 0.27f });
 
@@ -37,15 +39,13 @@ public:
 
 	void DrawSkyBox(jkMesh* skyBoxMesh);
 
-	UINT CreateTexture(Texture* pTexture);// Create texture  on GPU.
-
-
 private:
 
 	//void mPrepareRenderData(RenderData& data);
 
+	UINT mCreateTexture(Texture* pTexture);// Create texture  on GPU.
+
 	void mRender(GLRenderData* pData);
 
-	glShader* m_pCurrentShader;
 };
 
