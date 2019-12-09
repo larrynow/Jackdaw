@@ -74,12 +74,13 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
 	return pRenderData;
 }
 
-InstanceRenderData* jkBackendRendererGL::mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4> modelMatrices)
+InstanceRenderData* jkBackendRendererGL::mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4>& modelMatrices)
 {
 	if (instanceMesh->mIndexBuffer.size() == 0) return nullptr;
 
 	GLInstanceRenderData* pInstanceRenderData = new GLInstanceRenderData();
 	pInstanceRenderData->pOriginMesh = instanceMesh;
+	pInstanceRenderData->pModelMatrices = modelMatrices;
 
 	// TODO : Depends on mesh type, choose a shader. For one type only ceate shader once.
 	pInstanceRenderData->pShader = new glShader("./Shaders/instancing.vs", "./Shaders/instancing.fs");
@@ -175,7 +176,7 @@ void jkBackendRendererGL::StartRender()
 		GLInstanceRenderData* p_glInsRenderData = static_cast<GLInstanceRenderData*>(instance);
 		if (p_glInsRenderData->pOriginMesh->m_bRenderable)
 		{
-
+			mRenderInstance(p_glInsRenderData);
 		}
 	}
 
@@ -317,7 +318,7 @@ void jkBackendRendererGL::mRenderInstance(GLInstanceRenderData* instanceData)
 	instanceData->pShader->use();
 	glBindVertexArray(instanceData->VAO);
 	glDrawElementsInstanced(
-		GL_TRIANGLES, instanceData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0, instanceData->pModelMatrices->size()
+		GL_TRIANGLES, instanceData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0, instanceData->pModelMatrices.size()
 	);
 }
 

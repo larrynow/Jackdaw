@@ -25,7 +25,7 @@ struct GLRenderData : public RenderData
 struct GLInstanceRenderData : public GLRenderData, public InstanceRenderData
 {
 	UINT InstanceVBO;
-	std::vector<MAT4*>* pModelMatrices;
+	std::vector<MAT4> pModelMatrices;
 };
 
 struct GLCubeMapData : public CubeMapData, public GLRenderData{};
@@ -52,7 +52,7 @@ private:
 
 	RenderData* mProcessMesh(jkMesh* mesh) override;
 
-	InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4> modelMatrices) override;
+	InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4>& modelMatrices) override;
 
 	CubeMapData* mProcessCubeMap(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) override;
 

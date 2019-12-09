@@ -189,7 +189,7 @@ void jkContent::SelectMap(jkMap* map)
 		model = model * Matrix_RotationXYZ(rotAngleRadian, rotAngleRadian, rotAngleRadian);
 
 		// 4. 添加到矩阵的数组中
-		modelMatrices[i] = model;
+		modelMatrices[i] = model.T();
 	}
 	m_pBackendRenderer->LoadInstanceData(mesh, modelMatrices);
 

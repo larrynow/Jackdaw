@@ -74,7 +74,7 @@
     <IncludePath>$(ProjectDir)\Libraries\Includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Administrator\Desktop\Jackdaw\Libraries\Includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Libraries\Includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -17,7 +17,7 @@ public:
 
 	inline void LoadMesh(jkMesh* mesh) { mRenderDatas.push_back(mProcessMesh(mesh)); };
 
-	inline void LoadInstanceData(jkMesh* instanceMesh, std::vector<MAT4> modelMatrices)
+	inline void LoadInstanceData(jkMesh* instanceMesh, std::vector<MAT4>& modelMatrices)
 	{
 		mInstanceRenderDatas.push_back(mProcessInstanceData(instanceMesh, modelMatrices));
 	}
@@ -39,7 +39,7 @@ protected:
 
 	virtual RenderData* mProcessMesh(jkMesh* mesh) = 0;
 
-	virtual InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4> modelMatrices) = 0;
+	virtual InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4>& modelMatrices) = 0;
 
 	virtual CubeMapData* mProcessCubeMap(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) = 0;
 
