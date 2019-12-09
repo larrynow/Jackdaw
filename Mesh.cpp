@@ -14,9 +14,10 @@ void jkMesh::mFunction_UpdateScaleMatrix()
 
 void jkMesh::mFunction_UpdateTranslateMatrix()
 {
-	mScaleTranslateMatrix.m[0][3] = mPosition.x;
-	mScaleTranslateMatrix.m[1][3] = mPosition.y;
-	mScaleTranslateMatrix.m[2][3] = mPosition.z;
+	MakeTranslateMatrix(mScaleTranslateMatrix, mPosition.x, mPosition.y, mPosition.z);
+	//mScaleTranslateMatrix.m[0][3] = mPosition.x;
+	//mScaleTranslateMatrix.m[1][3] = mPosition.y;
+	//mScaleTranslateMatrix.m[2][3] = mPosition.z;
 }
 
 void jkMesh::mFunction_UpdateWorldMatrix()

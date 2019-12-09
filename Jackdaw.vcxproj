@@ -181,6 +181,8 @@
     <ClCompile Include="WinInputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\instancing.fs" />
+    <None Include="Shaders\instancing.vs" />
     <None Include="Shaders\shader.fs" />
     <None Include="Shaders\shader.vs" />
   </ItemGroup>

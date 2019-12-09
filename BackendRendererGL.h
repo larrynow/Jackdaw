@@ -22,6 +22,12 @@ struct GLRenderData : public RenderData
 	glShader* pShader;
 };
 
+struct GLInstanceRenderData : public GLRenderData, public InstanceRenderData
+{
+	UINT InstanceVBO;
+	std::vector<MAT4*>* pModelMatrices;
+};
+
 struct GLCubeMapData : public CubeMapData, public GLRenderData{};
 
 class jkBackendRendererGL : public jkBackendRenderer
@@ -46,11 +52,15 @@ private:
 
 	RenderData* mProcessMesh(jkMesh* mesh) override;
 
+	InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4> modelMatrices) override;
+
 	CubeMapData* mProcessCubeMap(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) override;
 
 	UINT mCreateTexture(Texture* pTexture);// Create texture  on GPU.
 
 	void mRender(GLRenderData* pData);
+
+	void mRenderInstance(GLInstanceRenderData* instanceData);
 
 	void mCopyBufferData(UINT vbo_from, UINT vbo_target, UINT dataSize);
 

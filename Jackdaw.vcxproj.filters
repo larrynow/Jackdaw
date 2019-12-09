@@ -163,5 +163,7 @@
   <ItemGroup>
     <None Include="Shaders\shader.fs" />
     <None Include="Shaders\shader.vs" />
+    <None Include="Shaders\instancing.vs" />
+    <None Include="Shaders\instancing.fs" />
   </ItemGroup>
 </Project>

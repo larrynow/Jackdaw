@@ -74,6 +74,70 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
 	return pRenderData;
 }
 
+InstanceRenderData* jkBackendRendererGL::mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4> modelMatrices)
+{
+	if (instanceMesh->mIndexBuffer.size() == 0) return nullptr;
+
+	GLInstanceRenderData* pInstanceRenderData = new GLInstanceRenderData();
+	pInstanceRenderData->pOriginMesh = instanceMesh;
+
+	// TODO : Depends on mesh type, choose a shader. For one type only ceate shader once.
+	pInstanceRenderData->pShader = new glShader("./Shaders/instancing.vs", "./Shaders/instancing.fs");
+
+	glGenVertexArrays(1, &pInstanceRenderData->VAO);
+	glGenBuffers(1, &pInstanceRenderData->VBO);
+	glGenBuffers(1, &pInstanceRenderData->EBO);
+
+	glBindVertexArray(pInstanceRenderData->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, pInstanceRenderData->VBO);
+	glBufferData(GL_ARRAY_BUFFER, instanceMesh->mVertexBuffer.size() * sizeof(Vertex), &instanceMesh->mVertexBuffer[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pInstanceRenderData->EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, instanceMesh->mIndexBuffer.size() * sizeof(UINT), &instanceMesh->mIndexBuffer[0], GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);//Vertex coords.
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));//Vertex normals.
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));//Vertex texcoord.
+	glEnableVertexAttribArray(2);
+
+	glGenBuffers(1, &pInstanceRenderData->InstanceVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, pInstanceRenderData->InstanceVBO);
+	glBufferData(GL_ARRAY_BUFFER, modelMatrices.size() * sizeof(MAT4), &modelMatrices[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(VEC4), (void*)0);//  A data size equals vec4 maximium.
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(VEC4), (void*)(sizeof(VEC4)));
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(VEC4), (void*)(2 * sizeof(VEC4)));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(VEC4), (void*)(3 * sizeof(VEC4)));
+
+	glVertexAttribDivisor(3, 1);// Update evey data point.
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
+
+	glBindVertexArray(0);
+
+	int tex_step = 0;
+	unsigned int texID = 0;
+	for (auto tex : instanceMesh->mTextures)
+	{
+		texID = mCreateTexture(tex);// Warning! : TexID is hung.
+		glActiveTexture(GL_TEXTURE0 + tex_step);
+		glBindTexture(GL_TEXTURE_2D, texID);
+		pInstanceRenderData->pShader->setInt((std::string("texture") + std::to_string(tex_step)).c_str(), tex_step++);
+	}
+
+	return pInstanceRenderData;
+}
+
 void jkBackendRendererGL::StartRender()
 {
 	glEnable(GL_DEPTH_TEST);
@@ -104,6 +168,15 @@ void jkBackendRendererGL::StartRender()
 			}
 		}
 		i++;
+	}
+
+	for (auto instance : mInstanceRenderDatas)
+	{
+		GLInstanceRenderData* p_glInsRenderData = static_cast<GLInstanceRenderData*>(instance);
+		if (p_glInsRenderData->pOriginMesh->m_bRenderable)
+		{
+
+		}
 	}
 
 	if (mSkybox)
@@ -237,6 +310,15 @@ void jkBackendRendererGL::mRender(GLRenderData* pData)
 	glDrawElements(GL_TRIANGLES, pData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
+}
+
+void jkBackendRendererGL::mRenderInstance(GLInstanceRenderData* instanceData)
+{
+	instanceData->pShader->use();
+	glBindVertexArray(instanceData->VAO);
+	glDrawElementsInstanced(
+		GL_TRIANGLES, instanceData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0, instanceData->pModelMatrices->size()
+	);
 }
 
 void jkBackendRendererGL::mCopyBufferData(UINT vbo_from, UINT vbo_target, UINT dataSize)

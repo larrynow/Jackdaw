@@ -34,6 +34,10 @@ struct RenderData
 
 struct CubeMapData {};
 
+struct InstanceRenderData
+{
+};
+
 struct ImageFormat
 {
 	ImageFormat(int w, int h, int c) : width(w), height(h), channels(c) {};

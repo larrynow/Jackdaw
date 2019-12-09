@@ -17,6 +17,11 @@ public:
 
 	inline void LoadMesh(jkMesh* mesh) { mRenderDatas.push_back(mProcessMesh(mesh)); };
 
+	inline void LoadInstanceData(jkMesh* instanceMesh, std::vector<MAT4> modelMatrices)
+	{
+		mInstanceRenderDatas.push_back(mProcessInstanceData(instanceMesh, modelMatrices));
+	}
+
 	inline void SetUpSkybox(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) 
 	{ mSkybox = mProcessCubeMap(faces, textureFormat); };
 
@@ -34,6 +39,8 @@ protected:
 
 	virtual RenderData* mProcessMesh(jkMesh* mesh) = 0;
 
+	virtual InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4> modelMatrices) = 0;
+
 	virtual CubeMapData* mProcessCubeMap(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) = 0;
 
 	CubeMapData* mSkybox;
@@ -43,6 +50,8 @@ protected:
 	MAT4 mProjMatrix;
 
 	std::vector<RenderData*> mRenderDatas;
+	std::vector<InstanceRenderData*> mInstanceRenderDatas;
+
 };
 
 #endif // !JKBACKENDRENDERER_H_

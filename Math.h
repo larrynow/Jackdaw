@@ -422,6 +422,20 @@ namespace jkMath
 		mat.SetRow(3, { 0, 0, -1.f, 0 });
 	}
 
+	inline void MakeTranslateMatrix(MAT4& mat, float x, float y, float z)
+	{
+		mat.m[0][3] = x;
+		mat.m[1][3] = y;
+		mat.m[2][3] = z;
+	}
+
+	inline void MakeScaleMatrix(MAT4& mat, float scale)
+	{
+		mat.m[0][0] = scale;
+		mat.m[1][0] = scale;
+		mat.m[2][0] = scale;
+	}
+
 	inline MAT4 RemoveTranslation(const MAT4& mat)
 	{
 		MAT4 retMat(mat);

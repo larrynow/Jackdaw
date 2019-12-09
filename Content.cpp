@@ -59,6 +59,8 @@ void jkContent::Display()
 
 void jkContent::StartUp()
 {
+
+
 	while (!ShouldFinish())
 	{
 
@@ -159,5 +161,36 @@ void jkContent::SelectMap(jkMap* map)
 	jkResourceManager::ImportCubeMap(skyBoxFaces, skyboxTexFormat, "./Asset/skyBox/blue_nebular", ".jpg");
 	m_pBackendRenderer->SetUpSkybox(skyBoxFaces, skyboxTexFormat);
 	// After setUp, skybox data is clear already.
+
+	unsigned int amount = 1000;
+	std::vector<MAT4> modelMatrices;
+	modelMatrices.resize(amount);
+	float radius = 50.0;
+	float offset = 2.5f;
+	for (unsigned int i = 0; i < amount; i++)
+	{
+		MAT4 model;
+		// 1. 位移：分布在半径为 'radius' 的圆形上，偏移的范围是 [-offset, offset]
+		float angle = (float)i / (float)amount * 360.0f;
+		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float x = sin(angle) * radius + displacement;
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float y = displacement * 0.4f; // 让行星带的高度比x和z的宽度要小
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float z = cos(angle) * radius + displacement;
+		MakeTranslateMatrix(model, x, y, z);
+
+		// 2. 缩放：在 0.05 和 0.25f 之间缩放
+		float scale = (rand() % 20) / 100.0f + 0.05;
+		MakeScaleMatrix(model, scale);
+
+		// 3. 旋转：绕着一个（半）随机选择的旋转轴向量进行随机的旋转
+		float rotAngleRadian = GetRadian(rand() % 360);
+		model = model * Matrix_RotationXYZ(rotAngleRadian, rotAngleRadian, rotAngleRadian);
+
+		// 4. 添加到矩阵的数组中
+		modelMatrices[i] = model;
+	}
+	m_pBackendRenderer->LoadInstanceData(mesh, modelMatrices);
 
 }
