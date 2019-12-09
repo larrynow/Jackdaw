@@ -42,6 +42,8 @@ public:
 
 private:
 
+	UINT mMatrixUBO;
+
 	RenderData* mProcessMesh(jkMesh* mesh) override;
 
 	CubeMapData* mProcessCubeMap(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) override;
@@ -50,5 +52,9 @@ private:
 
 	void mRender(GLRenderData* pData);
 
-};
+	void mCopyBufferData(UINT vbo_from, UINT vbo_target, UINT dataSize);
 
+	void mUpdateViewMatrix();
+
+	void mUpdateProjMatrix();
+};

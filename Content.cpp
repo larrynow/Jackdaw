@@ -37,6 +37,7 @@ void jkContent::Init(UINT width, UINT height)
 
 	m_pFrontendRenderer->Init(width, height, mContentBackendDevice);
 
+	m_pBackendRenderer->StartUp();
 	m_pBackendRenderer->SetClearColor();
 
 	//jkMapManager::LoadMaps("");
@@ -96,6 +97,12 @@ void jkContent::StartUp()
 		assert(m_pInputManager);
 		m_pInputManager->Listen();
 	}
+}
+
+void jkContent::ChangeView()
+{
+	// When view changes, update backend view matrix.
+
 }
 
 bool jkContent::ShouldFinish()

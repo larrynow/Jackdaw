@@ -358,6 +358,21 @@ namespace jkMath
 			return retMat;
 		}
 
+		MAT4 T() const
+		{
+			MAT4 retMat;
+			for (size_t i = 0; i < 4; i++)
+			{
+				for (size_t j = 0; j < 4; j++)
+				{
+					retMat.m[i][j] = m[j][i];
+				}
+
+			}
+
+			return retMat;
+		}
+
 		union {
 			struct { float _11, _12, _13, _14, _21, _22, _23, _24, _31, _32, _33, _34, _41, _42, _43, _44; };
 			float m[4][4];

@@ -41,6 +41,8 @@ public:
 
 	inline void RegisterInput(jkInput input, std::string input_name) { m_pInputManager->RegisterInput(input, input_name); };
 
+	void ChangeView();
+
 private:
 
 	//////////////////////////////////

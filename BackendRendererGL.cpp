@@ -16,8 +16,13 @@ void jkBackendRendererGL::Clear()
 
 void jkBackendRendererGL::StartUp()
 {
-	
-	
+	// Initialize matrices ubo.
+	glGenBuffers(1, &mMatrixUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, mMatrixUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(MAT4), NULL, GL_STATIC_DRAW);// Only reserve memory.
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, mMatrixUBO, 0, 2 * sizeof(MAT4));// Bind uboMatrices with binding point 0.
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
@@ -72,6 +77,9 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
 void jkBackendRendererGL::StartRender()
 {
 	glEnable(GL_DEPTH_TEST);
+
+	mUpdateViewMatrix();
+	mUpdateProjMatrix();
 
 	UINT i = 0;
 	while (i < mRenderDatas.size())
@@ -219,9 +227,11 @@ void jkBackendRendererGL::mRender(GLRenderData* pData)
 
 	mModelMatrix = pData->pOriginMesh->GetWorldMatrx();
 
+	// Set projection and view by uiniform buffer object.
+
 	pData->pShader->setMat4("model", mModelMatrix);
-	pData->pShader->setMat4("view", mViewMatrix);
-	pData->pShader->setMat4("projection", mProjMatrix);
+	//pData->pShader->setMat4("view", mViewMatrix);
+	//pData->pShader->setMat4("projection", mProjMatrix);
 
 	glBindVertexArray(pData->VAO);
 	glDrawElements(GL_TRIANGLES, pData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0);
@@ -229,5 +239,27 @@ void jkBackendRendererGL::mRender(GLRenderData* pData)
 
 }
 
+void jkBackendRendererGL::mCopyBufferData(UINT vbo_from, UINT vbo_target, UINT dataSize)
+{
+	// Copy data : from to target.
+	glBindBuffer(GL_COPY_READ_BUFFER, vbo_from);
+	glBindBuffer(GL_COPY_WRITE_BUFFER, vbo_target);
+	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, dataSize);
+}
 
+void jkBackendRendererGL::mUpdateViewMatrix()
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, mMatrixUBO);
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(MAT4), sizeof(MAT4), &(mViewMatrix.T()));
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void jkBackendRendererGL::mUpdateProjMatrix()
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, mMatrixUBO);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(MAT4), &(mProjMatrix.T()));
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
 
