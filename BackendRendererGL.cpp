@@ -61,14 +61,12 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
 
 	glBindVertexArray(0);
 
-	int tex_step = 0;
+	int shaderTexID = 0;
 	unsigned int texID = 0;
 	for (auto tex : mesh->mTextures)
 	{
 		texID = mCreateTexture(tex);// Warning! : TexID is hung.
-		glActiveTexture(GL_TEXTURE0 + tex_step);
-		glBindTexture(GL_TEXTURE_2D, texID);
-		pRenderData->pShader->setInt((std::string("texture") + std::to_string(tex_step)).c_str(), tex_step++);
+		pRenderData->TEXTURES.push_back(texID);
 	}
 
 	return pRenderData;
@@ -126,14 +124,12 @@ InstanceRenderData* jkBackendRendererGL::mProcessInstanceData(jkMesh* instanceMe
 
 	glBindVertexArray(0);
 
-	int tex_step = 0;
 	unsigned int texID = 0;
+	int shderTextureID = 1;
 	for (auto tex : instanceMesh->mTextures)
 	{
 		texID = mCreateTexture(tex);// Warning! : TexID is hung.
-		glActiveTexture(GL_TEXTURE0 + tex_step);
-		glBindTexture(GL_TEXTURE_2D, texID);
-		pInstanceRenderData->pShader->setInt((std::string("texture") + std::to_string(tex_step)).c_str(), tex_step++);
+		pInstanceRenderData->TEXTURES.push_back(texID);
 	}
 
 	return pInstanceRenderData;
@@ -302,10 +298,11 @@ void jkBackendRendererGL::mRender(GLRenderData* pData)
 	mModelMatrix = pData->pOriginMesh->GetWorldMatrx();
 
 	// Set projection and view by uiniform buffer object.
-
 	pData->pShader->setMat4("model", mModelMatrix);
-	//pData->pShader->setMat4("view", mViewMatrix);
-	//pData->pShader->setMat4("projection", mProjMatrix);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, pData->TEXTURES[0]);
+	pData->pShader->setInt("texture1", 0);
 
 	glBindVertexArray(pData->VAO);
 	glDrawElements(GL_TRIANGLES, pData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0);
@@ -317,6 +314,10 @@ void jkBackendRendererGL::mRenderInstance(GLInstanceRenderData* instanceData)
 {
 	instanceData->pShader->use();
 	glBindVertexArray(instanceData->VAO);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, instanceData->TEXTURES[0]);
+	instanceData->pShader->setInt("texture_diffuse1", 1);
 	glDrawElementsInstanced(
 		GL_TRIANGLES, instanceData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0, instanceData->pModelMatrices.size()
 	);

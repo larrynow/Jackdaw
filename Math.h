@@ -299,6 +299,17 @@ namespace jkMath
 			}
 		}
 
+		inline void SetColumn(UINT col, const VEC4& newCol)
+		{
+			if (col < 4)
+			{
+				for (size_t i = 0; i < 4; i++)
+				{
+					m[i][col] = newCol.m[i];
+				}
+			}
+		}
+
 		inline VEC4 GetColumn(UINT col) const
 		{
 			return VEC4(m[0][col], m[1][col], m[2][col], m[3][col]);
@@ -339,16 +350,27 @@ namespace jkMath
 		{
 			MAT4 retMat;
 			// Right matrix cols.
-			auto col1 = this->operator*(mat4.GetColumn(0));
-			auto col2 = this->operator*(mat4.GetColumn(1));
-			auto col3 = this->operator*(mat4.GetColumn(2));
-			auto col4 = this->operator*(mat4.GetColumn(3));
+			//auto col1 = this->operator*(mat4.GetColumn(0));
+			//auto col2 = this->operator*(mat4.GetColumn(1));
+			//auto col3 = this->operator*(mat4.GetColumn(2));
+			//auto col4 = this->operator*(mat4.GetColumn(3));
+
+			//retMat.SetColumn(0, col1);
+			//retMat.SetColumn(1, col2);
+			//retMat.SetColumn(2, col3);
+			//retMat.SetColumn(3, col4);
+
 
 			// Left matrix rows.
 			auto row1 = GetRow(0);
 			auto row2 = GetRow(1);
 			auto row3 = GetRow(2);
 			auto row4 = GetRow(3);
+
+			auto col1 = mat4.GetColumn(0);
+			auto col2 = mat4.GetColumn(1);
+			auto col3 = mat4.GetColumn(2);
+			auto col4 = mat4.GetColumn(3);
 
 			retMat.SetRow(0, { row1*col1, row1*col2, row1*col3, row1*col4 });
 			retMat.SetRow(1, { row2*col1, row2*col2, row2*col3, row2*col4 });
@@ -432,8 +454,8 @@ namespace jkMath
 	inline void MakeScaleMatrix(MAT4& mat, float scale)
 	{
 		mat.m[0][0] = scale;
-		mat.m[1][0] = scale;
-		mat.m[2][0] = scale;
+		mat.m[1][1] = scale;
+		mat.m[2][2] = scale;
 	}
 
 	inline MAT4 RemoveTranslation(const MAT4& mat)

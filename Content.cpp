@@ -162,6 +162,17 @@ void jkContent::SelectMap(jkMap* map)
 	m_pBackendRenderer->SetUpSkybox(skyBoxFaces, skyboxTexFormat);
 	// After setUp, skybox data is clear already.
 
+	///////////////////////////////////////////////
+	// Instance rocks.
+
+	jkMesh* rockMesh = new jkMesh();
+	jkResourceManager::ImportMeshFromOBJ("./Asset/rock.obj", rockMesh);
+
+	Texture* rockTexture = new Texture();
+	jkResourceManager::ImportTexture("./Asset/Rock-Texture-Surface.jpg", rockTexture);
+
+	rockMesh->BindTexture(rockTexture);
+
 	unsigned int amount = 1000;
 	std::vector<MAT4> modelMatrices;
 	modelMatrices.resize(amount);
@@ -186,11 +197,12 @@ void jkContent::SelectMap(jkMap* map)
 
 		// 3. 旋转：绕着一个（半）随机选择的旋转轴向量进行随机的旋转
 		float rotAngleRadian = GetRadian(rand() % 360);
-		model = model * Matrix_RotationXYZ(rotAngleRadian, rotAngleRadian, rotAngleRadian);
+		//model = model * Matrix_RotationXYZ(rotAngleRadian, rotAngleRadian, rotAngleRadian);
+		model = Matrix_RotationXYZ(rotAngleRadian, rotAngleRadian, rotAngleRadian) * model;
 
 		// 4. 添加到矩阵的数组中
 		modelMatrices[i] = model.T();
 	}
-	m_pBackendRenderer->LoadInstanceData(mesh, modelMatrices);
+	m_pBackendRenderer->LoadInstanceData(rockMesh, modelMatrices);
 
 }
