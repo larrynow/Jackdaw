@@ -33,7 +33,9 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
 	pRenderData->pOriginMesh = mesh;
 
 	// TODO : Depends on mesh type, choose a shader. For one type only ceate shader once.
-	pRenderData->pShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs");
+	//pRenderData->pShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs");
+	pRenderData->pShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs", 
+		"./Shaders/explode.gs");
 
 	glGenVertexArrays(1, &pRenderData->VAO);
 	glGenBuffers(1, &pRenderData->VBO);
@@ -142,6 +144,7 @@ void jkBackendRendererGL::StartRender()
 	mUpdateViewMatrix();
 	mUpdateProjMatrix();
 
+	mTimer = 0;
 	UINT i = 0;
 	while (i < mRenderDatas.size())
 	//for (auto it = mRenderDatas.begin(); it!=mRenderDatas.end();++it)
@@ -172,13 +175,13 @@ void jkBackendRendererGL::StartRender()
 		GLInstanceRenderData* p_glInsRenderData = static_cast<GLInstanceRenderData*>(instance);
 		if (p_glInsRenderData->pOriginMesh->m_bRenderable)
 		{
-			mRenderInstance(p_glInsRenderData);
+			//mRenderInstance(p_glInsRenderData);
 		}
 	}
 
 	if (mSkybox)
 	{
-		RenderSkybox();
+		//RenderSkybox();
 	}
 }
 
@@ -303,6 +306,9 @@ void jkBackendRendererGL::mRender(GLRenderData* pData)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, pData->TEXTURES[0]);
 	pData->pShader->setInt("texture1", 0);
+
+	// TODO : Set with Timer.
+	pData->pShader->setFloat("time", 0.00001f);
 
 	glBindVertexArray(pData->VAO);
 	glDrawElements(GL_TRIANGLES, pData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0);

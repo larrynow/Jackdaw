@@ -165,5 +165,6 @@
     <None Include="Shaders\shader.vs" />
     <None Include="Shaders\instancing.vs" />
     <None Include="Shaders\instancing.fs" />
+    <None Include="Shaders\explode.gs" />
   </ItemGroup>
 </Project>

@@ -4,8 +4,11 @@ layout (location=0) in vec4 aColor;
 layout (location=2) in vec3 aNormal;
 layout (location=3) in vec2 aTexCoord;
 
-out vec2 TexCoord;
-out vec3 ourColor;
+out VS_OUT
+{
+	vec2 TexCoord;
+	vec3 Color;
+};
 
 layout (std140, binding = 0) uniform Matrices
 {
@@ -20,6 +23,6 @@ void main()
 	//from right to left.
 	gl_Position = projection * view * model * vec4(aPos, 1.0f);
 
-	ourColor = vec3(1.0f, 1.0f, 1.0f);
+	Color = vec3(1.0f, 1.0f, 1.0f);
 	TexCoord = aTexCoord;
 }
