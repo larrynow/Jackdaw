@@ -144,7 +144,6 @@ void jkBackendRendererGL::StartRender()
 	mUpdateViewMatrix();
 	mUpdateProjMatrix();
 
-	mTimer = 0;
 	UINT i = 0;
 	while (i < mRenderDatas.size())
 	//for (auto it = mRenderDatas.begin(); it!=mRenderDatas.end();++it)
@@ -175,13 +174,13 @@ void jkBackendRendererGL::StartRender()
 		GLInstanceRenderData* p_glInsRenderData = static_cast<GLInstanceRenderData*>(instance);
 		if (p_glInsRenderData->pOriginMesh->m_bRenderable)
 		{
-			//mRenderInstance(p_glInsRenderData);
+			mRenderInstance(p_glInsRenderData);
 		}
 	}
 
 	if (mSkybox)
 	{
-		//RenderSkybox();
+		RenderSkybox();
 	}
 }
 

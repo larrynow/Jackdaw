@@ -1,7 +1,12 @@
 #version 420 core
 out vec4 FragColor;
 
-in vec2 TexCoord;
+in VS_OUT{
+	vec2 TexCoord;
+	vec3 Color;
+};
+
+//in vec2 TexCoord;
 //in vec3 ourColor;
 
 uniform sampler2D texture1;

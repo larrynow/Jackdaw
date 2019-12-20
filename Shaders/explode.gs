@@ -7,7 +7,12 @@ in VS_OUT{
 	vec3 Color;
 } gs_in[];
 
-out vec2 TexCoord;
+out GS_OUT{
+	vec2 TexCoord;
+	vec3 Color;
+};
+
+//out vec2 TexCoord;
 
 uniform float time;
 
