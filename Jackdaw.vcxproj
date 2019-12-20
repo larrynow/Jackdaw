@@ -131,6 +131,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Clock.h" />
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="GLShader.h" />

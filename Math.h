@@ -6,6 +6,7 @@
 #include<iostream>
 
 typedef unsigned int UINT;
+typedef unsigned long long U64;
 
 namespace jkMath
 {

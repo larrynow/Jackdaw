@@ -98,6 +98,7 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Clock.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
