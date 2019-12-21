@@ -330,4 +330,4 @@ ASALocalRun/
 .mfractor/
 
 # Include Assets
-!/Asset/
+!/Asset/*
