@@ -7,7 +7,7 @@ in VS_OUT{
 	vec3 Color;
 } gs_in[];
 
-out GS_OUT{
+out VS_OUT{
 	vec2 TexCoord;
 	vec3 Color;
 };
