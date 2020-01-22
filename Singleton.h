@@ -12,7 +12,12 @@ public:
 			m_pInstance = new T();
 		return m_pInstance;
 	};
-	static T& GetInstance();
+
+	static T& GetInstance() {
+		if (!m_pInstance)
+			m_pInstance = new T();
+		return *m_pInstance;
+	};
 
 protected:
 

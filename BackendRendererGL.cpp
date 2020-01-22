@@ -1,7 +1,8 @@
+#include "Jackdaw.h"
 #include "BackendRendererGL.h"
-#include"Camera.h"
-#include"ResourceManager.h"
-#include"stb_image.h"
+#include "Camera.h"
+#include "ResourceManager.h"
+#include "stb_image.h"
 #pragma comment (lib, "opengl32.lib")
 
 void jkBackendRendererGL::SetClearColor(COLOR3 color)
@@ -306,8 +307,7 @@ void jkBackendRendererGL::mRender(GLRenderData* pData)
 	glBindTexture(GL_TEXTURE_2D, pData->TEXTURES[0]);
 	pData->pShader->setInt("texture1", 0);
 
-	// TODO : Set with Timer.
-	pData->pShader->setFloat("time", 0.00001f);
+	pData->pShader->setFloat("time", pTimer->GetTime());
 
 	glBindVertexArray(pData->VAO);
 	glDrawElements(GL_TRIANGLES, pData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0);

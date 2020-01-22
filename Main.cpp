@@ -3,7 +3,7 @@
 
 int main()
 {
-	jkContent content;
+	jkContent& content = jkContent::GetInstance();
 	content.SelectFrontendDevice();
 	content.SelectBackendDevice();
 	content.Init(800, 600);

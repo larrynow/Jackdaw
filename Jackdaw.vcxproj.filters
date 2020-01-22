@@ -98,9 +98,9 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.h" />
-    <ClInclude Include="Clock.h">
-      <Filter>Core</Filter>
-    </ClInclude>
+    <ClInclude Include="Jackdaw.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="TimerWin32.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -162,6 +162,7 @@
     <ClCompile Include="Singleton.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="TimerWin32.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\shader.fs" />

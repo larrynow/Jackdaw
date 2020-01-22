@@ -32,11 +32,9 @@ struct RenderData
 	jkMesh* pOriginMesh;
 };
 
-struct CubeMapData {};
+struct CubeMapData {};// Empty Render data class.
 
-struct InstanceRenderData
-{
-};
+struct InstanceRenderData {};// Empty Render data class.
 
 struct ImageFormat
 {

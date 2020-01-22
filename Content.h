@@ -2,17 +2,17 @@
 #ifndef JKCONTENT_H_
 #define JKCONTENT_H_
 
+#include"Singleton.h"
 #include"Types.h"
 #include"Devices.h"
 #include"InputManager.h"
+#include"Timer.h"
 #include"Map.h"
 
 class jkFrontendRenderer;
 class jkBackendRenderer;
 class jkInputManager;
 class jkResourceManager;
-
-#define PRINT(msg) std::cout<<msg<<std::endl;
 
 /*
 jkContent : a content for engine modules.
@@ -21,7 +21,7 @@ Setting up a content for game.
 Select both frontend and backend devices.
 */
 
-class jkContent
+class jkContent : public jkSingleton<jkContent>
 {
 
 public:
@@ -43,10 +43,10 @@ public:
 
 	void ChangeView();
 
-private:
+//private:
 
 	//////////////////////////////////
-	// Devices
+	// Components.
 
 	jkFrontendDevice mContentFrontendDevice;
 	jkBackendDevice mContentBackendDevice;
@@ -60,11 +60,21 @@ private:
 	
 	jkInputManager* m_pInputManager;
 
-	bool ShouldFinish();
+	jkTimer* m_pTimer;
+
+	bool mShouldFinish();
 
 	void mPrepareBackendRenderer();
 
+	/////////////////////////////////////
+	// Properties.
+
 	UINT mWidth;
 	UINT mHeight;
+
+	const float mFixedUpdateTime = 0.02f;
+	float mSimulatedTime;
 };
+
+
 #endif	

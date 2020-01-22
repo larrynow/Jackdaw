@@ -3,6 +3,10 @@
 class jkFreeCamera :
 	public jkCharacter
 {
+	/*
+	* jkFreeCamera : a character class act like a camera.
+	*/
+
 public:
 	jkFreeCamera() :jkCharacter() 
 	{

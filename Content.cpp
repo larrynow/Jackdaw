@@ -1,11 +1,15 @@
 #include"Content.h"
+#include"Jackdaw.h"
 #include"FrontendRendererWin32.h"
 #include"BackendRendererGL.h"
 #include"WinInputManager.h"
+#include"TimerWin32.h"
 #include"MapManager.h"
 #include"ResourceManager.h"
 #include"Geometry.h"
 #include<assert.h>
+
+jkContent* jkSingleton<jkContent>::m_pInstance = nullptr;
 
 void jkContent::Init(UINT width, UINT height)
 {
@@ -18,10 +22,12 @@ void jkContent::Init(UINT width, UINT height)
 	case jkFrontendDevice::WIN_32:
 		m_pFrontendRenderer = new jkFrontendRendererWin32();
 		m_pInputManager = new jkWinInputManager();
+		m_pTimer = jkTimerWin32::GetInstancePtr();
 		break;
 	default:
 		m_pFrontendRenderer = new jkFrontendRendererWin32();
 		m_pInputManager = new jkWinInputManager();
+		m_pTimer = jkTimerWin32::GetInstancePtr();
 		break;
 	}
 
@@ -34,6 +40,8 @@ void jkContent::Init(UINT width, UINT height)
 		m_pBackendRenderer = new jkBackendRendererGL();
 		break;
 	}
+
+	m_pTimer->Init();
 
 	m_pFrontendRenderer->Init(width, height, mContentBackendDevice);
 
@@ -59,11 +67,10 @@ void jkContent::Display()
 
 void jkContent::StartUp()
 {
-
-
-	while (!ShouldFinish())
+	while (!mShouldFinish())
 	{
-
+		m_pTimer->Tick();
+		PRINT(m_pTimer->GetFPS());
 		/*::SetConsoleTitleA(fpsStr.c_str());
 		renderer->Clear();*/
 		m_pBackendRenderer->Clear();
@@ -74,18 +81,32 @@ void jkContent::StartUp()
 		{
 			auto input = (*it).first;
 			auto input_id = m_pInputManager->MapKey(input);// Note only key.
+			auto input_name = (*it).second;
 
 			if (input_id != -1 && *(m_pInputManager->KeyStatus + input_id) == 1)
 			{
-				auto input = (*it).second;
-				auto op = m_pControlledCharacter->input_op_map.at(input);
-				if (m_pControlledCharacter)// Check if character is still exist in content.
+				if (m_pControlledCharacter->input_op_map.count(input_name))
 				{
-					op();
-					//PRINT(input);
+					if (m_pControlledCharacter)// Check if character is still exist in content.
+					{
+						auto op = m_pControlledCharacter->input_op_map.at(input_name);
+						op();
+						//PRINT(input);
+					}
 				}
+				
 			}
 		}
+
+		////////////////////////////////
+		// Fixed update.
+
+		float real_time = m_pTimer->GetTime();
+		//while (simulated_time < real_time)
+		//{
+		//	simulated_time += fixed_step;
+		//	//UpdateFixed(fixed_step);
+		//}
 
 		////////////////////////////////
 		// Rendering.
@@ -107,7 +128,7 @@ void jkContent::ChangeView()
 
 }
 
-bool jkContent::ShouldFinish()
+bool jkContent::mShouldFinish()
 {
 	return jkInputManager::ExitStatus;
 }
@@ -192,11 +213,11 @@ void jkContent::SelectMap(jkMap* map)
 		MakeTranslateMatrix(model, x, y, z);
 
 		// 2. 缩放：在 0.05 和 0.25f 之间缩放
-		float scale = (rand() % 20) / 100.0f + 0.05;
+		float scale = (rand() % 20) / 100.0f + 0.05f;
 		MakeScaleMatrix(model, scale);
 
 		// 3. 旋转：绕着一个（半）随机选择的旋转轴向量进行随机的旋转
-		float rotAngleRadian = GetRadian(rand() % 360);
+		float rotAngleRadian = GetRadian(float(rand() % 360));
 		//model = model * Matrix_RotationXYZ(rotAngleRadian, rotAngleRadian, rotAngleRadian);
 		model = Matrix_RotationXYZ(rotAngleRadian, rotAngleRadian, rotAngleRadian) * model;
 
