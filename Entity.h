@@ -3,7 +3,7 @@
 #define JKENTITY_H_
 
 #include"Types.h"
-#include"Mesh.h"
+#include"Model.h"
 #include"EntityFactory.h"
 
 /*
@@ -15,17 +15,19 @@ class jkEntity
 {
 public:
 
-	jkEntity(const VEC3& position) : mPosition(position){ mMesh = new jkMesh(mPosition); }
+	jkEntity(const VEC3& position) : mPosition(position){ m_pModel = new jkModel(position); }
 
 	jkEntity() : jkEntity({0.f, 0.f, 0.f}) {}
 
 	//Transform transform;
-	inline jkMesh* GetMesh() { return mMesh; }
-	std::string MeshPath;
+	inline jkModel* GetModel() { return m_pModel; }
+	std::string ModelPath;
+
+	inline void SetPosition(const VEC3& pos) { mPosition = pos; m_pModel->SetPosition(pos); }
 
 protected:
 
-	jkMesh* mMesh;
+	jkModel* m_pModel;
 
 	VEC3 mPosition;
 };

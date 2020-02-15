@@ -60,9 +60,6 @@
     <ClInclude Include="JobList.h">
       <Filter>Thread</Filter>
     </ClInclude>
-    <ClInclude Include="Map.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="MapManager.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -99,8 +96,20 @@
     </ClInclude>
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Jackdaw.h" />
+    <ClInclude Include="Clock.h" />
+    <ClInclude Include="ClockWin32.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="TimerWin32.h" />
+    <ClInclude Include="Map.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h" />
+    <ClInclude Include="Algorithm.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Setting.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp">
@@ -162,7 +171,10 @@
     <ClCompile Include="Singleton.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="TimerWin32.cpp" />
+    <ClCompile Include="ClockWin32.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="Setting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\shader.fs" />
@@ -170,5 +182,8 @@
     <None Include="Shaders\instancing.vs" />
     <None Include="Shaders\instancing.fs" />
     <None Include="Shaders\explode.gs" />
+    <None Include="Shaders\grass.vs" />
+    <None Include="Shaders\grass.fs" />
+    <None Include="Shaders\grass.gs" />
   </ItemGroup>
 </Project>

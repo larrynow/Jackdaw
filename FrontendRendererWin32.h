@@ -3,6 +3,7 @@
 #define JKFRONDRENDERERWIN32_H_
 
 #include "FrontendRenderer.h"
+#define NOMINMAX // Disable max, min macro.
 #include<Windows.h>
 #include"Devices.h"
 

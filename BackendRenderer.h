@@ -25,7 +25,13 @@ public:
 	inline void SetUpSkybox(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) 
 	{ mSkybox = mProcessCubeMap(faces, textureFormat); };
 
-	virtual void StartRender() = 0;
+	inline void LoadSurroundingData(std::vector<VEC3>& positions)
+	{
+		mSurroundingRenderDatas.push_back(mProcessSurroundingData(positions));
+	}
+	// TODO : redesign renderData with different 'type'.
+
+	virtual void StartRender() = 0; // Render all loaded render data.
 
 	virtual void RenderSkybox() = 0;
 
@@ -45,12 +51,15 @@ protected:
 
 	CubeMapData* mSkybox;
 
+	virtual SurroundingRenderData* mProcessSurroundingData(std::vector<VEC3>& positions) = 0;
+
 	MAT4 mModelMatrix;
 	MAT4 mViewMatrix;
 	MAT4 mProjMatrix;
 
 	std::vector<RenderData*> mRenderDatas;
 	std::vector<InstanceRenderData*> mInstanceRenderDatas;
+	std::vector<SurroundingRenderData*> mSurroundingRenderDatas;
 
 };
 

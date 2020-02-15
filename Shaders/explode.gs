@@ -12,13 +12,15 @@ out GS_OUT{
 	vec3 Color;
 };
 
+
+
 //out vec2 TexCoord;
 
 uniform float time;
 
 vec4 Explode(vec4 position, vec3 normal)
 {
-	vec3 direction = normal * ((sin(time)+1.0)/2.0);
+	vec3 direction = normal * ((log(time + 1.0))) * 7;
 	return position + vec4(direction, 0.0);
 }
 
@@ -43,4 +45,5 @@ void main()
 	TexCoord = gs_in[2].TexCoord;
 	EmitVertex();
 	EndPrimitive();
+
 }

@@ -10,8 +10,8 @@ jkEntity* jkEntityFactory::GetEntity(const std::string entityName)
 	}
 	else
 	{
-		// Have not registe yet, return null.
-		return nullptr;
+		// Have not registe yet, return default.
+		return new jkEntity();
 	}
 }
 

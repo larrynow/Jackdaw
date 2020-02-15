@@ -14,11 +14,15 @@ struct GLRenderData : public RenderData
 		glDeleteBuffers(1, &VBO);
 		glDeleteBuffers(1, &EBO);
 
-		// TODO : texture is not delete yet.
+		for (auto tex : TexID)
+		{
+			//glDeleteTextures(1, &tex);
+			//TODO : texture should be delete at the time when no mesh is bind with.
+		}
 	}
 
 	UINT VAO, VBO, EBO;
-	std::vector<UINT> TEXTURES;
+	std::vector<UINT> TexID;
 	glShader* pShader;
 };
 
@@ -29,6 +33,14 @@ struct GLInstanceRenderData : public GLRenderData, public InstanceRenderData
 };
 
 struct GLCubeMapData : public CubeMapData, public GLRenderData{};
+
+struct GLSurroundingRenderData : public SurroundingRenderData
+{
+	UINT VAO, VBO;
+	std::vector<UINT> TexID;
+	glShader* pShader;
+	int count;
+};
 
 class jkBackendRendererGL : public jkBackendRenderer
 {
@@ -56,11 +68,15 @@ private:
 
 	CubeMapData* mProcessCubeMap(std::vector<unsigned char*>& faces, const ImageFormat& textureFormat) override;
 
+	SurroundingRenderData* mProcessSurroundingData(std::vector<VEC3>& positions) override;
+
 	UINT mCreateTexture(Texture* pTexture);// Create texture  on GPU.
 
 	void mRender(GLRenderData* pData);
 
 	void mRenderInstance(GLInstanceRenderData* instanceData);
+
+	void mRenderSurrounding(GLSurroundingRenderData* surroundingData);
 
 	void mCopyBufferData(UINT vbo_from, UINT vbo_target, UINT dataSize);
 

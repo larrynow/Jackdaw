@@ -19,9 +19,9 @@ int main()
 
 	auto pMap = new jkMap();
 
-	auto pEntity = new jkEntity({-5.f, 0.f, -5.f});
-	pEntity->MeshPath = "./Asset/model-triangulated.obj";
-	pMap->AddEntity(pEntity);
+	//auto pEntity = new jkEntity({-5.f, 0.f, -5.f});
+	//pEntity->MeshPath = "./Asset/model-triangulated.obj";
+	//pMap->AddEntity(pEntity);
 
 	auto pFreeCamera = new jkFreeCamera();
 	pMap->AddEntity(pFreeCamera);

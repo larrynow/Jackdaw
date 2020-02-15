@@ -41,7 +41,7 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	// Move and get position.
 
-	inline void MoveTo(const VEC3& _pos) { mPosition = _pos; mFunction_UpdateTranslateMatrix(); };// Maybe judge collisons first.
+	inline void MoveTo(const VEC3& _pos) { mPosition = _pos; mFunction_UpdateTranslateMatrix(); };
 	inline VEC3 GetPosition() const { return mPosition; };
 
 	/////////////////////////////////////////////////////////////////////

@@ -8,8 +8,8 @@ void jkMesh::mFunction_UpdateRotateMatrix()
 void jkMesh::mFunction_UpdateScaleMatrix()
 {
 	mScaleTranslateMatrix.m[0][0] = mScaleX;
-	mScaleTranslateMatrix.m[1][0] = mScaleY;
-	mScaleTranslateMatrix.m[2][0] = mScaleZ;
+	mScaleTranslateMatrix.m[1][1] = mScaleY;
+	mScaleTranslateMatrix.m[2][2] = mScaleZ;
 }
 
 void jkMesh::mFunction_UpdateTranslateMatrix()

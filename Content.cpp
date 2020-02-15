@@ -3,10 +3,12 @@
 #include"FrontendRendererWin32.h"
 #include"BackendRendererGL.h"
 #include"WinInputManager.h"
-#include"TimerWin32.h"
+#include"ClockWin32.h"
 #include"MapManager.h"
 #include"ResourceManager.h"
 #include"Geometry.h"
+#include"Terrain.h"
+#include"Model.h"
 #include<assert.h>
 
 jkContent* jkSingleton<jkContent>::m_pInstance = nullptr;
@@ -22,12 +24,12 @@ void jkContent::Init(UINT width, UINT height)
 	case jkFrontendDevice::WIN_32:
 		m_pFrontendRenderer = new jkFrontendRendererWin32();
 		m_pInputManager = new jkWinInputManager();
-		m_pTimer = jkTimerWin32::GetInstancePtr();
+		m_pTimer = jkClockWin32::GetInstancePtr();
 		break;
 	default:
 		m_pFrontendRenderer = new jkFrontendRendererWin32();
 		m_pInputManager = new jkWinInputManager();
-		m_pTimer = jkTimerWin32::GetInstancePtr();
+		m_pTimer = jkClockWin32::GetInstancePtr();
 		break;
 	}
 
@@ -115,6 +117,8 @@ void jkContent::StartUp()
 		mPrepareBackendRenderer();
 		m_pBackendRenderer->StartRender();
 
+		//m_pBackendRenderer->RenderGrass({2.0f, 0.0f, 0.0f});
+
 		m_pFrontendRenderer->Display();
 
 		assert(m_pInputManager);
@@ -151,10 +155,10 @@ void jkContent::SelectMap(jkMap* map)
 	////////////////////////////////////////////////
 	// Load Resources.
 
-	for (auto entity : map->mEntities)
+	/*for (auto entity : map->mEntities)
 	{
 		jkResourceManager::ImportMeshFromOBJ(entity->MeshPath, entity->GetMesh());
-	}
+	}*/
 
 	//////////////////////////////////////////////
 	// Load mesh into renderer.
@@ -168,7 +172,7 @@ void jkContent::SelectMap(jkMap* map)
 	jkMesh* mesh = new jkMesh(VEC3(1.f, 1.0f, -1.f));
 	jkGeometry::MakeCubeMesh(mesh, 1.f);
 	Texture* texure = new Texture();
-	jkResourceManager::ImportTexture("./Asset/awesomeface.bmp", texure);
+	jkResourceManager::LoadTexture("./Asset/awesomeface.bmp", texure, true);
 	mesh->BindTexture(texure);
 	m_pBackendRenderer->LoadMesh(mesh);
 
@@ -179,7 +183,7 @@ void jkContent::SelectMap(jkMap* map)
 
 	std::vector<unsigned char*> skyBoxFaces;
 	ImageFormat skyboxTexFormat;
-	jkResourceManager::ImportCubeMap(skyBoxFaces, skyboxTexFormat, "./Asset/skyBox/blue_nebular", ".jpg");
+	jkResourceManager::ImportCubeMap(skyBoxFaces, skyboxTexFormat, "./Asset/skyBox/bluecloud", ".jpg");
 	m_pBackendRenderer->SetUpSkybox(skyBoxFaces, skyboxTexFormat);
 	// After setUp, skybox data is clear already.
 
@@ -190,7 +194,7 @@ void jkContent::SelectMap(jkMap* map)
 	jkResourceManager::ImportMeshFromOBJ("./Asset/rock.obj", rockMesh);
 
 	Texture* rockTexture = new Texture();
-	jkResourceManager::ImportTexture("./Asset/Rock-Texture-Surface.jpg", rockTexture);
+	jkResourceManager::LoadTexture("./Asset/Rock-Texture-Surface.jpg", rockTexture);
 
 	rockMesh->BindTexture(rockTexture);
 
@@ -225,5 +229,93 @@ void jkContent::SelectMap(jkMap* map)
 		modelMatrices[i] = model.T();
 	}
 	m_pBackendRenderer->LoadInstanceData(rockMesh, modelMatrices);
+
+	//////////////////////////////////////////////////////
+	// Terrain.
+
+	jkTerrain::Tile* terrain_tile = new jkTerrain::Tile();
+	jkTerrain::CreateTerrain("./Asset/height_map.png", { 1024, 30, 1024 }, terrain_tile);
+
+	// Load texture.
+	auto soil_tex = jkResourceManager::ImportTexture("./Asset/soil.jpg");
+	auto mud_tex = jkResourceManager::ImportTexture("./Asset/mud.jpg");
+	auto grass_tex = jkResourceManager::ImportTexture("./Asset/grass.jpg");
+	auto rock_tex = jkResourceManager::ImportTexture("./Asset/rock.jpg");
+	auto sand_tex = jkResourceManager::ImportTexture("./Asset/sand.jpg");
+
+	auto blend_tex = jkResourceManager::ImportTexture("./Asset/blend.jpg");
+
+	//terrain_tile->pMesh->BindTexture(blend_tex);
+	terrain_tile->pMesh->BindTexture(mud_tex);
+	terrain_tile->pMesh->BindTexture(grass_tex);
+	terrain_tile->pMesh->BindTexture(rock_tex);
+
+	m_pBackendRenderer->LoadMesh(terrain_tile->pMesh);
+
+	/////////////////////////////////////////////////
+	// Dynamic grass.
+
+	/*jkTerrain::
+	m_pBackendRenderer->LoadSurroundingData(grassPositions);*/
+
+	jkModel* model = new jkModel();
+	jkResourceManager::LoadModel("./Asset/wolf/Wolf.fbx", model);
+
+	auto wolf_body_tex = jkResourceManager::ImportTexture("./Asset/wolf/textures/Wolf_Body.jpg");
+	auto wolf_body_flip_tex = jkResourceManager::ImportTexture("./Asset/wolf/textures/Wolf_Body.jpg",true);
+	auto wolf_fur_tex = jkResourceManager::ImportTexture("./Asset/wolf/textures/Wolf_Fur.png");
+	auto wolf_eye_1_tex = jkResourceManager::ImportTexture("./Asset/wolf/textures/Wolf_Eyes_1.jpg");
+	auto wolf_eye_2_tex = jkResourceManager::ImportTexture("./Asset/wolf/textures/Wolf_Eyes_2.jpg");
+
+	model->mMeshes[0]->BindTexture(wolf_body_tex);//belly fur.
+	//m_pBackendRenderer->LoadMesh(model->mMeshes[0]);
+	model->mMeshes[1]->BindTexture(wolf_body_tex);//paw.
+	//m_pBackendRenderer->LoadMesh(model->mMeshes[1]);
+	model->mMeshes[2]->BindTexture(wolf_eye_2_tex);//eye.
+	//m_pBackendRenderer->LoadMesh(model->mMeshes[2]);
+	model->mMeshes[3]->BindTexture(wolf_body_tex);//body.
+	//m_pBackendRenderer->LoadMesh(model->mMeshes[3]);
+	model->mMeshes[4]->BindTexture(wolf_body_tex);//head fur
+	//m_pBackendRenderer->LoadMesh(model->mMeshes[4]);
+
+	for (auto mesh : model->mMeshes)
+	{
+		mesh->RotateWithX(-90.f);
+		m_pBackendRenderer->LoadMesh(mesh);
+	}
+
+	jkModel* nanosuit_model = new jkModel();
+	jkResourceManager::LoadModel("./Asset/nanosuit/nanosuit.obj", nanosuit_model);
+
+	auto arm_tex = jkResourceManager::ImportTexture("./Asset/nanosuit/arm_dif.png");
+	auto body_tex = jkResourceManager::ImportTexture("./Asset/nanosuit/body_dif.png");
+	auto glass_tex = jkResourceManager::ImportTexture("./Asset/nanosuit/glass_dif.png");
+	auto hand_tex = jkResourceManager::ImportTexture("./Asset/nanosuit/hand_dif.png");
+	auto helmet_tex = jkResourceManager::ImportTexture("./Asset/nanosuit/helmet_dif.png");
+	auto leg_tex = jkResourceManager::ImportTexture("./Asset/nanosuit/leg_dif.png");
+
+	nanosuit_model->mMeshes[0]->BindTexture(glass_tex);//glass
+	//m_pBackendRenderer->LoadMesh(nanosuit_model->mMeshes[0]);
+	nanosuit_model->mMeshes[1]->BindTexture(leg_tex);//leg
+	//m_pBackendRenderer->LoadMesh(nanosuit_model->mMeshes[1]);
+	nanosuit_model->mMeshes[2]->BindTexture(hand_tex);//hand
+	//m_pBackendRenderer->LoadMesh(nanosuit_model->mMeshes[2]);
+	nanosuit_model->mMeshes[3]->BindTexture(glass_tex);//belly fur.
+	//m_pBackendRenderer->LoadMesh(nanosuit_model->mMeshes[3]);
+	nanosuit_model->mMeshes[4]->BindTexture(arm_tex);//belly fur.
+	//m_pBackendRenderer->LoadMesh(nanosuit_model->mMeshes[4]);
+	nanosuit_model->mMeshes[5]->BindTexture(helmet_tex);//belly fur.
+	//m_pBackendRenderer->LoadMesh(nanosuit_model->mMeshes[5]);
+	nanosuit_model->mMeshes[6]->BindTexture(body_tex);//belly fur.
+	//m_pBackendRenderer->LoadMesh(nanosuit_model->mMeshes[6]);
+
+	for (auto mesh : nanosuit_model->mMeshes)
+	{
+		mesh->ScaleUpXYZ(0.1f);
+		m_pBackendRenderer->LoadMesh(mesh);
+	}
+
+	//jkModel* amodel = new jkModel();
+	//jkResourceManager::LoadModel("./Asset/wolf/Wolf_UDK_2.fbx", amodel);
 
 }

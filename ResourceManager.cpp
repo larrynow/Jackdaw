@@ -3,23 +3,122 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include"stb_image.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include<fstream>
 #include<sstream>
 
-void jkResourceManager::ImportCubeMap(std::vector<unsigned char*>& faces, ImageFormat& textureFormat,
+std::vector<Texture*> jkResourceManager::mTextures = std::vector<Texture*>();
+
+void jkResourceManager::LoadModel(const std::string& modelFile, jkModel* model)
+{
+	Assimp::Importer import;
+	const aiScene* scene = import.ReadFile(modelFile, 
+		aiProcess_Triangulate | aiProcess_FlipUVs);
+	// Use aiProcess_OptimizeMeshes to splice triangles.
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
+		return;
+	}
+
+	ProcessNode(scene->mRootNode, scene, model);
+}
+
+void jkResourceManager::ProcessNode(aiNode* node, const aiScene* scene, jkModel* model)
+{
+	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		model->mMeshes.push_back(ProcessMesh(mesh, scene, model));
+	}
+
+	for (unsigned int i = 0; i < node->mNumChildren; i++)
+	{
+		ProcessNode(node->mChildren[i], scene, model);
+	}
+}
+
+jkMesh* jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene, const jkModel* model)
+{
+	std::vector<Vertex> vertices;
+	std::vector<UINT> indices;
+	std::vector<Texture> textures;
+
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+	{
+		Vertex vertex;
+		// Positions.
+		vertex.pos.x = mesh->mVertices[i].x;
+		vertex.pos.y = mesh->mVertices[i].y;
+		vertex.pos.z = mesh->mVertices[i].z;
+
+		// Normals.
+		vertex.normal.x = mesh->mNormals[i].x;
+		vertex.normal.y = mesh->mNormals[i].y;
+		vertex.normal.z = mesh->mNormals[i].z;
+
+		// Texture coordinates.
+		if (mesh->mTextureCoords[0])// If have texture coordinate.
+		{
+			// Only use first texture coord.
+			vertex.texcoord.x = mesh->mTextureCoords[0][i].x;
+			vertex.texcoord.y = mesh->mTextureCoords[0][i].y;
+		}// Else texture coord will be (0,0).
+		
+		// Tangent.
+		if (mesh->mTangents)
+		{
+			vertex.tangent.x = mesh->mTangents[i].x;
+			vertex.tangent.y = mesh->mTangents[i].y;
+			vertex.tangent.z = mesh->mTangents[i].z;
+		}
+
+		// Bitangent.
+		if (mesh->mBitangents)
+		{
+			vertex.bitangent.x = mesh->mBitangents[i].x;
+			vertex.bitangent.y = mesh->mBitangents[i].y;
+			vertex.bitangent.z = mesh->mBitangents[i].z;
+		}
+
+		vertices.push_back(vertex);
+	}
+	
+	// Indices.
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+	{
+		aiFace face = mesh->mFaces[i];
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
+			indices.push_back(face.mIndices[j]);
+	}
+		
+	// Only load mesh currently.
+
+	auto ret = new jkMesh(model->mTransform.position);
+	ret->mVertexBuffer = std::move(vertices);
+	ret->mIndexBuffer = std::move(indices);
+
+	return ret;
+}
+
+void jkResourceManager::ImportCubeMap(std::vector<unsigned char*>& faces, ImageFormat& imgFormat,
 	const std::string& cubeMapFolder, const std::string& formatName)
 {
 	std::vector<std::string> faceNames = { "right", "left", "top", "bottom", "front", "back" };
 	for (auto face : faceNames)
 	{
-		faces.push_back(ImportImage(cubeMapFolder+"/"+face+formatName, textureFormat, false));
+		faces.push_back(ImportImage(cubeMapFolder+"/"+face+formatName, imgFormat, false));
 	}
 }
 
-unsigned char* jkResourceManager::ImportImage(const std::string& imageFilePath, ImageFormat& textureFormat, bool flip)
+unsigned char* jkResourceManager::ImportImage(const std::string& imageFilePath, ImageFormat& imgFormat, bool flip)
 {
 	stbi_set_flip_vertically_on_load(flip);
-	return stbi_load(imageFilePath.c_str(), &textureFormat.width, &textureFormat.height, &textureFormat.channels, 0);
+	return stbi_load(imageFilePath.c_str(), &imgFormat.width, &imgFormat.height, &imgFormat.channels, 0);
 }
 
 // For obj loading.
@@ -159,7 +258,7 @@ struct BITMAPINFOHEADER {
 	unsigned long    biClrImportant;
 };
 
-bool jkResourceManager::ImportFile_BMP(const std::string& bmpFilePath, UINT& outWidth, UINT& outHeight, std::vector<COLOR3>& outColorBuffer)
+bool jkResourceManager::ImportFileBMP(const std::string& bmpFilePath, UINT& outWidth, UINT& outHeight, std::vector<COLOR3>& outColorBuffer)
 {
 	BITMAPFILEHEADER fileHeader = { 0 };
 

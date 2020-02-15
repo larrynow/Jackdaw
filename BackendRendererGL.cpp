@@ -34,9 +34,9 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
 	pRenderData->pOriginMesh = mesh;
 
 	// TODO : Depends on mesh type, choose a shader. For one type only ceate shader once.
-	//pRenderData->pShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs");
-	pRenderData->pShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs", 
-		"./Shaders/explode.gs");
+	pRenderData->pShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs");
+	//pRenderData->pShader = new glShader("./Shaders/shader.vs", "./Shaders/shader.fs", 
+	//	"./Shaders/explode.gs");
 
 	glGenVertexArrays(1, &pRenderData->VAO);
 	glGenBuffers(1, &pRenderData->VBO);
@@ -53,7 +53,7 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);//Vertex coords.
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));//Vertex normals.
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));//Vertex color.
 	glEnableVertexAttribArray(1);
 
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));//Vertex normals.
@@ -68,8 +68,8 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
 	unsigned int texID = 0;
 	for (auto tex : mesh->mTextures)
 	{
-		texID = mCreateTexture(tex);// Warning! : TexID is hung.
-		pRenderData->TEXTURES.push_back(texID);
+		texID = mCreateTexture(tex);
+		pRenderData->TexID.push_back(texID);
 	}
 
 	return pRenderData;
@@ -120,7 +120,8 @@ InstanceRenderData* jkBackendRendererGL::mProcessInstanceData(jkMesh* instanceMe
 	glEnableVertexAttribArray(6);
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(VEC4), (void*)(3 * sizeof(VEC4)));
 
-	glVertexAttribDivisor(3, 1);// Update evey data point.
+	// Update model matrix for evey data point.
+	glVertexAttribDivisor(3, 1);
 	glVertexAttribDivisor(4, 1);
 	glVertexAttribDivisor(5, 1);
 	glVertexAttribDivisor(6, 1);
@@ -132,7 +133,7 @@ InstanceRenderData* jkBackendRendererGL::mProcessInstanceData(jkMesh* instanceMe
 	for (auto tex : instanceMesh->mTextures)
 	{
 		texID = mCreateTexture(tex);// Warning! : TexID is hung.
-		pInstanceRenderData->TEXTURES.push_back(texID);
+		pInstanceRenderData->TexID.push_back(texID);
 	}
 
 	return pInstanceRenderData;
@@ -179,6 +180,12 @@ void jkBackendRendererGL::StartRender()
 		}
 	}
 
+	for (auto surrounding : mSurroundingRenderDatas)
+	{
+		GLSurroundingRenderData* p_glSurroundingData = static_cast<GLSurroundingRenderData*>(surrounding);
+		mRenderSurrounding(p_glSurroundingData);
+	}
+
 	if (mSkybox)
 	{
 		RenderSkybox();
@@ -197,10 +204,33 @@ void jkBackendRendererGL::RenderSkybox()
 
 	glBindVertexArray(skybox->VAO);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->TEXTURES.at(0));
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->TexID.at(0));
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 	glDepthFunc(GL_LESS); // set depth function back to default
+}
+
+void jkBackendRendererGL::mRenderSurrounding(GLSurroundingRenderData* surroundingData)
+{
+	mModelMatrix = MAT4();
+
+	//////////////////////////////
+	// Render.
+
+	surroundingData->pShader->use();
+	// Set projection and view by uiniform buffer object.
+	surroundingData->pShader->setMat4("view", RemoveTranslation(mViewMatrix));
+	surroundingData->pShader->setMat4("projection", mProjMatrix);
+
+	glDrawArrays(GL_POINTS, 0, surroundingData->count);
+
+	//int shaderTexID = 0;
+	//unsigned int texID = 0;
+	//Texture* tex;
+
+	//texID = mCreateTexture(tex);// Warning! : TexID is hung.
+	//pGrassData->TEXTURES.push_back(texID);
+	
 }
 
 CubeMapData* jkBackendRendererGL::mProcessCubeMap(std::vector<unsigned char*>& faces, 
@@ -259,12 +289,33 @@ CubeMapData* jkBackendRendererGL::mProcessCubeMap(std::vector<unsigned char*>& f
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-	glCmData->TEXTURES.push_back(textureID);
+	glCmData->TexID.push_back(textureID);
 
 	glCmData->pShader->use();
 	glCmData->pShader->setInt("skybox", 0);
 
 	return glCmData;
+}
+
+SurroundingRenderData* jkBackendRendererGL::mProcessSurroundingData(std::vector<VEC3>& positions)
+{
+	GLSurroundingRenderData* glSRData = new GLSurroundingRenderData();
+
+	glSRData->pShader = new glShader("./Shaders/grass.vs", "./Shaders/grass.fs",
+		"./Shaders/grass.gs");
+	glSRData->count = positions.size();
+	glGenVertexArrays(1, &glSRData->VAO);
+	glGenBuffers(1, &glSRData->VBO);
+
+	glBindVertexArray(glSRData->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, glSRData->VBO);
+	// Pass grass positions.
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(VEC3), &positions[0], GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VEC3), (void*)0);//Vertex coords.
+
+	return glSRData;
 }
 
 UINT jkBackendRendererGL::mCreateTexture(Texture* pTexture)
@@ -303,9 +354,13 @@ void jkBackendRendererGL::mRender(GLRenderData* pData)
 	// Set projection and view by uiniform buffer object.
 	pData->pShader->setMat4("model", mModelMatrix);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, pData->TEXTURES[0]);
-	pData->pShader->setInt("texture1", 0);
+	for (size_t i = 0; i < pData->TexID.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, pData->TexID.at(i));
+		auto tex_name = std::string("texture") + (char)('0'+i);
+		pData->pShader->setInt(tex_name, i);
+	}
 
 	pData->pShader->setFloat("time", pTimer->GetTime());
 
@@ -321,7 +376,7 @@ void jkBackendRendererGL::mRenderInstance(GLInstanceRenderData* instanceData)
 	glBindVertexArray(instanceData->VAO);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, instanceData->TEXTURES[0]);
+	glBindTexture(GL_TEXTURE_2D, instanceData->TexID[0]);
 	instanceData->pShader->setInt("texture_diffuse1", 1);
 	glDrawElementsInstanced(
 		GL_TRIANGLES, instanceData->pOriginMesh->mIndexBuffer.size(), GL_UNSIGNED_INT, 0, instanceData->pModelMatrices.size()

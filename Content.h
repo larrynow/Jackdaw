@@ -1,12 +1,12 @@
 #pragma once
-#ifndef JKCONTENT_H_
-#define JKCONTENT_H_
+#ifndef JKCONTENT
+#define JKCONTENT
 
 #include"Singleton.h"
 #include"Types.h"
 #include"Devices.h"
 #include"InputManager.h"
-#include"Timer.h"
+#include"Clock.h"
 #include"Map.h"
 
 class jkFrontendRenderer;
@@ -60,7 +60,7 @@ public:
 	
 	jkInputManager* m_pInputManager;
 
-	jkTimer* m_pTimer;
+	jkClock* m_pTimer;
 
 	bool mShouldFinish();
 
