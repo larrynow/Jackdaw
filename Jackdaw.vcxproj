@@ -133,69 +133,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Algorithm.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Clock.h" />
-    <ClInclude Include="ClockWin32.h" />
-    <ClInclude Include="FreeCamera.h" />
-    <ClInclude Include="Geometry.h" />
-    <ClInclude Include="GLShader.h" />
-    <ClInclude Include="Actor.h" />
-    <ClInclude Include="BackendRenderer.h" />
-    <ClInclude Include="BackendRendererGL.h" />
-    <ClInclude Include="Character.h" />
-    <ClInclude Include="EntityFactory.h" />
-    <ClInclude Include="Content.h" />
-    <ClInclude Include="Devices.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="FrontendRenderer.h" />
-    <ClInclude Include="FrontendRendererWin32.h" />
-    <ClInclude Include="InputManager.h" />
-    <ClInclude Include="Jackdaw.h" />
-    <ClInclude Include="JobList.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="MapManager.h" />
-    <ClInclude Include="Math.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="RenderTypes.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Setting.h" />
-    <ClInclude Include="Singleton.h" />
-    <ClInclude Include="Terrain.h" />
-    <ClInclude Include="Thread.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="Types.h" />
-    <ClInclude Include="WinInputManager.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="BackendRenderer.cpp" />
-    <ClCompile Include="BackendRendererGL.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Character.cpp" />
-    <ClCompile Include="ClockWin32.cpp" />
-    <ClCompile Include="Content.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="EntityFactory.cpp" />
-    <ClCompile Include="FrontendRenderer.cpp" />
-    <ClCompile Include="FrontendRendererWin32.cpp" />
-    <ClCompile Include="Geometry.cpp" />
-    <ClCompile Include="glad.c" />
-    <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="JobList.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Setting.cpp" />
-    <ClCompile Include="Singleton.cpp" />
-    <ClCompile Include="Terrain.cpp" />
-    <ClCompile Include="Thread.cpp" />
-    <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="WinInputManager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Shaders\explode.gs" />
     <None Include="Shaders\grass.fs" />
     <None Include="Shaders\grass.gs" />
@@ -204,6 +141,69 @@
     <None Include="Shaders\instancing.vs" />
     <None Include="Shaders\shader.fs" />
     <None Include="Shaders\shader.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Actor.cpp" />
+    <ClCompile Include="Source\BackendRenderer.cpp" />
+    <ClCompile Include="Source\BackendRendererGL.cpp" />
+    <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\Character.cpp" />
+    <ClCompile Include="Source\ClockWin32.cpp" />
+    <ClCompile Include="Source\Content.cpp" />
+    <ClCompile Include="Source\Entity.cpp" />
+    <ClCompile Include="Source\EntityFactory.cpp" />
+    <ClCompile Include="Source\FrontendRenderer.cpp" />
+    <ClCompile Include="Source\FrontendRendererWin32.cpp" />
+    <ClCompile Include="Source\Geometry.cpp" />
+    <ClCompile Include="Source\glad.c" />
+    <ClCompile Include="Source\InputManager.cpp" />
+    <ClCompile Include="Source\JobList.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Map.cpp" />
+    <ClCompile Include="Source\Mesh.cpp" />
+    <ClCompile Include="Source\ResourceManager.cpp" />
+    <ClCompile Include="Source\Setting.cpp" />
+    <ClCompile Include="Source\Singleton.cpp" />
+    <ClCompile Include="Source\Terrain.cpp" />
+    <ClCompile Include="Source\Thread.cpp" />
+    <ClCompile Include="Source\Timer.cpp" />
+    <ClCompile Include="Source\WinInputManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Actor.h" />
+    <ClInclude Include="Source\Algorithm.h" />
+    <ClInclude Include="Source\BackendRenderer.h" />
+    <ClInclude Include="Source\BackendRendererGL.h" />
+    <ClInclude Include="Source\Camera.h" />
+    <ClInclude Include="Source\Character.h" />
+    <ClInclude Include="Source\Clock.h" />
+    <ClInclude Include="Source\ClockWin32.h" />
+    <ClInclude Include="Source\Content.h" />
+    <ClInclude Include="Source\Devices.h" />
+    <ClInclude Include="Source\Entity.h" />
+    <ClInclude Include="Source\EntityFactory.h" />
+    <ClInclude Include="Source\FreeCamera.h" />
+    <ClInclude Include="Source\FrontendRenderer.h" />
+    <ClInclude Include="Source\FrontendRendererWin32.h" />
+    <ClInclude Include="Source\Geometry.h" />
+    <ClInclude Include="Source\GLShader.h" />
+    <ClInclude Include="Source\InputManager.h" />
+    <ClInclude Include="Source\Jackdaw.h" />
+    <ClInclude Include="Source\JobList.h" />
+    <ClInclude Include="Source\Map.h" />
+    <ClInclude Include="Source\MapManager.h" />
+    <ClInclude Include="Source\Math.h" />
+    <ClInclude Include="Source\Mesh.h" />
+    <ClInclude Include="Source\Model.h" />
+    <ClInclude Include="Source\RenderTypes.h" />
+    <ClInclude Include="Source\ResourceManager.h" />
+    <ClInclude Include="Source\Setting.h" />
+    <ClInclude Include="Source\Singleton.h" />
+    <ClInclude Include="Source\Terrain.h" />
+    <ClInclude Include="Source\Thread.h" />
+    <ClInclude Include="Source\Timer.h" />
+    <ClInclude Include="Source\Types.h" />
+    <ClInclude Include="Source\WinInputManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
