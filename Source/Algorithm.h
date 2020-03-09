@@ -2,6 +2,7 @@
 #ifndef JKALGORITHM
 #define JKALGORITHM
 #include"Types.h"
+#include<random>
 
 namespace jkAlgorithm
 {
@@ -13,7 +14,7 @@ namespace jkAlgorithm
 		int k;
 		for (int i = 0; i < arr.size(); ++i)
 		{
-			srand((unsigned)time(NULL));
+			//srand((unsigned)time(NULL));
 			k = rand() % (i + 1);
 			res[i] = res[k];
 			res[k] = arr[i];
@@ -24,7 +25,46 @@ namespace jkAlgorithm
 	void RandomSelect(const std::vector<T>& arr, std::vector<T>& res, const int selectNum)
 	{
 		InsideOutShuffle(arr, res);
-		res(res.begin(), res.begin() + select_num);
+		res= std::vector<T>(res.begin(), res.begin() + selectNum);
+	}
+
+	VEC3 RandomSampleFromTriangle(const VEC3& a, const VEC3& b, const VEC3& c)
+	{
+		VEC3 a_b = b - a;
+		VEC3 a_c = c - a;
+		VEC3 b_c = c - b;
+
+		//Create Rectangle.
+		float cos_theta = a_b.DotProduct(a_c) / a_b.Length() / a_c.Length();
+		VEC3 upVector = a_b - cos_theta* a_b.Length()* a_c / a_c.Length();
+		VEC3 rightVector = a_c;
+		float upScale = (float)(rand() % 101) / 100;
+		float rightScale = (float)(rand() % 101) / 100;
+
+		VEC3 a_ = { 0.f, 0.f, 0.f };
+		VEC3 b_ = { cos_theta * a_b.Length()/a_c.Length(), 1.f, 0.f };
+		VEC3 c_ = { 1.f, 0.f, 0.f };
+
+		VEC3 p_ = { rightScale, upScale, 0.f };
+
+		//Judge p out of triangle or not. 
+		//If p and a is on differrent side of b_c. Symmetry it with b_c.
+		bool p_c_one_side = (a_ - p_).CrossProduct(b_ - p_).z * (a_ - c_).CrossProduct(b_ - c_).x > 0.f;
+		bool p_b_one_side = (a_ - p_).CrossProduct(c_ - p_).z * (a_ - b_).CrossProduct(b_ - b_).x > 0.f;
+		bool p_a_one_side = (b_ - p_).CrossProduct(c_ - p_).z * (b_ - a_).CrossProduct(c_ - a_).x > 0.f;
+		if (!p_c_one_side) p_ = (b_ + a_) - p_;
+		else if (!p_b_one_side) p_ = (c_ + a_) - p_;
+		else if (!p_a_one_side) p_ = (b_ + c_) - p_;
+		
+		return a + p_.x * rightVector + p_.y * upVector;
+	}
+
+	inline float GetArea(const VEC3& a, const VEC3& b, const VEC3& c)
+	{
+		VEC3 a_b = b - a;
+		VEC3 a_c = c - a;
+
+		return a_b.CrossProduct(a_c).Length() / 2;
 	}
 }
 

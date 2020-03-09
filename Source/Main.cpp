@@ -24,10 +24,12 @@ int main()
 	//pMap->AddEntity(pEntity);
 
 	auto pFreeCamera = new jkFreeCamera();
+	pFreeCamera->GetCamera()->SetFarPlane(300.f);
 	pMap->AddEntity(pFreeCamera);
 	pMap->ControllCharacter(pFreeCamera);
 
-	content.SelectMap(pMap);
+	//content.SelectMapIndoor(pMap);
+	content.SelectMapWild(pMap);
 
 	content.StartUp();
 

@@ -3,6 +3,7 @@
 #define JKSETTING
 
 #include<string>
+#include<tinyxml2.h>
 #include"EntityFactory.h"
 
 struct SettingItem
@@ -18,7 +19,7 @@ class jkSetting
 
 public:
 
-	inline static void ReadSetting() {}
+	static void ReadLevelSetting(const std::string& setting_file);
 
 	// Use entityFactory create entity.
 

@@ -2,6 +2,7 @@
 #ifndef JACKDAW
 #include"Content.h"
 #include<string>
+#include <assert.h>
 
 ////////////////////////////////////////////
 // Easy coding.

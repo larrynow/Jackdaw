@@ -13,6 +13,10 @@ class jkFrontendRenderer;
 class jkBackendRenderer;
 class jkInputManager;
 class jkResourceManager;
+namespace jkTerrain {
+	class jkTerrainManager;
+}
+//class jkTerrain::jkTerrainTileManager;
 
 /*
 jkContent : a content for engine modules.
@@ -31,7 +35,9 @@ public:
 	inline void SelectFrontendDevice(jkFrontendDevice ftDevice = jkFrontendDevice::WIN_32) { mContentFrontendDevice = ftDevice; };
 	inline void SelectBackendDevice(jkBackendDevice bkDevice = jkBackendDevice::OPENGL) { mContentBackendDevice = bkDevice; };
 
-	void SelectMap(jkMap* map);
+	void SelectMapWild(jkMap* map);
+
+	void SelectMapIndoor(jkMap* map);
 
 	void Init(UINT width, UINT height);
 
@@ -61,6 +67,8 @@ public:
 	jkInputManager* m_pInputManager;
 
 	jkClock* m_pTimer;
+
+	jkTerrain::jkTerrainManager* m_pTerrainTileManager;
 
 	bool mShouldFinish();
 

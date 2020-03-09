@@ -16,11 +16,14 @@
     <Filter Include="Core\GameObject">
       <UniqueIdentifier>{e5321753-40b7-4d0e-867f-125551244aac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lib">
-      <UniqueIdentifier>{76a53cf5-ddd6-40d1-916f-c67af51357bf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Render">
       <UniqueIdentifier>{89d3e6b3-00e8-4393-90ad-1e49bad666e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Lib">
+      <UniqueIdentifier>{76a53cf5-ddd6-40d1-916f-c67af51357bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Component">
+      <UniqueIdentifier>{c301e7e0-e14d-4681-8ea3-59bbd09c050b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -32,72 +35,201 @@
     <None Include="Shaders\grass.vs" />
     <None Include="Shaders\grass.fs" />
     <None Include="Shaders\grass.gs" />
+    <None Include="Shaders\shadowMapping.vs" />
+    <None Include="Shaders\shadowMapping.fs" />
+    <None Include="Shaders\odShadowMapping.vs" />
+    <None Include="Shaders\odShadowMapping.gs" />
+    <None Include="Shaders\odShadowMapping.fs" />
+    <None Include="Shaders\normal.gs" />
+    <None Include="Shaders\normal.fs" />
+    <None Include="Shaders\normal.vs" />
+    <None Include="Shaders\heightMapping.vs" />
+    <None Include="Shaders\heightMapping.fs" />
+    <None Include="Shaders\postRendering.vs" />
+    <None Include="Shaders\postRendering.fs" />
+    <None Include="Shaders\bluring.vs" />
+    <None Include="Shaders\bluring.fs" />
+    <None Include="Shaders\skybox.vs" />
+    <None Include="Shaders\skybox.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BackendRenderer.cpp" />
-    <ClCompile Include="Source\BackendRendererGL.cpp" />
-    <ClCompile Include="Source\Camera.cpp" />
-    <ClCompile Include="Source\Character.cpp" />
-    <ClCompile Include="Source\ClockWin32.cpp" />
-    <ClCompile Include="Source\Content.cpp" />
-    <ClCompile Include="Source\Entity.cpp" />
-    <ClCompile Include="Source\EntityFactory.cpp" />
-    <ClCompile Include="Source\FrontendRenderer.cpp" />
-    <ClCompile Include="Source\FrontendRendererWin32.cpp" />
-    <ClCompile Include="Source\Geometry.cpp" />
-    <ClCompile Include="Source\InputManager.cpp" />
-    <ClCompile Include="Source\JobList.cpp" />
-    <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\Map.cpp" />
-    <ClCompile Include="Source\Mesh.cpp" />
-    <ClCompile Include="Source\ResourceManager.cpp" />
-    <ClCompile Include="Source\Setting.cpp" />
-    <ClCompile Include="Source\Singleton.cpp" />
-    <ClCompile Include="Source\Terrain.cpp" />
-    <ClCompile Include="Source\Thread.cpp" />
-    <ClCompile Include="Source\Timer.cpp" />
-    <ClCompile Include="Source\WinInputManager.cpp" />
-    <ClCompile Include="Source\glad.c" />
     <ClCompile Include="Source\Actor.cpp">
       <Filter>Core\GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="Source\BackendRenderer.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BackendRendererGL.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Character.cpp">
+      <Filter>Core\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Entity.cpp">
+      <Filter>Core\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FrontendRenderer.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FrontendRendererWin32.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WinInputManager.cpp">
+      <Filter>Core\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\JobList.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Thread.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\InputManager.cpp">
+      <Filter>Core\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mesh.cpp">
+      <Filter>Core\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Terrain.cpp">
+      <Filter>Core\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Map.cpp">
+      <Filter>Core\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Geometry.cpp">
+      <Filter>Core\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera.cpp">
+      <Filter>Core\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ClockWin32.cpp">
+      <Filter>Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Content.cpp">
+      <Filter>Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ResourceManager.cpp">
+      <Filter>Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Setting.cpp">
+      <Filter>Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timer.cpp">
+      <Filter>Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EntityFactory.cpp">
+      <Filter>Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Singleton.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Main.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\tinyxml2.cpp" />
+    <ClCompile Include="Source\glad.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Algorithm.h" />
-    <ClInclude Include="Source\BackendRenderer.h" />
-    <ClInclude Include="Source\BackendRendererGL.h" />
-    <ClInclude Include="Source\Camera.h" />
-    <ClInclude Include="Source\Character.h" />
-    <ClInclude Include="Source\Clock.h" />
-    <ClInclude Include="Source\ClockWin32.h" />
-    <ClInclude Include="Source\Content.h" />
-    <ClInclude Include="Source\Devices.h" />
-    <ClInclude Include="Source\Entity.h" />
-    <ClInclude Include="Source\EntityFactory.h" />
-    <ClInclude Include="Source\FreeCamera.h" />
-    <ClInclude Include="Source\FrontendRenderer.h" />
-    <ClInclude Include="Source\FrontendRendererWin32.h" />
-    <ClInclude Include="Source\Geometry.h" />
-    <ClInclude Include="Source\GLShader.h" />
-    <ClInclude Include="Source\InputManager.h" />
-    <ClInclude Include="Source\Jackdaw.h" />
-    <ClInclude Include="Source\JobList.h" />
-    <ClInclude Include="Source\Map.h" />
-    <ClInclude Include="Source\MapManager.h" />
-    <ClInclude Include="Source\Math.h" />
-    <ClInclude Include="Source\Mesh.h" />
-    <ClInclude Include="Source\Model.h" />
-    <ClInclude Include="Source\RenderTypes.h" />
-    <ClInclude Include="Source\ResourceManager.h" />
-    <ClInclude Include="Source\Setting.h" />
-    <ClInclude Include="Source\Singleton.h" />
-    <ClInclude Include="Source\Terrain.h" />
-    <ClInclude Include="Source\Thread.h" />
-    <ClInclude Include="Source\Timer.h" />
-    <ClInclude Include="Source\Types.h" />
-    <ClInclude Include="Source\WinInputManager.h" />
     <ClInclude Include="Source\Actor.h">
       <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Algorithm.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BackendRenderer.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BackendRendererGL.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Character.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FrontendRenderer.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FrontendRendererWin32.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\WinInputManager.h">
+      <Filter>Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Jackdaw.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLShader.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Entity.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\InputManager.h">
+      <Filter>Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\JobList.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Thread.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Types.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Mesh.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Model.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Terrain.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Map.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Devices.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Geometry.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Camera.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Clock.h">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ClockWin32.h">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Content.h">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MapManager.h">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ResourceManager.h">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Setting.h">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Timer.h">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EntityFactory.h">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Singleton.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FreeCamera.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Light.h">
+      <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -51,6 +51,8 @@ public:
 
 	// Function to adjust FOV, change viewMatrix.
 	inline void SetFOV(float _FOV) { mFOV = _FOV; };
+	inline void SetNearPlane(float _NearPlane) { mNearPlane = _NearPlane; }
+	inline void SetFarPlane(float _FarPlane) { mFarPlane = _FarPlane; }
 
 	inline float GetFOV() { return mFOV; };
 	inline float GetNearPlane() { return mNearPlane; };

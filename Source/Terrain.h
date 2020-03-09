@@ -2,6 +2,7 @@
 #ifndef JKTERRAIN
 #define JKTERRAIN
 #include"Types.h"
+#include"Mesh.h"
 
 namespace jkTerrain
 {
@@ -9,14 +10,73 @@ namespace jkTerrain
 	{
 		int blockIdX;
 		int blockIdY;
+		std::vector<UINT> blockLODIndices[5];//5 levels
+		std::vector<Block*> adjacentBlocks;
+		VEC2 XBoundary;
+		VEC2 YBoundary;
+		UINT LOD;
+
+		//Quad-tree.
+		Block* pChildLeftTop;
+		Block* pChildLeftBottom;
+		Block* pChildRightTop;
+		Block* pChildRightBottom;
+
+		std::vector<MAT4> InstanceMatrices;
+		std::vector<VEC3> GrassPositions;
 	};
 	struct Tile
 	{
-		//std::vector<Vertex>* pVertices;
-		jkMesh* pMesh;
-		std::vector<Block>* pBlocks;
+		Tile() { pFullTerrainMesh = new jkMesh(); }
+
+		jkMesh* pFullTerrainMesh;//delete latter.
+		std::vector<Block*> mBlocks;
 		VEC3 center;
-		float scale;
+		VEC2 size;
+		VEC2 xBoundary;
+		VEC2 yBoundary;
+		UINT vertexNumX;
+		UINT vertexNumY;
+	};
+
+	class jkTerrainManager
+	{
+	public:
+
+		jkTerrainManager() { mTile = new Tile(); };
+
+		inline auto GetMesh() { return mTile->pFullTerrainMesh; }
+
+		std::vector<UINT>& GetTerrainData() { return mCurrentIndices; };
+
+		void InitializeBlocks(UINT blockNumX, UINT blockNumY);
+
+		void TileUpdate(const VEC3& viewPos, const MAT4& frustum);
+
+		void CreateTerrain(const std::string& heightMapFile, const VEC3& terrainSize,
+			const VEC3& centerPosition = { 0.f, 0.f, 0.f });
+		
+		void CreateInstances();//Create instances positions in every block(matrice format).
+
+		void CreatePositions();//Create positions to grow plants.
+
+		std::vector<MAT4>& GetInstanceMatrices();//Return current rendering instances.
+
+		std::vector<VEC3>& GetPositions();//Return positions for surrounding rendering.
+		
+	private:
+
+		Tile* mTile;
+		Block* m_pCurrentBlock;
+
+		std::vector<UINT> mCurrentIndices;
+
+		std::vector<Texture*> mTerrainTexs;
+
+		Texture* mTerrainBlendTex;
+
+		void mUpdateBlockLOD();//Update all the blocks LOD;
+
 	};
 
 	// Load terrain height info from a image.
@@ -24,7 +84,7 @@ namespace jkTerrain
 		std::vector<float>& heightInfo, const float& heightScale);
 
 	// Create a tile-terrain from a heightmap image.
-	void CreateTerrain(const std::string& heightMapFile, const VEC3& terrainSize,
+	void LoadTerrain(const std::string& heightMapFile, const VEC3& terrainSize,
 		Tile* terrainTile, const VEC3& centerPosition = { 0.f, 0.f, 0.f });
 
 	// Create grass positions in terrain.

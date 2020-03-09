@@ -4,6 +4,11 @@
 
 #include"Types.h"
 
+class glShader;
+namespace jkTerrain {
+	class jkTerrainManager;
+}
+
 class jkMesh
 {
 	friend class jkFrontendRenderer;
@@ -11,32 +16,86 @@ class jkMesh
 	friend class jkBackendRendererGL;
 	friend class jkResourceManager;
 	friend class jkGeometry;
+	friend class jkTerrain::jkTerrainManager;
 
 public:
 
-	jkMesh() : m_bRenderable(true),
+	jkMesh() : m_bRenderable(true), m_bLighting(true), m_bShinning(false),
 		mPosition(0.f, 0.f, 0.f), 
 		mScaleX(1.f), mScaleY(1.f), mScaleZ(1.f),
-		mRotationPitch(0.f), mRotationYaw(0.f), mRotationRoll(0.f){};
+		mRotationPitch(0.f), mRotationYaw(0.f), mRotationRoll(0.f),
+		m_pShader(nullptr)
+	{};
 	jkMesh(const VEC3& _pos) : jkMesh() { mPosition = _pos; mFunction_UpdateTranslateMatrix(); };
 	jkMesh(const VEC3& _pos, const VEC3& _scales, const VEC3& _rotations, bool _renderable = true) :
-		m_bRenderable(_renderable),
+		m_bRenderable(_renderable), m_bLighting(true), m_bShinning(false),
 		mPosition(_pos), 
 		mScaleX(_scales.x), mScaleY(_scales.y), mScaleZ(_scales.z),
-		mRotationPitch(_rotations.x), mRotationYaw(_rotations.y), mRotationRoll(_rotations.z)
+		mRotationPitch(_rotations.x), mRotationYaw(_rotations.y), mRotationRoll(_rotations.z),
+		m_pShader(nullptr)
 	{
 		mFunction_UpdateTranslateMatrix();
 		mFunction_UpdateScaleMatrix();
 		mFunction_UpdateRotateMatrix();
 	};
 
-	~jkMesh() { for (auto pTex : mTextures) { delete pTex; pTex = nullptr; } }
+	~jkMesh() { }
 
 	inline UINT GetVertexCount() const { 
 		return mVertexBuffer.size(); 
 	};
 
-	inline void BindTexture(Texture* pTexture) { mTextures.push_back(pTexture); };
+	inline void BindTexture(Texture* pTexture) 
+	{ 
+		switch (pTexture->Type)
+		{
+		case TextureType::Diffuse:
+			mMaterial.diffuseMap = pTexture;
+			break;
+		case TextureType::Specular:
+			mMaterial.specularMap = pTexture;
+			break;
+		case TextureType::Normal:
+			mMaterial.normalMap = pTexture;
+			CalcTangentSpace();
+			break;
+		case TextureType::Height:
+			mMaterial.heightMap = pTexture;
+			break;
+		default:
+			mMaterial.diffuseMap = pTexture;
+			break;
+		}
+	};
+
+	inline void BindTextures(const std::vector<Texture*>& textures)
+	{
+		for (auto tex : textures)
+		{
+			BindTexture(tex);
+		}
+	}
+
+	inline void BindMaterial(const Material& material) { mMaterial = material; }
+
+	inline Material GetMaterial() const { return mMaterial; }
+
+	inline void BindShader(glShader* pShader) { m_pShader = pShader; }
+
+	inline void DisableLighting() { m_bLighting = false; }
+	inline void EnableLighting() { m_bLighting = true; }
+
+	inline void EnableBlooming() { m_bShinning = true; }
+	inline void DisableBlooming() { m_bShinning = false; }
+
+	///////////////////////////////////
+	// Generate tangent and bitangent.
+
+	void CalcTangentSpace(bool mirror = false);
+
+	/*
+	* Tranform.
+	*/
 
 	/////////////////////////////////////////////////////////////////////
 	// Move and get position.
@@ -48,19 +107,21 @@ public:
 	// Adjust rotations, renew rotate matrix.
 
 	inline void SetRotation(float _pitch, float _yaw, float _roll) { mRotationPitch = _pitch; mRotationYaw = _yaw; mRotationRoll = _roll; mFunction_UpdateRotateMatrix(); };
-	inline void RotateWithX(float _angle) { mRotationPitch += _angle; mFunction_UpdateRotateMatrix(); };
-	inline void RotateWithY(float _angle) { mRotationYaw += _angle; mFunction_UpdateRotateMatrix(); };
-	inline void RotateWithZ(float _angle) { mRotationRoll += _angle; mFunction_UpdateRotateMatrix(); };
+	inline jkMesh* RotateWithX(float _angle) { mRotationPitch += _angle; mFunction_UpdateRotateMatrix(); return this; };
+	inline jkMesh* RotateWithY(float _angle) { mRotationYaw += _angle; mFunction_UpdateRotateMatrix(); return this; };
+	inline jkMesh* RotateWithZ(float _angle) { mRotationRoll += _angle; mFunction_UpdateRotateMatrix(); return this; };
 
 	////////////////////////////////////////////////////////////////////
 	// Adjust scales, renew scale matrix.
 
 	inline void SetScale(float _sX, float _sY, float _sZ) { mScaleX = _sX; mScaleY = _sY; mScaleZ = _sZ; mFunction_UpdateScaleMatrix(); };
 	inline void SetScale(float _scale) { mScaleX = mScaleY = mScaleZ = _scale; mFunction_UpdateScaleMatrix(); };
-	inline void ScaleUpX(float _value) { mScaleX *= _value; mFunction_UpdateScaleMatrix(); };
-	inline void ScaleUpY(float _value) { mScaleY *= _value; mFunction_UpdateScaleMatrix(); };
-	inline void ScaleUpZ(float _value) { mScaleZ *= _value; mFunction_UpdateScaleMatrix(); };
-	inline void ScaleUpXYZ(float _value) { mScaleX *= _value; mScaleY *= _value; mScaleZ *= _value; mFunction_UpdateScaleMatrix(); };
+	inline jkMesh* ScaleUpX(float _value) { mScaleX *= _value; mFunction_UpdateScaleMatrix(); return this; };
+	inline jkMesh* ScaleUpY(float _value) { mScaleY *= _value; mFunction_UpdateScaleMatrix(); return this; };
+	inline jkMesh* ScaleUpZ(float _value) { mScaleZ *= _value; mFunction_UpdateScaleMatrix(); return this; };
+	inline jkMesh* ScaleUpXYZ(float _value) { mScaleX *= _value; mScaleY *= _value; mScaleZ *= _value; 
+		mFunction_UpdateScaleMatrix(); return this;
+	};
 
 	///////////////////////////////////////////////////////////////////
 	// Use mRotateMatrix, mScaleMatrix, mTranslateMatrix to get mWorldMatrix.
@@ -70,6 +131,9 @@ public:
 private:
 
 	bool m_bRenderable;
+	bool m_bLighting;//Calculate lighting or not.
+	bool m_bShinning;//Calculate bloom for it or not.
+	glShader* m_pShader;
 
 	//////////////////////////////////////////////////////////////////
 	// Mesh transforms.
@@ -98,7 +162,9 @@ private:
 
 	std::vector<Vertex> mVertexBuffer;
 	std::vector<UINT> mIndexBuffer;
-	std::vector<Texture*> mTextures;
+	//std::vector<Texture*> mTextures;
+
+	Material mMaterial;
 };
 
 

@@ -21,6 +21,8 @@ public:
 
 	inline void AddEntity(jkEntity* entity) { mEntities.push_back(entity); };
 
+	inline void AddMesh(jkMesh* mesh) { m_Meshes_temp.push_back(mesh); }
+
 	inline jkCharacter* GetControlledCharacter() { return m_pControlledCharacter; };
 
 private:
@@ -31,6 +33,10 @@ private:
 	jkCharacter* m_pControlledCharacter;
 
 	std::vector<jkEntity*> mEntities;
+
+	std::vector<jkMesh*> m_Meshes_temp;
+
+	std::vector<jkMesh*> m_InstanceMeshes_temp;
 
 	//std::unordered_map<std::string, jkEntity*> mEntityPtrMap;// From an entity name to an entity.
 };

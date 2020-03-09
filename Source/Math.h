@@ -65,7 +65,7 @@ namespace jkMath
 			y = column[1];
 			z = column[2];
 		}
-		VEC3(float _v) : VEC3(_v, _v, _v) {};
+		explicit VEC3(float _v) : VEC3(_v, _v, _v) {};
 		VEC3(const VEC2& _vec2, float _z) : VEC3(_vec2.x, _vec2.y, _z) {};
 
 		float Length() const
@@ -396,6 +396,12 @@ namespace jkMath
 			return retMat;
 		}
 
+		/*MAT4 Inv() const
+		{
+			MAT4 retMat;
+
+		}*/
+
 		union {
 			struct { float _11, _12, _13, _14, _21, _22, _23, _24, _31, _32, _33, _34, _41, _42, _43, _44; };
 			float m[4][4];
@@ -443,6 +449,48 @@ namespace jkMath
 		mat.SetRow(1, { 0, 1.0f / tan(viewRadianY), 0, 0 });
 		mat.SetRow(2, { 0, 0, -1.f * (farPlane + nearPlane) / (farPlane - nearPlane), -2.f * nearPlane * farPlane / (farPlane - nearPlane) });
 		mat.SetRow(3, { 0, 0, -1.f, 0 });
+	}
+
+	inline void MakeLookAtMatrix(MAT4& mat, const VEC3& eye, 
+		const VEC3& lookingDirection, const VEC3& up)
+	{
+		// First a shift matrix.
+		MAT4 shiftMat;
+		shiftMat.SetRow(0, { 1, 0, 0, -eye.x });
+		shiftMat.SetRow(1, { 0, 1, 0, -eye.y });
+		shiftMat.SetRow(2, { 0, 0, 1, -eye.z });
+		shiftMat.SetRow(3, { 0, 0, 0, 1 });
+
+		// Then made a vector space tans matrix.
+		// Camera space in left-hand coordinates.
+		VEC3 frontVector = lookingDirection.Normalize();
+		VEC3 rightVector = frontVector.CrossProduct(up.Normalize());
+		VEC3 upVector = rightVector.CrossProduct(frontVector);
+		MAT4 transMat;
+		transMat.SetRow(0, { rightVector.x, rightVector.y, rightVector.z, 0 });
+		transMat.SetRow(1, { upVector.x, upVector.y, upVector.z, 0 });
+		//transMat.SetRow(1, { 0.f, 1.f, 0.f, 0 });
+		transMat.SetRow(2, { -frontVector.x, -frontVector.y, -frontVector.z, 0 });
+		transMat.SetRow(3, { 0, 0, 0, 1 });
+
+		mat = transMat * shiftMat;
+	}
+
+	inline MAT4 GetLookAtMatrix(const VEC3& eye, const VEC3& lookingDirection,
+		const VEC3& upVector)
+	{
+		MAT4 lookAtMatrix;
+		MakeLookAtMatrix(lookAtMatrix, eye, lookingDirection, upVector);
+
+		return lookAtMatrix;
+	}
+
+	inline void MakeOrthMatrix(MAT4& mat, float left, float right, float bottom, float top, float near, float far)
+	{
+		mat.SetRow(0, { 2 / (right - left), 0, 0, -(left + right) / (right - left) });
+		mat.SetRow(1, { 0, 2 / (top - bottom), 0, (bottom + top) / (bottom - top) });
+		mat.SetRow(2, { 0, 0, -2 / (far - near), (near + far) / (near - far) });
+		mat.SetRow(3, { 0, 0, 0, 1});
 	}
 
 	inline void MakeTranslateMatrix(MAT4& mat, float x, float y, float z)

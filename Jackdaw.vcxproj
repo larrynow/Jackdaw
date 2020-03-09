@@ -87,7 +87,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mt.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -133,14 +133,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="Shaders\bluring.fs" />
+    <None Include="Shaders\bluring.vs" />
     <None Include="Shaders\explode.gs" />
     <None Include="Shaders\grass.fs" />
     <None Include="Shaders\grass.gs" />
     <None Include="Shaders\grass.vs" />
+    <None Include="Shaders\postRendering.fs" />
+    <None Include="Shaders\postRendering.vs" />
+    <None Include="Shaders\heightMapping.fs" />
+    <None Include="Shaders\heightMapping.vs" />
     <None Include="Shaders\instancing.fs" />
     <None Include="Shaders\instancing.vs" />
+    <None Include="Shaders\normal.fs" />
+    <None Include="Shaders\normal.gs" />
+    <None Include="Shaders\normal.vs" />
+    <None Include="Shaders\odShadowMapping.fs" />
+    <None Include="Shaders\odShadowMapping.gs" />
+    <None Include="Shaders\odShadowMapping.vs" />
     <None Include="Shaders\shader.fs" />
     <None Include="Shaders\shader.vs" />
+    <None Include="Shaders\shadowMapping.fs" />
+    <None Include="Shaders\shadowMapping.vs" />
+    <None Include="Shaders\skybox.fs" />
+    <None Include="Shaders\skybox.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Actor.cpp" />
@@ -167,6 +183,7 @@
     <ClCompile Include="Source\Terrain.cpp" />
     <ClCompile Include="Source\Thread.cpp" />
     <ClCompile Include="Source\Timer.cpp" />
+    <ClCompile Include="Source\tinyxml2.cpp" />
     <ClCompile Include="Source\WinInputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -190,12 +207,12 @@
     <ClInclude Include="Source\InputManager.h" />
     <ClInclude Include="Source\Jackdaw.h" />
     <ClInclude Include="Source\JobList.h" />
+    <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\Map.h" />
     <ClInclude Include="Source\MapManager.h" />
     <ClInclude Include="Source\Math.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\Model.h" />
-    <ClInclude Include="Source\RenderTypes.h" />
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\Setting.h" />
     <ClInclude Include="Source\Singleton.h" />

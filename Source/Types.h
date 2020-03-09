@@ -41,11 +41,12 @@ struct RenderData
 	virtual ~RenderData() {}
 
 	jkMesh* pOriginMesh;
+	UINT IndexSize;
 };
 
 struct CubeMapData {};// Empty Render data class.
 
-struct InstanceRenderData {};// Empty Render data class.
+struct InstanceRenderData { UINT instanceNum; };
 
 struct SurroundingRenderData {};
 
@@ -60,19 +61,43 @@ struct ImageFormat
 enum class TextureType
 {
 	Diffuse,
-	Specular
+	Specular,
+	Normal,
+	Height
 };
 
 struct Texture
 {
-	Texture() : TextureFormat(), pImageData(nullptr) {};
+	Texture() : TextureFormat(), Type(TextureType::Diffuse), pImageData(nullptr), isSRGB(true) {};
 
 	~Texture() { delete pImageData; };
 
 	unsigned char* pImageData;
 	ImageFormat TextureFormat;
 	TextureType Type;
+	bool isSRGB;
 };
+
+struct Material
+{
+	Material():diffuseMap(nullptr), specularMap(nullptr), 
+		normalMap(nullptr), heightMap(nullptr), shininess(32){ }
+	Material(Texture* dif, Texture* spec, int shin) :
+		diffuseMap(dif), specularMap(spec), 
+		normalMap(nullptr), heightMap(nullptr), shininess(shin) {}
+	Material(Texture* dif) : Material() {diffuseMap = dif;}
+	Material(int shi) : Material() { shininess = shi; }
+
+	Texture* diffuseMap;
+	Texture* specularMap;
+
+	Texture* normalMap;
+	Texture* heightMap;
+
+	int shininess;// For specular. Bigger for smaller specular boundary.
+};
+
+struct Light;
 
 ////////////////////////////////////////////////
 // Types for entity.

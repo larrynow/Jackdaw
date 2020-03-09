@@ -11,6 +11,7 @@
 #include<sstream>
 
 std::vector<Texture*> jkResourceManager::mTextures = std::vector<Texture*>();
+std::unordered_map<std::string, glShader*> jkResourceManager::mShaderMap = std::unordered_map<std::string, glShader*>();
 
 void jkResourceManager::LoadModel(const std::string& modelFile, jkModel* model)
 {
@@ -234,7 +235,7 @@ bool jkResourceManager::ImportFileOBJ(const std::string& objFilePath, std::vecto
 	return true;
 }
 
-// For bmp.
+// For bmp loading.
 struct BITMAPFILEHEADER
 {
 	unsigned short   bfType;
