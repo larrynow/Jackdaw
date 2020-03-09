@@ -34,6 +34,14 @@ namespace jkAlgorithm
 		VEC3 a_c = c - a;
 		VEC3 b_c = c - b;
 
+		//Make a_c as max length line.
+		if (a_b.Length() > a_c.Length()) {
+			std::swap(a_b, a_c); b_c = -b_c;
+		}
+		if (b_c.Length() > a_c.Length()) { 
+			std::swap(b_c, a_c); a_b = -a_b;
+		}
+
 		//Create Rectangle.
 		float cos_theta = a_b.DotProduct(a_c) / a_b.Length() / a_c.Length();
 		VEC3 upVector = a_b - cos_theta* a_b.Length()* a_c / a_c.Length();
@@ -59,12 +67,47 @@ namespace jkAlgorithm
 		return a + p_.x * rightVector + p_.y * upVector;
 	}
 
+	/*VEC3 RandomSampleFromCircle(const VEC3& o, const VEC3& n, float r)
+	{
+		
+	}*/
+
 	inline float GetArea(const VEC3& a, const VEC3& b, const VEC3& c)
 	{
 		VEC3 a_b = b - a;
 		VEC3 a_c = c - a;
 
 		return a_b.CrossProduct(a_c).Length() / 2;
+	}
+
+	inline bool IfPointInTaiangle_SameArea(const VEC3& a, const VEC3& b, const VEC3& c, const VEC3& p)
+	{
+		VEC3 a_b = b - a;
+		VEC3 a_p = p - a;
+		VEC3 a_c = c - a;
+
+		VEC3 b_c = c - b;
+		VEC3 b_p = p - b;
+		VEC3 b_a = a - b;
+
+		VEC3 c_a = a - c;
+		VEC3 c_p = p - c;
+		VEC3 c_b = b - c;
+
+		if (a_b.CrossProduct(a_p).DotProduct(a_b.CrossProduct(a_c)) < 0)//p and c should in same direction of a_b.
+		{
+			return false;
+		}
+		if (b_c.CrossProduct(b_p).DotProduct(b_c.CrossProduct(b_a)) < 0)
+		{
+			return false;
+		}
+		if (c_a.CrossProduct(c_p).DotProduct(c_a.CrossProduct(c_b)) < 0)
+		{
+			return false;
+		}
+
+		return true;
 	}
 }
 
