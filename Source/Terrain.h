@@ -43,13 +43,17 @@ namespace jkTerrain
 	{
 	public:
 
-		jkTerrainManager() { mTile = new Tile(); };
+		jkTerrainManager() : mTile(nullptr){};
 
 		inline auto GetMesh() { return mTile->pFullTerrainMesh; }
 
 		std::vector<UINT>& GetTerrainData() { return mCurrentIndices; };
 
 		void InitializeBlocks(UINT blockNumX, UINT blockNumY);
+
+		void CreateTile() { mTile = new Tile(); }
+
+		Tile* GetTile() { return mTile; }
 
 		void TileUpdate(const VEC3& viewPos, const MAT4& frustum);
 

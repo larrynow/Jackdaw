@@ -116,39 +116,68 @@ void jkBackendRendererGL::StartUp()
 	glBindFramebuffer(GL_FRAMEBUFFER, mHDRFBO);
 
 	glGenTextures(2, mFloatColorBuffers);//Two float color buffers, one for color, one for high color.
+	
 	for (size_t i = 0; i < 2; i++)
 	{
-		glBindTexture(GL_TEXTURE_2D, mFloatColorBuffers[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F,
-			jkContent::GetInstancePtr()->mWidth, jkContent::GetInstancePtr()->mHeight,
-			0, GL_RGB, GL_FLOAT, NULL);//16 bits float color buffer(default as 8 bits).
+		//Set as multisampled(for anti-aliasing, float 16 bits for HDR.
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE,
+			mFloatColorBuffers[i]);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4,
+			GL_RGB16F, jkContent::GetInstancePtr()->mWidth, jkContent::GetInstancePtr()->mHeight,
+			GL_TRUE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i,
-			GL_TEXTURE_2D, mFloatColorBuffers[i], 0);//Bind color buffer.
+			GL_TEXTURE_2D_MULTISAMPLE, mFloatColorBuffers[i], 0);
 	}
+	/*for (size_t i = 1; i < 2; i++)*/
+	//{
+	//	glBindTexture(GL_TEXTURE_2D, mFloatColorBuffers[1]);
+	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F,
+	//		jkContent::GetInstancePtr()->mWidth, jkContent::GetInstancePtr()->mHeight,
+	//		0, GL_RGB, GL_FLOAT, NULL);//16 bits float color buffer(default as 8 bits).
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	//	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+1,
+	//		GL_TEXTURE_2D, mFloatColorBuffers[1], 0);//Bind color buffer.
+	//}
 	GLenum color_attaches[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, color_attaches);
+	//glReadBuffer(GL_COLOR_ATTACHMENT0);
 
 	UINT rboDepth;//Render buffer(Write-Only, better).
 	glGenRenderbuffers(1, &rboDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8,
 		jkContent::GetInstancePtr()->mWidth, jkContent::GetInstancePtr()->mHeight);
-
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
 		GL_RENDERBUFFER, rboDepth);//BInd render buffer.
+
+	
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+		std::cout << glCheckFramebufferStatus(GL_FRAMEBUFFER) << std::endl;
+		std::cout << GL_FRAMEBUFFER_UNSUPPORTED << std::endl;
+		std::cout << GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT << std::endl;
+
+		
+	}
 
 	////////////////////////////////////////////////////////////
 	// Create auxiliary frame buffers, each with a color buffer.
 
-	glGenFramebuffers(2, mAuxFBOs);
-	glGenTextures(2, mAuxColorBuffers);
+	glGenFramebuffers(3, mAuxFBOs);
+	glGenTextures(3, mAuxColorBuffers);
 
-	for (size_t i = 0; i < 2; i++)
+	for (size_t i = 0; i < 3; i++)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, mAuxFBOs[i]);
 		glBindTexture(GL_TEXTURE_2D, mAuxColorBuffers[i]);
@@ -364,6 +393,13 @@ void jkBackendRendererGL::StartRender()
 
 	glEnable(GL_CULL_FACE);
 
+	glEnable(GL_MULTISAMPLE);//MSAA.
+
+	mUpdateViewPos();
+	//mUpdateLightPos();
+	mUpdateViewMatrix();
+	mUpdateProjMatrix();
+
 	//Shadow mapping.
 
 	if(mDirLight) mGetDepthMap();
@@ -376,10 +412,6 @@ void jkBackendRendererGL::StartRender()
 	glViewport(0, 0, jkContent::GetInstance().mWidth, jkContent::GetInstance().mHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	mUpdateViewPos();
-	//mUpdateLightPos();
-	mUpdateViewMatrix();
-	mUpdateProjMatrix();
 
 	UINT color_buffer = 0;//Color buffer for post rendering.
 
@@ -508,7 +540,15 @@ void jkBackendRendererGL::ChangeSurrounding(std::vector<VEC3>& positions)
 
 void jkBackendRendererGL::mPostRendering(UINT color_buffer)
 {
-	// Render color buffer into Default framebuffer.
+	// Blit multisampled color buffer into normal colorbuffer.
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, mHDRFBO);
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mAuxFBOs[2]);
+	glBlitFramebuffer(0, 0, jkContent::GetInstance().mWidth
+		, jkContent::GetInstance().mHeight, 0, 0, 
+		jkContent::GetInstance().mWidth, jkContent::GetInstance().mHeight, 
+		GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 	mPostRenderingShader->use();
 
@@ -517,7 +557,7 @@ void jkBackendRendererGL::mPostRendering(UINT color_buffer)
 	if (bloom)
 	{
 		// Blur high light color.
-		UINT bloom_blur_cbo = mBlurRendering(mFloatColorBuffers[1]);
+		UINT bloom_blur_cbo = mBlurRendering(mAuxColorBuffers[2]);
 		mPostRenderingShader->use();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, bloom_blur_cbo);
@@ -525,12 +565,20 @@ void jkBackendRendererGL::mPostRendering(UINT color_buffer)
 		mPostRenderingShader->setBool("bloom", true);
 	}
 
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, mHDRFBO);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mAuxFBOs[2]);
+	glBlitFramebuffer(0, 0, jkContent::GetInstance().mWidth
+		, jkContent::GetInstance().mHeight, 0, 0,
+		jkContent::GetInstance().mWidth, jkContent::GetInstance().mHeight,
+		GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, color_buffer);
+	glBindTexture(GL_TEXTURE_2D, mAuxColorBuffers[2]);
 	mPostRenderingShader->setInt("colorBuffer", 1);
 
 	mPostRenderingShader->setBool("hdr", true);
-	mPostRenderingShader->setFloat("exposure", 1.f);//TODO : set exposure.
+	mPostRenderingShader->setFloat("exposure", 2.f);//TODO : set exposure.
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

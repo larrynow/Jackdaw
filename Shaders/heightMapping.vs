@@ -28,6 +28,7 @@ out VS_OUT
 	vec3 Color;
     vec3 Normal;
 	vec4 FragPosLightSpace;//For directional light.
+	vec3 viewPos;
 
 	vec3 TangentLightDir;
 	vec3 TangentLightPos[MAX_LIGHTS];
@@ -45,6 +46,7 @@ void main()
 	vs_out.Normal = aNormal;
 
 	vs_out.FragPosLightSpace = lightSpaceMatrix * model * vec4(aPos, 1.0);
+	vs_out.viewPos = viewPos;
 
 	vec3 T = normalize(mat3(model)*aTangent);
 	vec3 B = normalize(mat3(model)*aBitangent);

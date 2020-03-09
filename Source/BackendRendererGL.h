@@ -85,9 +85,9 @@ private:
 
 	UINT mFloatColorBuffers[2];//Float color buffer texs belongs to HDR FBO.
 
-	UINT mAuxFBOs[2];//Auxiliary FBOs.
+	UINT mAuxFBOs[3];//Auxiliary FBOs.
 
-	UINT mAuxColorBuffers[2];//Auxiliary color buffers.
+	UINT mAuxColorBuffers[3];//Auxiliary color buffers.
 
 	UINT mShadowFBO;//A frame buffer contains a depth texture for shadow.
 

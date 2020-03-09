@@ -28,8 +28,8 @@ int main()
 	pMap->AddEntity(pFreeCamera);
 	pMap->ControllCharacter(pFreeCamera);
 
-	//content.SelectMapIndoor(pMap);
-	content.SelectMapWild(pMap);
+	content.SelectMapIndoor(pMap);
+	//content.SelectMapWild(pMap);
 
 	content.StartUp();
 

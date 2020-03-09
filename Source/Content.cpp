@@ -117,16 +117,19 @@ void jkContent::StartUp()
 		/////////////////////////////////
 		// Terrain update.
 
-		m_pTerrainTileManager->TileUpdate(m_pControlledCharacter->GetCamera()->GetPos(), MAT4());
+		if (m_pTerrainTileManager->GetTile())
+		{
+			m_pTerrainTileManager->TileUpdate(m_pControlledCharacter->GetCamera()->GetPos(), MAT4());
 
-		m_pBackendRenderer->ChangeDataIndices(m_pTerrainTileManager->GetMesh(), 
-			m_pTerrainTileManager->GetTerrainData());
+			m_pBackendRenderer->ChangeDataIndices(m_pTerrainTileManager->GetMesh(),
+				m_pTerrainTileManager->GetTerrainData());
 
-		// Get instance matrices by Terrain update.
-		m_pBackendRenderer->ChangeInstances(m_pCurrentMap->m_InstanceMeshes_temp[0],
-			m_pTerrainTileManager->GetInstanceMatrices());
+			// Get instance matrices by Terrain update.
+			m_pBackendRenderer->ChangeInstances(m_pCurrentMap->m_InstanceMeshes_temp[0],
+				m_pTerrainTileManager->GetInstanceMatrices());
 
-		m_pBackendRenderer->ChangeSurrounding(m_pTerrainTileManager->GetPositions());
+			m_pBackendRenderer->ChangeSurrounding(m_pTerrainTileManager->GetPositions());
+		}
 
 		////////////////////////////////
 		// Rendering.
@@ -228,6 +231,7 @@ void jkContent::SelectMapWild(jkMap* map)
 	//////////////////////////////////////////////////////
 	// Terrain.
 
+	m_pTerrainTileManager->CreateTile();
 	m_pTerrainTileManager->CreateTerrain("./Asset/height_map.png", { 1024, 30, 1024 });
 
 	auto grd_tex = jkResourceManager::ImportTexture("./Asset/rock_mossy_albedo.png");
@@ -416,7 +420,7 @@ void jkContent::SelectMapIndoor(jkMap* map)
 
 	//Wall mesh.
 	jkMesh* wall_mesh_front = new jkMesh({ 0.f, 40.f, -20.f });
-	wall_mesh_front->RotateWithX(90.f);
+	wall_mesh_front->RotateWithX(90.f)->RotateWithZ(90.f);
 	jkGeometry::MakePlaneMesh(wall_mesh_front, 80.f, 80.f, 100, 100, 0.1f);
 	jkMesh* wall_mesh_left = new jkMesh({ -40.f, 40.f, 0.f });
 	wall_mesh_left->RotateWithX(90.f)->RotateWithY(90.f);
@@ -454,13 +458,13 @@ void jkContent::SelectMapIndoor(jkMap* map)
 	jkMesh* ground_mesh = new jkMesh({ 0.f, 0.f, 0.f });
 	jkGeometry::MakePlaneMesh(ground_mesh, 80.f, 80.f, 100, 100, 1.f);
 	//auto grd_tex = jkResourceManager::ImportTexture("./Asset/cobblestone_albedo.png");
-	auto grd_tex = jkResourceManager::ImportTexture("./Asset/rock_mossy_albedo.png");
+	auto grd_tex = jkResourceManager::ImportTexture("./Asset/concrete_albedo.png");
 	ground_mesh->BindTexture(grd_tex);
 
-	auto grd_normal_tex = jkResourceManager::ImportTexture("./Asset/rock_mossy_normal.png", TextureType::Normal);
+	auto grd_normal_tex = jkResourceManager::ImportTexture("./Asset/concrete_normal.png", TextureType::Normal);
 	ground_mesh->BindTexture(grd_normal_tex);
 
-	auto grd_height_tex = jkResourceManager::ImportTexture("./Asset/rock_mossy_height.png", TextureType::Height);
+	auto grd_height_tex = jkResourceManager::ImportTexture("./Asset/concrete_height.png", TextureType::Height);
 	ground_mesh->BindTexture(grd_height_tex);
 
 	ground_mesh->BindShader(shader);
@@ -470,7 +474,7 @@ void jkContent::SelectMapIndoor(jkMap* map)
 	//m_pCurrentMap->AddMesh(ground_mesh);
 
 	// A test cube mesh.
-	auto cb_mesh = new jkMesh(VEC3(0.f, 0.5f, 0.f));
+	auto cb_mesh = new jkMesh(VEC3(0.f, 0.5f, -17.f));
 	//cb_mesh->RotateWithY(60.f);
 	//cb_mesh->RotateWithZ(45.f);
 	jkGeometry::MakeCubeMesh(cb_mesh, 1.f);
@@ -480,14 +484,14 @@ void jkContent::SelectMapIndoor(jkMap* map)
 	cb_mesh->CalcTangentSpace();
 	cb_mesh->BindShader(shader);
 	//m_pCurrentMap->AddMesh(cb_mesh);
-	//m_pBackendRenderer->LoadMesh(cb_mesh);
+	m_pBackendRenderer->LoadMesh(cb_mesh);
 
 	/*auto cb_mesh_2 = new jkMesh(*cb_mesh);
 	cb_mesh_2->MoveTo({-2.f, 0.5f, 0.f});
 	cb_mesh_2->CalcTangentSpace();
 	m_pBackendRenderer->LoadMesh(cb_mesh_2);*/
 
-	jkModel* nanosuit_model = new jkModel(VEC3(0.f, 0.f, -2.f));
+	jkModel* nanosuit_model = new jkModel(VEC3(-3.f, 0.f, -18.f));
 	jkResourceManager::LoadModel("./Asset/nanosuit/nanosuit.obj", nanosuit_model);
 
 	auto arm_tex = jkResourceManager::ImportTexture("./Asset/nanosuit/arm_dif.png");
@@ -545,9 +549,11 @@ void jkContent::SelectMapIndoor(jkMap* map)
 		map->AddMesh(mesh);
 
 	}
-	jkMesh* sphereMesh = new jkMesh({0.f, 1.f, 0.f});
+	jkMesh* sphereMesh = new jkMesh({-2.f, 2.f, -18.f});
 	sphereMesh->DisableLighting();
-	jkGeometry::MakeSphereMesh(sphereMesh, {5.f, 5.f, 5.f});
+	sphereMesh->EnableBlooming();
+	jkGeometry::MakeSphereMesh(sphereMesh, {10.f, 10.f, 10.f});
+	sphereMesh->ScaleUpXYZ(0.2);
 	sphereMesh->BindTexture(grd_tex);
 	sphereMesh->BindShader(shader);
 
@@ -555,7 +561,7 @@ void jkContent::SelectMapIndoor(jkMap* map)
 
 	//m_pBackendRenderer->SetUpLight(new DirectionLight({ -20.f, -20.f, 0.f }));
 
-	m_pBackendRenderer->SetUpLight(new PointLight(VEC3(0.15f), VEC3(1.8f), VEC3(5.0f), VEC3( 0.f, 1.f, 0.f ), 1.f, 0.35f, 0.44f));
+	m_pBackendRenderer->SetUpLight(new PointLight(VEC3(0.15f), VEC3(1.8f), VEC3(5.0f), VEC3( -2.f, 2.f, -18.f ), 1.f, 0.35f, 0.44f));
 
 	//m_pBackendRenderer->SetUpLight(new PointLight({ 0.f, 4.f, -8.f }));
 

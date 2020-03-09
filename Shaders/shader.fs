@@ -89,7 +89,6 @@ void main(){
         norm = normalize(TBN*tanNorm);
     else
         norm = normalize(Normal);
-        norm = normalize(Normal);
     
     vec3 viewDir = normalize(viewPos-FragPos);
 	
