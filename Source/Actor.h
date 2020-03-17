@@ -23,15 +23,21 @@ public:
 	virtual void AddMovement(const VEC3& direction, float movement);
 	
 	virtual void Move(const VEC3& direction, float speed);
-	inline void MoveForward() { Move(m_pCamera->GetFront(), mMoveSpeed); };
-	inline virtual void MoveBack() { Move(-m_pCamera->GetFront(), mMoveSpeed); };
-	inline virtual void MoveLeft() { Move(-m_pCamera->GetRight(), mMoveSpeed); };
-	inline virtual void MoveRight() { Move(m_pCamera->GetRight(), mMoveSpeed); };
-	inline virtual void MoveUp() { Move(m_pCamera->GetUp(), mMoveSpeed); };
-	inline virtual void MoveDown() { Move(-m_pCamera->GetUp(), mMoveSpeed); };
+	inline virtual void MoveForward(float scaling) { Move(m_pCamera->GetFront(), scaling*mMoveSpeed); };
+	inline virtual void MoveBack(float scaling) { Move(-m_pCamera->GetFront(), scaling*mMoveSpeed); };
+	inline virtual void MoveLeft(float scaling) { Move(-m_pCamera->GetRight(), scaling*mMoveSpeed); };
+	inline virtual void MoveRight(float scaling) { Move(m_pCamera->GetRight(), scaling*mMoveSpeed); };
+	inline virtual void MoveUp(float scaling) { Move(m_pCamera->GetUp(), scaling*mMoveSpeed); };
+	inline virtual void MoveDown(float scaling) { Move(-m_pCamera->GetUp(), scaling*mMoveSpeed); };
+
+	virtual void RotatePitch(float value); 
+	virtual void RotateYaw(float value); 
+	virtual void RotateRoll(float value); 
 
 	inline jkCamera* GetCamera() { return m_pCamera; };
 	inline void MakeViewMatrix(MAT4& mat) { m_pCamera->MakeViewMatrix(mat); };
+
+	inline virtual void ZoomUp(float value) { m_pCamera->SetFOV(Clamp(m_pCamera->GetFOV()*value, 30.f, 90.f)); }
 
 private:
 
@@ -41,6 +47,8 @@ private:
 	//VEC3 mPosition;
 
 	float mMoveSpeed;
+
+	float mRotateSpeed;
 
 	/////////////////////////////////////
 	// Actor components.

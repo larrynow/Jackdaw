@@ -7,6 +7,13 @@
 
 using namespace jkMath;
 
+template<typename T>
+struct Rect
+{
+	T Width;
+	T Height;
+};
+
 //////////////////////////////////////////
 // Types for rendering.
 

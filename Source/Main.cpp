@@ -15,6 +15,14 @@ int main()
 	content.RegisterInput(jkInput::KEY_SPACE, "up");
 	content.RegisterInput(jkInput::KEY_CTRL, "down");
 
+	content.RegisterInput(jkInput::MOUSE_LEFT, "attack");
+	content.RegisterInput(jkInput::MOUSE_RIGHT, "defend");
+	content.RegisterInput(jkInput::MOUSE_WHEEL, "zoom");
+	content.RegisterInput(jkInput::MOUSE_X, "turn");
+	content.RegisterInput(jkInput::MOUSE_Y, "lookup");
+
+	content.SetMouseSensi(0.4f);
+
 	//content.
 
 	auto pMap = new jkMap();

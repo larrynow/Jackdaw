@@ -43,8 +43,9 @@ void jkCamera::mFunction_MakeDirections()
 {
 	// From rotations to directions.
 	mCameraFront = VEC3(cos(GetRadian(pitch)) * cos(GetRadian(yaw)), sin(GetRadian(pitch)), cos(GetRadian(pitch)) * sin(GetRadian(yaw))).Normalize();
+	//mCameraFront = VEC3(sin(GetRadian(yaw)), sin(GetRadian(pitch)), cos(GetRadian(yaw))).Normalize();
 	mCameraRight = mCameraFront.CrossProduct({ 0.f, 1.0f, 0.f }).Normalize();
-	mCameraUp = mCameraFront.CrossProduct(mCameraRight).Normalize();
+	mCameraUp = mCameraRight.CrossProduct(mCameraFront).Normalize();
 
 }
 

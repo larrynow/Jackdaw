@@ -23,7 +23,7 @@ void jkBackendRendererGL::StartUp()
 {
 	/////////////////////////////////
 	// Uniform buffer obejects.
-
+	
 	// Initialize matrices ubo.
 	glGenBuffers(1, &mMatrixUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, mMatrixUBO);

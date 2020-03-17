@@ -22,6 +22,39 @@ LRESULT jkFrontendRendererWin32::mEventsHandler(HWND hWnd, UINT msg,
 	case WM_KEYUP:
 		jkInputManager::KeyStatus[wParam & 511] = 0;
 		break;
+	case WM_MOUSEMOVE:
+	{
+		jkInputManager::MouseMove = true;
+		//jkInputManager::LastMousePosX = jkInputManager::MousePosX;
+		//jkInputManager::LastMousePosY = jkInputManager::MousePosY;
+		jkInputManager::MousePosX = LOWORD(lParam);
+		jkInputManager::MousePosY = HIWORD(lParam);
+		break;
+	}
+	case WM_LBUTTONDOWN:
+	{
+		jkInputManager::MouseLeftButton = 1;
+		break;
+	}
+	case WM_RBUTTONDOWN:
+	{
+		jkInputManager::MouseRightButton = 1;
+		break;
+	}
+	case WM_LBUTTONUP:
+	{
+		jkInputManager::MouseLeftButton = 0;
+		break;
+	}
+	case WM_RBUTTONUP:
+	{
+		jkInputManager::MouseRightButton = 0;
+		break;
+	}
+	case WM_MOUSEWHEEL:
+	{
+		jkInputManager::MouseWheel = HIWORD(wParam);
+	}
 	default: 
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
@@ -93,6 +126,17 @@ void jkFrontendRendererWin32::Display()
 	auto hdc = GetDC(m_hWindowHandle);
 	SwapBuffers(hdc);
 	ReleaseDC(m_hWindowHandle, hdc);
+}
+
+Rect<UINT> jkFrontendRendererWin32::GetScreenPosition(Rect<UINT> window_pos)
+{
+	POINT window_point;
+	window_point.x = window_pos.Width;
+	window_point.y = window_pos.Height;
+
+	ClientToScreen(m_hWindowHandle, &window_point);
+
+	return { (UINT)window_point.x, (UINT)window_point.y };
 }
 
 bool jkFrontendRendererWin32::mCreateGLContext(HWND hWnd)

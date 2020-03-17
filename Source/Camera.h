@@ -7,8 +7,8 @@
 class jkCamera
 {
 public:
-	jkCamera() : mCameraPos(0.f, 0.f, 10.f), pitch(0.f), yaw(90.f), roll(0.f), bIsPitchRestricted(true),
-		mCameraFront(0.f, 0.f, -1.0f), mCameraRight(1.f, 0.f, 0.f), mCameraUp(0.f, 1.f, 0.f),
+	jkCamera() : mCameraPos(0.f, 0.f, 10.f), pitch(0.f), yaw(0.f), roll(0.f), bIsPitchRestricted(true),
+		mCameraFront(0.f, 0.f, 1.0f), mCameraRight(-1.f, 0.f, 0.f), mCameraUp(0.f, 1.f, 0.f),
 		mFOV(45.f), mNearPlane(0.1f), mFarPlane(100.f) {};
 	jkCamera(const VEC3& _pos) : jkCamera() { mCameraPos = _pos; };// Use default directions.
 	jkCamera(const VEC3& _pos, const VEC3& _rotations, const float _FOV, const float _nearPlane, const float _farPlane) :
@@ -29,6 +29,7 @@ public:
 
 	/////////////////////////////////////////////////////////////////
 	// Functions to change rotations, also need to renew directions.
+	// Input angle value.
 
 	inline void SetPitch(float _pitch) { pitch = _pitch; mFunction_MakeDirections(); };
 	inline void SetYaw(float _yaw) { yaw = _yaw; mFunction_MakeDirections(); };
@@ -36,8 +37,10 @@ public:
 	inline void SetRotations(float _pitch, float _yaw, float _roll) { pitch = _pitch; yaw = _yaw; roll = _roll; mFunction_MakeDirections(); };
 
 	inline void RotatePitch(float _add_value) { SetPitch(mFunction_ClipPitch(pitch + _add_value)); };// Need clamp in someway.
-	inline void RotateYaw(float _add_value) { SetYaw(mFunction_ClipRotation(pitch + _add_value)); };
-	inline void RotateRoll(float _add_value) { SetRoll(mFunction_ClipRotation(pitch + _add_value)); };
+	inline void RotateYaw(float _add_value) { 
+		SetYaw(mFunction_ClipRotation(yaw + _add_value)); 
+	};
+	inline void RotateRoll(float _add_value) { SetRoll(mFunction_ClipRotation(roll + _add_value)); };
 
 	////////////////////////////////////////////////////////////////
 	// Get camera direction vectors.
@@ -49,7 +52,7 @@ public:
 	// New looking point, change cameraFront, Rotations and Directions.
 	void LookAt(const VEC3& lookAtPoint);
 
-	// Function to adjust FOV, change viewMatrix.
+	// Function to adjust FOV, change projMatrix.
 	inline void SetFOV(float _FOV) { mFOV = _FOV; };
 	inline void SetNearPlane(float _NearPlane) { mNearPlane = _NearPlane; }
 	inline void SetFarPlane(float _FarPlane) { mFarPlane = _FarPlane; }

@@ -3,6 +3,7 @@
 #define JKALGORITHM
 #include"Types.h"
 #include<random>
+#include<queue>
 
 namespace jkAlgorithm
 {
@@ -108,6 +109,23 @@ namespace jkAlgorithm
 		}
 
 		return true;
+	}
+
+	template<typename T>
+	inline void TopK(std::vector<T>& inputs, int K, std::vector<T>& outputs)
+	{
+		if (K == 0)return;
+		outputs = std::vector<T>(inputs.begin(), inputs.begin() + K);
+		std::make_heap(outputs.begin(), outputs.end(), std::greater<T>());//Smallest on first.
+
+		for (size_t i = K; i < inputs.size(); i++)
+		{
+			if (inputs.at(i) > outputs.at(0))
+			{
+				outputs[0] = inputs.at(i);
+				std::make_heap(outputs.begin(), outputs.end(), std::greater<T>());
+			}
+		}
 	}
 }
 

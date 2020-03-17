@@ -22,6 +22,7 @@ public:
 
 	virtual void Display() = 0;
 
+	virtual Rect<UINT> GetScreenPosition(Rect<UINT> window_pos) = 0;
 
 	void PushToBackend(class BackendRenderer*);
 

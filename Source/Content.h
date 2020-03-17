@@ -47,6 +47,8 @@ public:
 
 	inline void RegisterInput(jkInput input, std::string input_name) { m_pInputManager->RegisterInput(input, input_name); };
 
+	inline void SetMouseSensi(float value) { m_pInputManager->SetMouseSensitivity(value); }
+
 	void ChangeView();
 
 //private:
@@ -77,8 +79,13 @@ public:
 	/////////////////////////////////////
 	// Properties.
 
-	UINT mWidth;
-	UINT mHeight;
+	union{
+		Rect<UINT> mWindowSize;
+		struct {
+			UINT mWidth;
+			UINT mHeight;
+		};
+	};
 
 	const float mFixedUpdateTime = 0.02f;
 	float mSimulatedTime;

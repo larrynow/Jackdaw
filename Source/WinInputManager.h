@@ -13,6 +13,13 @@ public:
 
 	void Listen(void) override;
 
+	virtual void ResetMouseInput() override;
+
+	inline virtual void SetMousePos(Rect<UINT> pos) override
+	{
+		SetCursorPos(pos.Width, pos.Height);
+	}
+
 	int MapKey(jkInput input) override;
 
 };

@@ -104,12 +104,12 @@ public:
 	inline VEC3 GetPosition() const { return mPosition; };
 
 	/////////////////////////////////////////////////////////////////////
-	// Adjust rotations, renew rotate matrix.
+	// Adjust rotations(loacl space), renew rotate matrix.
 
 	inline void SetRotation(float _pitch, float _yaw, float _roll) { mRotationPitch = _pitch; mRotationYaw = _yaw; mRotationRoll = _roll; mFunction_UpdateRotateMatrix(); };
-	inline jkMesh* RotateWithX(float _angle) { mRotationPitch += _angle; mFunction_UpdateRotateMatrix(); return this; };
-	inline jkMesh* RotateWithY(float _angle) { mRotationYaw += _angle; mFunction_UpdateRotateMatrix(); return this; };
-	inline jkMesh* RotateWithZ(float _angle) { mRotationRoll += _angle; mFunction_UpdateRotateMatrix(); return this; };
+	inline jkMesh* RotatePitch(float _angle) { mRotationPitch += _angle; mFunction_UpdateRotateMatrix(); return this; };
+	inline jkMesh* RotateYaw(float _angle) { mRotationYaw += _angle; mFunction_UpdateRotateMatrix(); return this; };
+	inline jkMesh* RotateRoll(float _angle) { mRotationRoll += _angle; mFunction_UpdateRotateMatrix(); return this; };
 
 	////////////////////////////////////////////////////////////////////
 	// Adjust scales, renew scale matrix.

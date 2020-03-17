@@ -15,7 +15,7 @@ class jkCharacter : public jkActor
 public:
 
 	jkCharacter() : jkActor() {}
-	inline void BindInput(std::string input_name, std::function<void()> operation)
+	inline void BindInput(std::string input_name, std::function<void(float)> operation)
 	{
 		input_op_map.insert(std::make_pair(input_name, operation));
 	};
@@ -24,7 +24,7 @@ public:
 
 private:
 
-	std::unordered_map<std::string, std::function<void()>> input_op_map;
+	std::unordered_map<std::string, std::function<void(float)>> input_op_map;
 	// From a player input to a operation.
 
 };

@@ -166,6 +166,7 @@ namespace jkMath
 
 		union {
 			struct { float x, y, z; };
+			struct { float r, g, b; };
 			float m[3];
 		};
 	};
@@ -255,6 +256,7 @@ namespace jkMath
 
 		union {
 			struct{ float x, y, z, w; };
+			struct{ float r, g, b, a; };
 			float m[4];
 		};
 

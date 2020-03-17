@@ -17,6 +17,8 @@ public:
 
 	void Display() override;
 
+	Rect<UINT> GetScreenPosition(Rect<UINT> window_pos) override;
+
 private:
 
 	///////////////////////////////////////////

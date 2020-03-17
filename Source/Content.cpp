@@ -76,7 +76,7 @@ void jkContent::StartUp()
 	while (!mShouldFinish())
 	{
 		m_pTimer->Tick();
-		PRINT(m_pTimer->GetFPS());
+		//PRINT(m_pTimer->GetFPS());
 		/*::SetConsoleTitleA(fpsStr.c_str());
 		renderer->Clear();*/
 		m_pBackendRenderer->Clear();
@@ -89,20 +89,24 @@ void jkContent::StartUp()
 			auto input_id = m_pInputManager->MapKey(input);// Note only key.
 			auto input_name = (*it).second;
 
-			if (input_id != -1 && *(m_pInputManager->KeyStatus + input_id) == 1)
+			//if (input_id != -1 && *(m_pInputManager->KeyStatus + input_id) == 1)
+			if (m_pInputManager->CheckInput(input))
 			{
+				//TODO:check global inputs.
 				if (m_pControlledCharacter->input_op_map.count(input_name))
 				{
 					if (m_pControlledCharacter)// Check if character is still exist in content.
 					{
 						auto op = m_pControlledCharacter->input_op_map.at(input_name);
-						op();
+						op(m_pInputManager->GetInputValue(input));
 						//PRINT(input);
 					}
 				}
 				
 			}
 		}
+		
+		m_pInputManager->ResetMouseInput();
 
 		////////////////////////////////
 		// Fixed update.
@@ -311,7 +315,7 @@ void jkContent::SelectMapWild(jkMap* map)
 	}*/
 	tree_model->mMeshes.at(0)->BindTexture(tree_tex);
 	tree_model->mMeshes.at(0)->BindShader(shader);
-	tree_model->mMeshes.at(0)->RotateWithX(-90.f);
+	tree_model->mMeshes.at(0)->RotatePitch(-90.f);
 	m_pBackendRenderer->LoadMesh(tree_model->mMeshes.at(0));
 
 	jkModel* model = new jkModel({0.f, 0.f, 0.f});
@@ -338,7 +342,7 @@ void jkContent::SelectMapWild(jkMap* map)
 	for (auto mesh : model->mMeshes)
 	{
 		if (!mesh)continue;
-		mesh->RotateWithX(-90.f);
+		mesh->RotatePitch(-90.f);
 		mesh->BindShader(shader);
 		//m_pBackendRenderer->LoadMesh(mesh);
 	}
@@ -420,16 +424,16 @@ void jkContent::SelectMapIndoor(jkMap* map)
 
 	//Wall mesh.
 	jkMesh* wall_mesh_front = new jkMesh({ 0.f, 40.f, -20.f });
-	wall_mesh_front->RotateWithX(90.f)->RotateWithZ(90.f);
+	wall_mesh_front->RotatePitch(90.f)->RotateRoll(90.f);
 	jkGeometry::MakePlaneMesh(wall_mesh_front, 80.f, 80.f, 100, 100, 0.1f);
 	jkMesh* wall_mesh_left = new jkMesh({ -40.f, 40.f, 0.f });
-	wall_mesh_left->RotateWithX(90.f)->RotateWithY(90.f);
+	wall_mesh_left->RotatePitch(90.f)->RotateYaw(90.f);
 	jkGeometry::MakePlaneMesh(wall_mesh_left, 40.f, 80.f, 100, 100, 0.1f);
 	jkMesh* wall_mesh_right = new jkMesh({ 40.f, 40.f, 0.f });
-	wall_mesh_right->RotateWithX(90.f)->RotateWithY(-90.f);
+	wall_mesh_right->RotatePitch(90.f)->RotateYaw(-90.f);
 	jkGeometry::MakePlaneMesh(wall_mesh_right, 40.f, 80.f, 100, 100, 0.1f);
 	jkMesh* wall_mesh_back = new jkMesh({ 0.f, 40.f, 20.f });
-	wall_mesh_back->RotateWithX(90.f)->RotateWithY(180.f);
+	wall_mesh_back->RotatePitch(90.f)->RotateYaw(180.f);
 	jkGeometry::MakePlaneMesh(wall_mesh_back, 80.f, 80.f, 100, 100, 0.1f);
 
 	auto wall_tex = jkResourceManager::ImportTexture(
@@ -542,7 +546,7 @@ void jkContent::SelectMapIndoor(jkMap* map)
 		auto mesh = nanosuit_model->mMeshes[i];
 		mesh->BindShader(shader);
 		mesh->ScaleUpXYZ(0.1f);
-		mesh->RotateWithY(45.f);
+		mesh->RotateYaw(45.f);
 		mesh->CalcTangentSpace(true);
 		
 		m_pBackendRenderer->LoadMesh(mesh);
@@ -553,7 +557,7 @@ void jkContent::SelectMapIndoor(jkMap* map)
 	sphereMesh->DisableLighting();
 	sphereMesh->EnableBlooming();
 	jkGeometry::MakeSphereMesh(sphereMesh, {10.f, 10.f, 10.f});
-	sphereMesh->ScaleUpXYZ(0.2);
+	sphereMesh->ScaleUpXYZ(0.2f);
 	sphereMesh->BindTexture(grd_tex);
 	sphereMesh->BindShader(shader);
 

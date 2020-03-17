@@ -1,4 +1,6 @@
 #include "WinInputManager.h"
+#include "Content.h"
+#include "FrontendRenderer.h"
 
 void jkWinInputManager::Listen(void)
 {
@@ -9,6 +11,19 @@ void jkWinInputManager::Listen(void)
 		if (!GetMessage(&msg, NULL, 0, 0)) break;
 		DispatchMessage(&msg);
 	}
+}
+
+void jkWinInputManager::ResetMouseInput()
+{
+	//Reset mouse to Center of window.
+	MouseMove = false;
+	auto pos = jkContent::GetInstance().m_pFrontendRenderer->GetScreenPosition(
+		{ jkContent::GetInstance().mWidth / 2, jkContent::GetInstance().mHeight / 2 });
+	
+	SetCursorPos(pos.Width, pos.Height);
+	//Rest Last mouse to center for calculating x, y values.
+	LastMousePosX = jkContent::GetInstance().mWidth / 2;
+	LastMousePosY = jkContent::GetInstance().mHeight / 2;
 }
 
 // Windows inputMap, from VK to BFInput.
