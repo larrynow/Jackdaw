@@ -141,6 +141,7 @@ void jkContent::StartUp()
 		// Update renderer matrices.
 		mPrepareBackendRenderer();
 		m_pBackendRenderer->StartRender();
+		//m_pBackendRenderer->StartDeferredShading();
 
 		//m_pBackendRenderer->RenderGrass({2.0f, 0.0f, 0.0f});
 
@@ -453,7 +454,7 @@ void jkContent::SelectMapIndoor(jkMap* map)
 		w_m->BindShader(shader);
 		w_m->BindTexture(wall_tex);
 		w_m->BindTexture(wall_normal_tex);
-		//w_m->BindTexture(wall_height_tex);
+		w_m->BindTexture(wall_height_tex);
 		w_m->CalcTangentSpace();
 		m_pBackendRenderer->LoadMesh(w_m);
 	}
@@ -490,10 +491,17 @@ void jkContent::SelectMapIndoor(jkMap* map)
 	//m_pCurrentMap->AddMesh(cb_mesh);
 	m_pBackendRenderer->LoadMesh(cb_mesh);
 
+	//cb_mesh->MoveTo({ 0.f, 0.f, 0.f });
+	//m_pBackendRenderer->LoadMesh(cb_mesh);
+
+
 	/*auto cb_mesh_2 = new jkMesh(*cb_mesh);
 	cb_mesh_2->MoveTo({-2.f, 0.5f, 0.f});
 	cb_mesh_2->CalcTangentSpace();
 	m_pBackendRenderer->LoadMesh(cb_mesh_2);*/
+
+	/////////////////////////////////////////
+	// nanosuit.
 
 	jkModel* nanosuit_model = new jkModel(VEC3(-3.f, 0.f, -18.f));
 	jkResourceManager::LoadModel("./Asset/nanosuit/nanosuit.obj", nanosuit_model);
@@ -562,6 +570,18 @@ void jkContent::SelectMapIndoor(jkMap* map)
 	sphereMesh->BindShader(shader);
 
 	m_pBackendRenderer->LoadMesh(sphereMesh);
+
+	//////////////////////////////////////////////////
+	// Load warrior.
+
+	jkModel* arthur_model = new jkModel(VEC3(-5.f, 0.f, -18.f));
+	jkResourceManager::LoadModel("./Asset/Arthur/arthur_attack_01.FBX", arthur_model);
+	for (auto mesh : arthur_model->mMeshes)
+	{
+		mesh->RotatePitch(-90.f);
+		mesh->RotateYaw(90.f);
+		m_pBackendRenderer->LoadMesh(mesh);
+	}
 
 	//m_pBackendRenderer->SetUpLight(new DirectionLight({ -20.f, -20.f, 0.f }));
 

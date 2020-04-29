@@ -135,6 +135,10 @@
   <ItemGroup>
     <None Include="Shaders\bluring.fs" />
     <None Include="Shaders\bluring.vs" />
+    <None Include="Shaders\deferredShader.fs" />
+    <None Include="Shaders\deferredShader.vs" />
+    <None Include="Shaders\GBufferShader.vs" />
+    <None Include="Shaders\GBufferShader.fs" />
     <None Include="Shaders\explode.gs" />
     <None Include="Shaders\grass.fs" />
     <None Include="Shaders\grass.gs" />
@@ -159,6 +163,7 @@
     <None Include="Shaders\skybox.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Animator.cpp" />
     <ClCompile Include="Source\Actor.cpp" />
     <ClCompile Include="Source\BackendRenderer.cpp" />
     <ClCompile Include="Source\BackendRendererGL.cpp" />
@@ -187,6 +192,7 @@
     <ClCompile Include="Source\WinInputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Animator.h" />
     <ClInclude Include="Source\Actor.h" />
     <ClInclude Include="Source\Algorithm.h" />
     <ClInclude Include="Source\BackendRenderer.h" />

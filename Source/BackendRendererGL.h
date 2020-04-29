@@ -63,6 +63,8 @@ public:
 
 	void StartRender() override;
 
+	void StartDeferredShading() override;
+
 	void RenderSkybox() override;
 
 	void ChangeDataIndices(jkMesh* p_mesh, std::vector<UINT>& indices) override;
@@ -99,6 +101,22 @@ private:
 
 	UINT mQuadVBO;
 
+	//////////////////////////
+	// For deferred shading.
+
+	UINT mGBuffer;//A frameBuffer.
+
+	UINT mGPositionBuffer;
+
+	UINT mGNormalBuffer;
+
+	UINT mGAlbedoSpecBuffer;
+
+	UINT mGDepthRBO;
+
+	//////////////////////////
+	// Shaders.
+
 	glShader* mDepthShader;//TODO: can use shader id.
 
 	glShader* mOMDepthShader;
@@ -108,6 +126,9 @@ private:
 	glShader* mPostRenderingShader;
 
 	glShader* mBluringShader;
+
+	glShader* mGBufferShader;
+	glShader* mDeferredShader;
 
 	MAT4 mLightSpaceMatrix;
 
@@ -139,13 +160,17 @@ private:
 
 	void mRenderNormal(GLRenderData* pData);
 
-	UINT mRenderBloom();
-
 	UINT mBlurRendering(UINT color_buffer);
 
 	void mPostRendering(UINT color_buffer);// Render a squad, enable post-effects.
 
 	void mRenderQuad();
+
+	void mPrepareGBuffer();
+
+	void mGetGBuffer(GLRenderData* pData);
+
+	void mRenderWithGBuffer();
 
 	void mCopyBufferData(UINT vbo_from, UINT vbo_target, UINT dataSize);
 

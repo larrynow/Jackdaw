@@ -51,6 +51,10 @@
     <None Include="Shaders\bluring.fs" />
     <None Include="Shaders\skybox.vs" />
     <None Include="Shaders\skybox.fs" />
+    <None Include="Shaders\GBufferShader.fs" />
+    <None Include="Shaders\GBufferShader.vs" />
+    <None Include="Shaders\deferredShader.vs" />
+    <None Include="Shaders\deferredShader.fs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Actor.cpp">
@@ -127,6 +131,9 @@
     </ClCompile>
     <ClCompile Include="Source\tinyxml2.cpp" />
     <ClCompile Include="Source\glad.c" />
+    <ClCompile Include="Source\Animator.cpp">
+      <Filter>Core\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Actor.h">
@@ -230,6 +237,9 @@
     </ClInclude>
     <ClInclude Include="Source\Light.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Animator.h">
+      <Filter>Core\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

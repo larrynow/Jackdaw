@@ -62,6 +62,8 @@ public:
 
 	virtual void StartRender() = 0; // Render all loaded render data.
 
+	virtual void StartDeferredShading() = 0; // DeferredShading.
+
 	virtual void RenderSkybox() = 0;
 
 	inline MAT4& GetModelMatrix() { return mModelMatrix; };

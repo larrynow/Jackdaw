@@ -146,13 +146,13 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
     const float maxLayers = 32;
     float numLayers = mix(maxLayers, minLayers, 
         abs(dot(vec3(0.f, 0.f, 1.f), viewDir)));
-
+    numLayers = 32;
     float layerDepth = 1.0/numLayers;
     float currentDepth = 0.f;
 	float depth = 1.f - texture(material.heightMap, texCoords).r;
 
 	float scale = 0.01f;
-    vec2 p = viewDir.xz * scale;
+    vec2 p = viewDir.xy/viewDir.z * scale;
     vec2 deltaTexCoords = p/numLayers;
 
     vec2 currentTexCoords = texCoords;

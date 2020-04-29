@@ -12,6 +12,8 @@ struct aiScene;
 struct aiNode;
 struct aiMesh;
 
+
+
 class jkResourceManager
 {
 public:
@@ -52,10 +54,10 @@ public:
 
 	}*/
 
-	static void LoadModel(const std::string& modelFile, jkModel* model);
-
 	static void ImportCubeMap(std::vector<unsigned char*>& faces, ImageFormat& textureFormat, 
 		const std::string& cubeMapFolder, const std::string& formatName = ".jpg");
+
+	static void LoadModel(const std::string& modelFile, jkModel* model, bool withAnim=false);
 
 	static inline bool ImportMeshFromOBJ(const std::string& objFilePath, jkMesh* mesh) { return ImportFileOBJ(objFilePath, mesh->mVertexBuffer, mesh->mIndexBuffer); };
 
@@ -75,9 +77,15 @@ public:
 
 private:
 
-	static void ProcessNode(aiNode* node, const aiScene* scene, jkModel* model);
+	//Recursively process node in scene(mesh+bone_weight&id).
+	static void RecurProcessNode(aiNode* node, const aiScene* scene, jkModel* model);
+	//Process mesh in node.
+	static jkMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, jkModel* model);
 
-	static jkMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, const jkModel* model);
+	//Global entrance for collecting key frame animations. 
+	static void ProcessAnim(const aiScene* scene, jkModel* model);
+	//Recursively connect node anims(for bone matrices updation).
+	static void RecurLinkNodeAnim(const aiNode* node, const aiScene* scene, NodeAnimation* parent_node_anim, Animation& anim);
 
 	static std::vector<Texture*> mTextures;
 	static std::unordered_map<std::string, glShader*> mShaderMap;

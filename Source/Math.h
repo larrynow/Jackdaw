@@ -264,6 +264,7 @@ namespace jkMath
 
 	struct MAT4
 	{
+		//Default as identity matrix.
 		MAT4() : MAT4(1.0f) {};
 		MAT4(const MAT4& mat) { memcpy(m, mat.m, sizeof(float)*16); }
 
@@ -273,6 +274,16 @@ namespace jkMath
 			SetRow(1, { 0, I, 0, 0 });
 			SetRow(2, { 0, 0, I, 0 });
 			SetRow(3, { 0, 0, 0, I });
+		}
+
+		inline float* operator[](std::size_t i)
+		{
+			return m[i];
+		}
+
+		inline const float GetValue(int i, int j) const
+		{
+			return m[i][j];
 		}
 
 		inline void SetRow(UINT row, const float(&newRows)[4])
@@ -318,7 +329,7 @@ namespace jkMath
 			return VEC4(m[0][col], m[1][col], m[2][col], m[3][col]);
 		}
 
-		VEC4 operator*(const VEC4& vec4) const
+		const VEC4 operator*(const VEC4& vec4) const
 		{
 			VEC4 retVec;
 			retVec.x = m[0][0] * vec4.x + m[0][1] * vec4.y +
@@ -333,7 +344,7 @@ namespace jkMath
 			return retVec;
 		}
 
-		friend MAT4 operator*(const VEC4& vec4, const MAT4& mat4)
+		friend const MAT4 operator*(const VEC4& vec4, const MAT4& mat4)
 		{
 			MAT4 retMat;
 			for (size_t i = 0; i < 4; ++i)
@@ -349,7 +360,7 @@ namespace jkMath
 			return retMat;
 		}
 
-		MAT4 operator*(const MAT4& mat4) const
+		const MAT4 operator*(const MAT4& mat4) const
 		{
 			MAT4 retMat;
 			// Right matrix cols.
@@ -383,7 +394,7 @@ namespace jkMath
 			return retMat;
 		}
 
-		MAT4 T() const
+		const MAT4 T() const
 		{
 			MAT4 retMat;
 			for (size_t i = 0; i < 4; i++)
@@ -411,11 +422,18 @@ namespace jkMath
 
 	};
 
-	inline float Clamp(float val, float min, float max) { if (val > max)return max; else if (val < min) return min; else return val; };
-	inline float Clamp(float val, UINT min, UINT max) { return Clamp(val, float(min), float(max)); };
+	template<typename T>
+	inline T Clamp(const T& val, const T& min, const T& max){ if (val > max)return max; else if (val < min) return min; else return val; }
+	/*inline float Clamp(float val, float min, float max) { if (val > max)return max; else if (val < min) return min; else return val; };
+	inline float Clamp(float val, UINT min, UINT max) { return Clamp(val, float(min), float(max)); };*/
 
-	inline float Lerp(const float start, const float end, const float fraction) { return start + (end - start)*fraction; };
-	inline VEC2 Lerp(const VEC2& start, const VEC2& end, float fraction) { return VEC2(Lerp(start.x, end.x, fraction), Lerp(start.y, end.y, fraction)); };
+	template<typename T>
+	inline float Fraction(const T left, const T right, const T value) { return right==left?0:(value - left) / (right - left); }
+
+	template<typename T>
+	inline T Lerp(const T& start, const T& end, const float fraction) { return start + (end - start) * fraction; };
+	/*inline float Lerp(const float start, const float end, const float fraction) { return start + (end - start)*fraction; };
+	inline VEC2 Lerp(const VEC2& start, const VEC2& end, float fraction) { return VEC2(Lerp(start.x, end.x, fraction), Lerp(start.y, end.y, fraction)); };*/
 
 	inline VEC3 Reflect(const VEC3& direction, const VEC3& normal)
 	{
@@ -502,13 +520,30 @@ namespace jkMath
 		mat.m[2][3] = z;
 	}
 
-	inline void MakeScaleMatrix(MAT4& mat, float scale)
+	inline void MakeTranslateMatrix(MAT4& mat, const VEC3& translateVec)
 	{
-		mat.m[0][0] = scale;
-		mat.m[1][1] = scale;
-		mat.m[2][2] = scale;
+		MakeTranslateMatrix(mat, translateVec.x, translateVec.y, translateVec.z);
 	}
 
+	inline void MakeScaleMatrix(MAT4& mat, 
+		const float xScale, const float yScale, const float zScale)
+	{
+		mat.m[0][0] = xScale;
+		mat.m[1][1] = yScale;
+		mat.m[2][2] = zScale;
+	}
+
+	inline void MakeScaleMatrix(MAT4& mat, const VEC3& scaleVec)
+	{
+		MakeScaleMatrix(mat, scaleVec.x, scaleVec.y, scaleVec.z);
+	}
+
+	inline void MakeScaleMatrix(MAT4& mat, float scale)
+	{
+		MakeScaleMatrix(mat, scale, scale, scale);
+	}
+
+	//Remove translation part of a matrix.
 	inline MAT4 RemoveTranslation(const MAT4& mat)
 	{
 		MAT4 retMat(mat);
@@ -524,6 +559,7 @@ namespace jkMath
 	/////////////////////////////////////////////////////////////
 	// Matrices for rotate.
 
+	//Rotate order : x-y-z(outter).
 	inline MAT4 Matrix_RotationXYZ(float x, float y, float z)// Input radians.
 	{
 		MAT4 outMatrix;
@@ -537,6 +573,23 @@ namespace jkMath
 		return outMatrix;
 	};
 
+	inline void MakeRotationMatrix_Quaternion(MAT4& ret, const VEC4& quaternion)
+	{
+		auto& x = quaternion.x;
+		auto& y = quaternion.y;
+		auto& z = quaternion.z;
+		auto& w = quaternion.w;
+
+		ret.m[0][0] = 1.f - 2.f* (y* y + z * z);
+		ret.m[0][1] = 2.f* (x* y - z * w);
+		ret.m[0][2] = 2.f* (x* z + y * w);
+		ret.m[1][0] = 2.f* (x* y + z * w);
+		ret.m[1][1] = 1.f - 2.f* (x* x + z * z);
+		ret.m[1][2] = 2.f* (y* z - x * w);
+		ret.m[2][0] = 2.f* (x* z - y * w);
+		ret.m[2][1] = 2.f* (y* z + x * w);
+		ret.m[2][2] = 1.f - 2.f* (x* x + y * y);
+	}
 
 	inline float GetRadian(float angle) { return angle * PI / 180.0f; };
 }

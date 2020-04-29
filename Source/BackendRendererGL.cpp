@@ -133,23 +133,9 @@ void jkBackendRendererGL::StartUp()
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i,
 			GL_TEXTURE_2D_MULTISAMPLE, mFloatColorBuffers[i], 0);
 	}
-	/*for (size_t i = 1; i < 2; i++)*/
-	//{
-	//	glBindTexture(GL_TEXTURE_2D, mFloatColorBuffers[1]);
-	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F,
-	//		jkContent::GetInstancePtr()->mWidth, jkContent::GetInstancePtr()->mHeight,
-	//		0, GL_RGB, GL_FLOAT, NULL);//16 bits float color buffer(default as 8 bits).
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	//	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+1,
-	//		GL_TEXTURE_2D, mFloatColorBuffers[1], 0);//Bind color buffer.
-	//}
+	
 	GLenum color_attaches[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, color_attaches);
-	//glReadBuffer(GL_COLOR_ATTACHMENT0);
 
 	UINT rboDepth;//Render buffer(Write-Only, better).
 	glGenRenderbuffers(1, &rboDepth);
@@ -225,6 +211,11 @@ void jkBackendRendererGL::StartUp()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	bool bDeferredShading = true;
+	if (bDeferredShading)
+		mPrepareGBuffer();
+
 }
 
 RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
@@ -474,6 +465,56 @@ void jkBackendRendererGL::StartRender()
 	mPostRendering(color_buffer);
 }
 
+void jkBackendRendererGL::StartDeferredShading()
+{
+	mUpdateViewPos();
+	mUpdateProjMatrix();
+	mUpdateViewMatrix();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, mGBuffer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, jkContent::GetInstance().mWidth, jkContent::GetInstance().mHeight);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+
+	//Render into GBuffer.
+
+	for(auto renderData : mRenderDatas)
+		//for (auto it = mRenderDatas.begin(); it!=mRenderDatas.end();++it)
+	{
+		GLRenderData* p_glRenderData = static_cast<GLRenderData*>(renderData);
+
+		if (p_glRenderData->pOriginMesh->m_bRenderable)
+		{
+			//mRenderHDR(p_glRenderData);
+			mGetGBuffer(p_glRenderData);
+			//mRenderNormal(p_glRenderData);
+		}
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glViewport(0, 0, jkContent::GetInstance().mWidth, jkContent::GetInstance().mHeight);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	////////////////////////////
+	// Use GBuffer.
+
+	//mPostRenderingShader->use();
+
+	//glActiveTexture(GL_TEXTURE1);
+	////glBindTexture(GL_TEXTURE_2D, mGPositionBuffer);//Show gposition.
+	//glBindTexture(GL_TEXTURE_2D, mGAlbedoSpecBuffer);//Show gposition.
+	//glBindTexture(GL_TEXTURE_2D, mGNormalBuffer);//Show gNormal.
+	//mPostRenderingShader->setInt("colorBuffer", 1);
+
+	//mRenderQuad();
+
+	mRenderWithGBuffer();
+
+}
+
 void jkBackendRendererGL::RenderSkybox()
 {
 	auto skybox = static_cast<GLCubeMapData*>(mSkybox);
@@ -503,16 +544,7 @@ void jkBackendRendererGL::ChangeDataIndices(jkMesh* p_mesh, std::vector<UINT>& i
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data->EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() *sizeof(UINT), &indices[0], GL_STATIC_DRAW);
 	
-	/*for (size_t i = 0; i < 30; i++)
-	{
-		std::cout << indices.at(i)<<" ";
-
-	}
-	std::cout << std::endl;*/
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_mesh->mIndexBuffer.size()/4*sizeof(UINT), &p_mesh->mIndexBuffer[0], GL_DYNAMIC_DRAW);
-
 	glBindVertexArray(0);
-
 }
 
 void jkBackendRendererGL::ChangeInstances(jkMesh* p_ins_mesh, std::vector<MAT4>& model_matrices)
@@ -619,6 +651,136 @@ void jkBackendRendererGL::mRenderQuad()
 	glBindVertexArray(mQuadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+}
+
+void jkBackendRendererGL::mPrepareGBuffer()
+{
+	glGenFramebuffers(1, &mGBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mGBuffer);
+
+	const UINT SCR_WIDTH = jkContent::GetInstance().mWidth;
+	const UINT SCR_HEIGHT = jkContent::GetInstance().mHeight;
+
+	// Position color buffer.
+	glGenTextures(1, &mGPositionBuffer);
+	glBindTexture(GL_TEXTURE_2D, mGPositionBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH,
+		SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);//High precision.
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+		GL_TEXTURE_2D, mGPositionBuffer, 0);
+
+	// Normal color buffer.
+	glGenTextures(1, &mGNormalBuffer);
+	glBindTexture(GL_TEXTURE_2D, mGNormalBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH,
+		SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+		GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+		GL_TEXTURE_2D, mGNormalBuffer, 0);
+
+	// Albedo and spec(strength) color buffer.
+	glGenBuffers(1, &mGAlbedoSpecBuffer);
+	glBindTexture(GL_TEXTURE_2D, mGAlbedoSpecBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH,
+		SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+		GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2,
+		GL_TEXTURE_2D, mGAlbedoSpecBuffer, 0);
+
+	// Enable 3 color attachments to render.
+	GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,
+		GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3, attachments);
+
+	// Depth renderBuffer.
+	glGenRenderbuffers(1, &mGDepthRBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, mGDepthRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,
+		SCR_WIDTH, SCR_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+		GL_RENDERBUFFER, mGDepthRBO);
+	
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Framebuffer not complete!" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	mDeferredShader = new glShader("./Shaders/deferredShader.vs",
+		"./Shaders/deferredShader.fs");
+	mGBufferShader = new glShader("./Shaders/GBufferShader.vs",
+		"./Shaders/GBufferShader.fs");
+}
+
+void jkBackendRendererGL::mGetGBuffer(GLRenderData* pData)
+{
+	mGBufferShader->use();
+	mModelMatrix = pData->pOriginMesh->GetWorldMatrx();
+	mGBufferShader->setMat4("model", mModelMatrix);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, pData->difffuseTex);
+	mGBufferShader->setInt("texture_diffuse", 2);
+
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, pData->specularTex);
+	mGBufferShader->setInt("texture_specular", 3);
+
+	//glActiveTexture(0);
+
+	glBindVertexArray(pData->VAO);
+	glDrawElements(GL_TRIANGLES, pData->IndexSize, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+}
+
+void jkBackendRendererGL::mRenderWithGBuffer()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	mDeferredShader->use();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mGPositionBuffer);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, mGNormalBuffer);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, mGAlbedoSpecBuffer);
+
+	mDeferredShader->setInt("gPosition", 0);
+	mDeferredShader->setInt("gNormal", 1);
+	mDeferredShader->setInt("gAlbedoSpec", 2);
+
+	int lightCount = 0;
+	for (size_t i = 0; i < mPointLights.size(); i++)
+	{
+		auto pointLight = mPointLights.at(i);
+
+		//mDeferredShader->setVec3(std::string("lightPos[") + (char)('0' + lightCount++) + "]", pointLight->Position);
+
+		mDeferredShader->setVec3(std::string("pointLights[") + (char)('0' + i) + "].position", pointLight->Position);
+		//mDeferredShader->setVec3(std::string("pointLights[") + (char)('0' + i) + "].color.ambient", pointLight->AmbientColor);
+		mDeferredShader->setVec3(std::string("pointLights[") + (char)('0' + i) + "].color", pointLight->DiffuseColor);
+		//mDeferredShader->setVec3(std::string("pointLights[") + (char)('0' + i) + "].color.specular", pointLight->SpecularColor);
+		mDeferredShader->setFloat(std::string("pointLights[") + (char)('0' + i) + "].constant", pointLight->Constant);
+		mDeferredShader->setFloat(std::string("pointLights[") + (char)('0' + i) + "].linear", pointLight->Linear);
+		mDeferredShader->setFloat(std::string("pointLights[") + (char)('0' + i) + "].quadratic", pointLight->Quadratic);
+		//mDeferredShader->setFloat(std::string("pointLights[") + (char)('0' + i) + "].bound", 15.f);
+	}
+
+	mDeferredShader->setInt("pointLightNum", mPointLights.size());
+
+	mRenderQuad();
+
 }
 
 void jkBackendRendererGL::mRenderSurrounding(GLSurroundingRenderData* surroundingData)

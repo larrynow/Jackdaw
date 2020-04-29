@@ -165,6 +165,9 @@ private:
 	//std::vector<Texture*> mTextures;
 
 	Material mMaterial;
+
+	
+
 };
 
 

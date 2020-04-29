@@ -11,13 +11,16 @@
 #include<sstream>
 
 std::vector<Texture*> jkResourceManager::mTextures = std::vector<Texture*>();
-std::unordered_map<std::string, glShader*> jkResourceManager::mShaderMap = std::unordered_map<std::string, glShader*>();
+std::unordered_map<std::string, glShader*> jkResourceManager::mShaderMap = 
+	std::unordered_map<std::string, glShader*>();
 
-void jkResourceManager::LoadModel(const std::string& modelFile, jkModel* model)
+void jkResourceManager::LoadModel(const std::string& modelFile, jkModel* model,
+	bool withAnim)
 {
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(modelFile, 
-		aiProcess_Triangulate | aiProcess_FlipUVs);
+		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace
+		| aiProcess_GenSmoothNormals);
 	// Use aiProcess_OptimizeMeshes to splice triangles.
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -26,10 +29,12 @@ void jkResourceManager::LoadModel(const std::string& modelFile, jkModel* model)
 		return;
 	}
 
-	ProcessNode(scene->mRootNode, scene, model);
+	RecurProcessNode(scene->mRootNode, scene, model);
+	if(withAnim)
+		ProcessAnim(scene, model);
 }
 
-void jkResourceManager::ProcessNode(aiNode* node, const aiScene* scene, jkModel* model)
+void jkResourceManager::RecurProcessNode(aiNode* node, const aiScene* scene, jkModel* model)
 {
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
@@ -39,15 +44,16 @@ void jkResourceManager::ProcessNode(aiNode* node, const aiScene* scene, jkModel*
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
-		ProcessNode(node->mChildren[i], scene, model);
+		RecurProcessNode(node->mChildren[i], scene, model);
 	}
 }
 
-jkMesh* jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene, const jkModel* model)
+jkMesh* jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene, jkModel* model)
 {
-	std::vector<Vertex> vertices;
-	std::vector<UINT> indices;
-	std::vector<Texture> textures;
+	auto ret = new jkMesh(model->mTransform.position);
+
+	std::vector<Vertex>& vertices = ret->mVertexBuffer;
+	std::vector<UINT>& indices = ret->mIndexBuffer;
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -97,13 +103,127 @@ jkMesh* jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene, const
 			indices.push_back(face.mIndices[j]);
 	}
 		
-	// Only load mesh currently.
+	// Skeletal animations.
+	std::vector<MAT4>& bone_offset = model->mBoneOffsetMatrices;
+	bone_offset.resize(mesh->mNumBones);
 
-	auto ret = new jkMesh(model->mTransform.position);
-	ret->mVertexBuffer = std::move(vertices);
-	ret->mIndexBuffer = std::move(indices);
+	// Helper from aiMat4 to MAT4.
+	auto aiMat4_to_Mat4 = [](const aiMatrix4x4& aimat)
+	{
+		MAT4 mat;
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				mat[i][j] = aimat[i][j];
+			}
+		}
+
+		return mat;
+	};
+
+	for (int i = 0; i < mesh->mNumBones; i++)
+	{
+		auto bone = mesh->mBones[i];
+		model->mBoneOffsetMatrices.push_back(aiMat4_to_Mat4(bone->mOffsetMatrix));
+		auto id = model->mBoneOffsetMatrices.size() - 1;
+		model->mBoneIDMap.insert(
+			std::make_pair(bone->mName.C_Str(), id));
+
+		for (int j = 0; j < bone->mNumWeights; j++)
+		{
+			auto weight = bone->mWeights[j];
+			//Let bone influence vertex.
+			vertices[weight.mVertexId].AddBone(id, weight.mWeight);
+		}
+	}
 
 	return ret;
+}
+
+void jkResourceManager::ProcessAnim(const aiScene* scene, jkModel* model)
+{
+	auto VEC3FromAiVector = [](const aiVector3D& aVec3)
+	{
+		return VEC3(aVec3.x, aVec3.y, aVec3.z);
+	};
+
+	auto VEC4FromAiQuaternion = [](const aiQuaternion& aQuat)
+	{
+		return VEC4(aQuat.x, aQuat.y, aQuat.z, aQuat.w);
+	};
+
+	model->mAnimations.resize(scene->mNumAnimations);
+	for (int i = 0; i < scene->mNumAnimations; i++)
+	{
+		auto ai_animation = scene->mAnimations[i];
+		model->mAnimations[i].animationID = i;
+		model->mAnimations[i].pRootAnimationNode = nullptr;
+
+		//Collect channels in an animation.
+		model->mAnimations[i].nodeAnimationMap.reserve(ai_animation->mNumChannels);
+		for (int j = 0; j < ai_animation->mNumChannels; j++)
+		{
+			//Each channel affect a node.
+			auto channel = ai_animation->mChannels[j];
+
+
+			NodeAnimation nodeAnim(channel->mNodeName.C_Str());
+			nodeAnim.positionKeys.reserve(channel->mNumPositionKeys);
+			nodeAnim.rotationKeys.reserve(channel->mNumRotationKeys);
+			nodeAnim.scalingKeys.reserve(channel->mNumScalingKeys);
+
+			for (int i = 0; i < channel->mNumPositionKeys; i++)
+			{
+				nodeAnim.positionKeys.push_back(
+					KeyInfo<VEC3>(channel->mPositionKeys[i].mTime,
+						VEC3FromAiVector(channel->mPositionKeys[i].mValue)));
+			}
+			for (int i = 0; i < channel->mNumRotationKeys; i++)
+			{
+				nodeAnim.rotationKeys.push_back(
+					KeyInfo<VEC4>(channel->mRotationKeys[i].mTime,
+						VEC4FromAiQuaternion(channel->mRotationKeys[i].mValue)));
+			}
+			for (int i = 0; i < channel->mNumScalingKeys; i++)
+			{
+				nodeAnim.scalingKeys.push_back(
+					KeyInfo<VEC3>(channel->mScalingKeys[i].mTime,
+						VEC3FromAiVector(channel->mScalingKeys[i].mValue)));
+			}
+
+			model->mAnimations[i].nodeAnimationMap.insert(
+				std::make_pair(channel->mNodeName.C_Str(), nodeAnim));
+		}
+
+		RecurLinkNodeAnim(scene->mRootNode, scene, nullptr, model->mAnimations[i]);
+	}
+}
+
+void jkResourceManager::RecurLinkNodeAnim(const aiNode* node,
+	const aiScene* scene, NodeAnimation* parent_node_anim, Animation& anim)
+{
+	auto& rNodeAnimMap = anim.nodeAnimationMap;
+	auto it = rNodeAnimMap.find(node->mName.C_Str());
+	if (it != rNodeAnimMap.end())
+	{
+		auto pCurAnimNode = &(it->second);
+		pCurAnimNode->nodeName = node->mName.C_Str();
+		//First as root.
+		if (anim.pRootAnimationNode == nullptr)
+			anim.pRootAnimationNode = pCurAnimNode;
+
+		//Connect with parent.
+		if(parent_node_anim)
+			parent_node_anim->childNodeAnims.push_back(pCurAnimNode);
+
+		for (unsigned int i = 0; i < node->mNumChildren; i++)
+		{
+			RecurLinkNodeAnim(node->mChildren[i], scene, pCurAnimNode, anim);
+		}
+		
+	}
 }
 
 void jkResourceManager::ImportCubeMap(std::vector<unsigned char*>& faces, ImageFormat& imgFormat,
