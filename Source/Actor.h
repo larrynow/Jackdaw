@@ -14,8 +14,11 @@ class jkActor : public jkEntity
 {
 public:
 	
-	jkActor(const VEC3& actorPosition, const VEC3& cameraPosition, float moveSpeed = 10.0f) : jkEntity(actorPosition),
-		m_pCamera(new jkCamera(cameraPosition)), mMoveSpeed(moveSpeed) {};
+	jkActor(const VEC3& actorPosition, const VEC3& cameraPosition, 
+		float moveSpeed = 10.f, float rotateSpeed = 1.f) 
+		: jkEntity(actorPosition),
+		m_pCamera(new jkCamera(cameraPosition)), 
+		mMoveSpeed(moveSpeed), mRotateSpeed(rotateSpeed) {};
 
 	jkActor() : jkActor({ 0.f, 0.f, 0.f }, { 0.f, 0.f, 10.f }) {};// Default actor camera position is behind.
 	~jkActor() { delete m_pCamera; };

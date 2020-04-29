@@ -7,9 +7,11 @@ class jkTransform
 
 public:
 
-	/*
-	* Tranform.
-	*/
+	jkTransform(const VEC3& pos) : mPosition(pos), mScale(1.f), mEulerAngle(0.f)
+	{
+		mMakeDirections();
+	}
+	jkTransform() : jkTransform(VEC3()){}
 
 	/////////////////////////////////////////////////////////////////////
 	// Change position.
@@ -29,8 +31,12 @@ public:
 
 	inline void SetEulerAngle(const VEC3& eAngle)
 	{
-		mEulerAngle = eAngle;
+		mEulerAngle.x = mClipEulerAngle(eAngle.x);
+		mEulerAngle.y = mClipEulerAngle(eAngle.y);
+		mEulerAngle.z = mClipEulerAngle(eAngle.z);
+
 		mUpdateRotateMatrix();
+		mMakeDirections();
 	}
 	inline void SetEulerAngle(float _pitch, float _yaw, float _roll)
 	{ 
@@ -118,6 +124,23 @@ private:
 	}
 	//void mUpdateWorldMatrix();
 
+	inline float mClipEulerAngle(float _val)
+	{
+		if (_val > 180.f) return _val - 360.f;
+		else if (_val < -180.f) return 360.f + _val;
+		else return _val;
+	}
+
+	inline void mMakeDirections()
+	{
+		// From eulerAngle to directions.
+		mFront = VEC3(cos(GetRadian(mEulerAngle.x)) * cos(GetRadian(mEulerAngle.y)),
+			sin(GetRadian(mEulerAngle.x)),
+			cos(GetRadian(mEulerAngle.x)) * sin(GetRadian(mEulerAngle.y))).Normalize();
+		mRight = mFront.CrossProduct({ 0.f, 1.0f, 0.f }).Normalize();
+		mUp = mRight.CrossProduct(mFront).Normalize();
+	}
+
 	/////////////////////////////////////////////////////////////////
 	// Matrices(update when transform changes immediately).
 
@@ -132,6 +155,10 @@ private:
 	VEC3 mPosition;
 	VEC3 mScale;
 	VEC3 mEulerAngle;//Angle.
+
+	VEC3 mFront;
+	VEC3 mRight;
+	VEC3 mUp;
 
 	//float mScaleX, mScaleY, mScaleZ;
 	//float mRotationPitch, mRotationYaw, mRotationRoll;// Angle.

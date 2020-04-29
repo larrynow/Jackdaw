@@ -172,7 +172,7 @@ void jkContent::mPrepareBackendRenderer()
 		MakePerspectiveMatrix_GL(m_pBackendRenderer->GetProjMatrix(), GetRadian(pCamera->GetFOV()/2), 
 			float(mWidth) / float(mHeight), pCamera->GetNearPlane(), pCamera->GetFarPlane());
 	// Set viewPos.
-	m_pBackendRenderer->SetViewPos(m_pControlledCharacter->mPosition);
+	m_pBackendRenderer->SetViewPos(m_pControlledCharacter->mTransform.GetPosition());
 }
 
 void jkContent::SelectMapWild(jkMap* map)

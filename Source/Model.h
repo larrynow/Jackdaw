@@ -67,7 +67,7 @@ public:
 
 private:
 
-	//VEC3 mPosition;
+	std::string mModelPath;
 
 	Transform mTransform;
 
