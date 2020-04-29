@@ -20,15 +20,19 @@ class jkMesh
 
 public:
 
-	jkMesh() : m_bRenderable(true), m_bLighting(true), m_bShinning(false),
+	//Default constructor.
+	jkMesh() : m_bRenderable(true), m_bLighting(true), m_bShinning(false), m_bStatic(true),
 		mPosition(0.f, 0.f, 0.f), 
 		mScaleX(1.f), mScaleY(1.f), mScaleZ(1.f),
 		mRotationPitch(0.f), mRotationYaw(0.f), mRotationRoll(0.f),
-		m_pShader(nullptr)
-	{};
+		m_pShader(nullptr) {};
+
+	//Constructor with position.
 	jkMesh(const VEC3& _pos) : jkMesh() { mPosition = _pos; mFunction_UpdateTranslateMatrix(); };
-	jkMesh(const VEC3& _pos, const VEC3& _scales, const VEC3& _rotations, bool _renderable = true) :
-		m_bRenderable(_renderable), m_bLighting(true), m_bShinning(false),
+
+	//Constructor with position and transform.
+	jkMesh(const VEC3& _pos, const VEC3& _scales, const VEC3& _rotations) :
+		m_bRenderable(true), m_bLighting(true), m_bShinning(false), m_bStatic(true),
 		mPosition(_pos), 
 		mScaleX(_scales.x), mScaleY(_scales.y), mScaleZ(_scales.z),
 		mRotationPitch(_rotations.x), mRotationYaw(_rotations.y), mRotationRoll(_rotations.z),
@@ -130,9 +134,10 @@ public:
 
 private:
 
-	bool m_bRenderable;
+	bool m_bRenderable;//Render it or not.
 	bool m_bLighting;//Calculate lighting or not.
 	bool m_bShinning;//Calculate bloom for it or not.
+	bool m_bStatic;//Mesh static or not.
 	glShader* m_pShader;
 
 	//////////////////////////////////////////////////////////////////

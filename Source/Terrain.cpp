@@ -249,7 +249,7 @@ void jkTerrain::jkTerrainManager::CreateInstances()
 
 			//Rotate.
 			float rotAngleRadian = GetRadian(float(rand() % 360));
-			model = model * Matrix_RotationXYZ(rotAngleRadian, rotAngleRadian, rotAngleRadian);
+			model = model * GetRotationMatrix_Euler(rotAngleRadian, rotAngleRadian, rotAngleRadian);
 
 			block->InstanceMatrices.push_back(model.T());
 		}

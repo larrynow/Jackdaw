@@ -75,7 +75,8 @@ void jkMesh::CalcTangentSpace(bool mirror)
 
 void jkMesh::mFunction_UpdateRotateMatrix()
 {
-	mRotateMatrix = Matrix_RotationXYZ(GetRadian(mRotationPitch), GetRadian(mRotationYaw), GetRadian(mRotationRoll));
+	mRotateMatrix = 
+		GetRotationMatrix_Euler(GetRadian(mRotationPitch), GetRadian(mRotationYaw), GetRadian(mRotationRoll));
 }
 
 void jkMesh::mFunction_UpdateScaleMatrix()

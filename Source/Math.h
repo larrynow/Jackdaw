@@ -166,7 +166,7 @@ namespace jkMath
 
 		union {
 			struct { float x, y, z; };
-			struct { float r, g, b; };
+			//struct { float r, g, b; };
 			float m[3];
 		};
 	};
@@ -560,18 +560,32 @@ namespace jkMath
 	// Matrices for rotate.
 
 	//Rotate order : x-y-z(outter).
-	inline MAT4 Matrix_RotationXYZ(float x, float y, float z)// Input radians.
+	inline void MakeRotationMatrix_Euler(MAT4& ret, const VEC3& eulerAngle)// Input radians.
+	{
+		const float& x = eulerAngle.x;
+		const float& y = eulerAngle.y;
+		const float& z = eulerAngle.z;
+
+		ret.SetRow(0, { cos(y) * cos(z),
+			sin(x) * sin(y) * cos(z) - cos(x) * sin(z), sin(x) * sin(z) + cos(x) * sin(y) * cos(z), 0 });
+		ret.SetRow(1, { cos(y) * sin(z), 
+			sin(x) * sin(y) * sin(z) + cos(x) * cos(z), cos(x) * sin(y) * sin(z) - sin(x) * cos(z), 0 });
+		ret.SetRow(2, { -sin(y), sin(x) * cos(y), cos(x) * cos(y), 0 });
+		ret.SetRow(3, { 0, 0, 0, 1 });
+	}
+	inline void MakeRotationMatrix_Euler(MAT4& ret, 
+		const float pitch, const float yaw, const float roll)
+	{
+		MakeRotationMatrix_Euler(ret, { pitch, yaw, roll });
+	}
+
+	inline MAT4 GetRotationMatrix_Euler(float x, float y, float z)// Input radians.
 	{
 		MAT4 outMatrix;
-
-		outMatrix.SetRow(0, { cos(y)*cos(z),
-			sin(x)*sin(y)*cos(z) - cos(x)*sin(z), sin(x)*sin(z) + cos(x)*sin(y)*cos(z), 0 });
-		outMatrix.SetRow(1, { cos(y)*sin(z), sin(x)*sin(y)*sin(z) + cos(x)*cos(z), cos(x)*sin(y)*sin(z) - sin(x)*cos(z), 0 });
-		outMatrix.SetRow(2, { -sin(y), sin(x)*cos(y), cos(x)*cos(y), 0 });
-		outMatrix.SetRow(3, { 0, 0, 0, 1 });
+		MakeRotationMatrix_Euler(outMatrix, { x, y, z });
 
 		return outMatrix;
-	};
+	}
 
 	inline void MakeRotationMatrix_Quaternion(MAT4& ret, const VEC4& quaternion)
 	{
@@ -592,6 +606,10 @@ namespace jkMath
 	}
 
 	inline float GetRadian(float angle) { return angle * PI / 180.0f; };
+	inline VEC3 GetRadian(const VEC3& angle) 
+	{ 
+		return VEC3(GetRadian(angle.x), GetRadian(angle.y), GetRadian(angle.z)); 
+	}
 }
 
 #endif // !JKMATH_H_

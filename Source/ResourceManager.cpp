@@ -50,6 +50,7 @@ void jkResourceManager::RecurProcessNode(aiNode* node, const aiScene* scene, jkM
 
 jkMesh* jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene, jkModel* model)
 {
+	//Resource new.
 	auto ret = new jkMesh(model->mTransform.position);
 
 	std::vector<Vertex>& vertices = ret->mVertexBuffer;
