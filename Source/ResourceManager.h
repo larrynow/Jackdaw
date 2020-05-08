@@ -5,14 +5,13 @@
 #include<string>
 #include<unordered_map>
 #include"Mesh.h"
+#include"SkeletalMesh.h"
 #include"Model.h"
 #include"GLShader.h"
 
 struct aiScene;
 struct aiNode;
 struct aiMesh;
-
-
 
 class jkResourceManager
 {
@@ -57,9 +56,18 @@ public:
 	static void ImportCubeMap(std::vector<unsigned char*>& faces, ImageFormat& textureFormat, 
 		const std::string& cubeMapFolder, const std::string& formatName = ".jpg");
 
+	static inline std::shared_ptr<jkModel> ImportModel(const std::string& modelFile, bool withAnim = false)
+	{
+		auto res = new jkModel(modelFile);
+		LoadModel(modelFile, res, withAnim);
+		
+		return std::shared_ptr<jkModel>(res);
+	}
+
 	static void LoadModel(const std::string& modelFile, jkModel* model, bool withAnim=false);
 
-	static inline bool ImportMeshFromOBJ(const std::string& objFilePath, jkMesh* mesh) { return ImportFileOBJ(objFilePath, mesh->mVertexBuffer, mesh->mIndexBuffer); };
+	static inline bool ImportMeshFromOBJ(const std::string& objFilePath, jkMesh* mesh) 
+	{ return ImportFileOBJ(objFilePath, mesh->mVertexBuffer, mesh->mIndexBuffer); };
 
 	static bool ImportFileOBJ(const std::string& objFilePath, std::vector<Vertex>& rVertexBuffer, std::vector<UINT>& rIndexBuffer);
 	static bool ImportFileBMP(const std::string& bmpFilePath, UINT& outWidth, UINT& outHeight, std::vector<COLOR3>& outColorBuffer);
@@ -80,7 +88,8 @@ private:
 	//Recursively process node in scene(mesh+bone_weight&id).
 	static void RecurProcessNode(aiNode* node, const aiScene* scene, jkModel* model);
 	//Process mesh in node.
-	static jkMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, jkModel* model);
+	//static jkMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	static std::shared_ptr<jkMesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
 
 	//Global entrance for collecting key frame animations. 
 	static void ProcessAnim(const aiScene* scene, jkModel* model);
@@ -89,6 +98,8 @@ private:
 
 	static std::vector<Texture*> mTextures;
 	static std::unordered_map<std::string, glShader*> mShaderMap;
+
+	static std::unordered_map<std::string, jkModel*> mModelMap;
 };
 
 #endif // !JKRESOURCEMANAGER_H_

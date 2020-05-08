@@ -1,6 +1,6 @@
 #include "Animator.h"
 
-void jkAnimator::RecurUpdateBoneMatrix(jkModel* model,
+void jkAnimator::RecurUpdateBoneMatrix(jkSkeletalMesh* mesh,
 	const double tick, const NodeAnimation* curNode, const MAT4& parentTransform)
 {
 	MAT4 translatMatrix = InterpolateTranslationMatrix(tick, curNode->positionKeys);
@@ -10,13 +10,13 @@ void jkAnimator::RecurUpdateBoneMatrix(jkModel* model,
 	MAT4 current_transform =
 		translatMatrix * rotationMatrix * scalingMatrix;
 
-	auto id = model->mBoneIDMap.at(curNode->nodeName);
-	model->mBoneMatrices[id] = parentTransform * current_transform 
-		* model->mBoneOffsetMatrices[id];
+	auto id = mesh->mBoneIDMap.at(curNode->nodeName);
+	mesh->mBoneMatrices[id] = parentTransform * current_transform 
+		* mesh->mBoneOffsetMatrices[id];
 
 	for (auto pChild : curNode->childNodeAnims)
 	{
-		RecurUpdateBoneMatrix(model, tick, pChild,
+		RecurUpdateBoneMatrix(mesh, tick, pChild,
 			parentTransform * current_transform);
 	}
 }

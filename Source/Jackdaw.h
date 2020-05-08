@@ -1,6 +1,6 @@
 #pragma once
 #ifndef JACKDAW
-#include"Content.h"
+//#include"Content.h"
 #include<string>
 #include <assert.h>
 
@@ -17,7 +17,11 @@ inline const char* ToCStr(T value)// WRONG£¡ return array error.
 
 #define PRINT(msg) std::cout<<msg<<std::endl
 
-#define pTimer jkContent::GetInstancePtr()->m_pTimer// Content's mian Timer.
-#define iContent jkContent::GetInstance()// Content.
+
+
+// A macro to disallow the copy constructor and operator= functions.
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&) = delete;               \
+  void operator=(const TypeName&) = delete
 
 #endif // !JACKDAW

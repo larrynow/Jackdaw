@@ -11,6 +11,7 @@ public:
 	jkFreeCamera() :jkCharacter() 
 	{
 		SetUpInput();
+
 	}
 
 	void SetUpInput() override

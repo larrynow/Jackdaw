@@ -31,6 +31,8 @@ struct GLRenderData : public RenderData
 	int shininess;
 	//std::vector<UINT> TexID;
 	glShader* pShader;
+
+	MAT4 worldMat;
 };
 
 struct GLInstanceRenderData : public GLRenderData, public InstanceRenderData
@@ -132,7 +134,7 @@ private:
 
 	MAT4 mLightSpaceMatrix;
 
-	RenderData* mProcessMesh(jkMesh* mesh) override;
+	RenderData* mProcessMesh(jkMesh* mesh, const MAT4& worldMat = MAT4()) override;
 
 	InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4>& modelMatrices) override;
 
@@ -154,7 +156,7 @@ private:
 
 	void mGetDepthCubemap();
 
-	void mCalcDepth(RenderData* pData, glShader* depthShader);
+	void mCalcDepth(GLRenderData* pData, glShader* depthShader);
 
 	void mCalcDepth(InstanceRenderData* pData, glShader* depthShader);
 

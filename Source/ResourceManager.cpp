@@ -39,7 +39,7 @@ void jkResourceManager::RecurProcessNode(aiNode* node, const aiScene* scene, jkM
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		model->mMeshes.push_back(ProcessMesh(mesh, scene, model));
+		model->mMeshes.push_back(ProcessMesh(mesh, scene));
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -48,10 +48,12 @@ void jkResourceManager::RecurProcessNode(aiNode* node, const aiScene* scene, jkM
 	}
 }
 
-jkMesh* jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene, jkModel* model)
+std::shared_ptr<jkMesh> jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
 	//Resource new.
-	auto ret = new jkMesh(model->mTransform.position);
+	//auto ret = new jkMesh();
+	auto ret = std::make_shared<jkSkeletalMesh>();
+		//new jkSkeletalMesh();
 
 	std::vector<Vertex>& vertices = ret->mVertexBuffer;
 	std::vector<UINT>& indices = ret->mIndexBuffer;
@@ -105,7 +107,7 @@ jkMesh* jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene, jkMod
 	}
 		
 	// Skeletal animations.
-	std::vector<MAT4>& bone_offset = model->mBoneOffsetMatrices;
+	std::vector<MAT4>& bone_offset = ret->mBoneOffsetMatrices;
 	bone_offset.resize(mesh->mNumBones);
 
 	// Helper from aiMat4 to MAT4.
@@ -127,9 +129,9 @@ jkMesh* jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene, jkMod
 	for (int i = 0; i < mesh->mNumBones; i++)
 	{
 		auto bone = mesh->mBones[i];
-		model->mBoneOffsetMatrices.push_back(aiMat4_to_Mat4(bone->mOffsetMatrix));
-		auto id = model->mBoneOffsetMatrices.size() - 1;
-		model->mBoneIDMap.insert(
+		bone_offset.push_back(aiMat4_to_Mat4(bone->mOffsetMatrix));
+		auto id = bone_offset.size() - 1;
+		ret->mBoneIDMap.insert(
 			std::make_pair(bone->mName.C_Str(), id));
 
 		for (int j = 0; j < bone->mNumWeights; j++)

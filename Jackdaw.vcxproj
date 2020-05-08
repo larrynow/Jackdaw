@@ -163,6 +163,7 @@
     <None Include="Shaders\skybox.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\SkeletalMesh.cpp" />
     <ClCompile Include="Source\Animator.cpp" />
     <ClCompile Include="Source\Actor.cpp" />
     <ClCompile Include="Source\BackendRenderer.cpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="Source\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\SkeletalMesh.h" />
     <ClInclude Include="Source\Animator.h" />
     <ClInclude Include="Source\Actor.h" />
     <ClInclude Include="Source\Algorithm.h" />

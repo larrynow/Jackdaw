@@ -1,9 +1,9 @@
-#include "Jackdaw.h"
 #include "BackendRendererGL.h"
 #include "Camera.h"
 #include "ResourceManager.h"
 #include "Light.h"
 #include "stb_image.h"
+#include"Content.h"
 //#pragma comment (lib, "opengl32.lib")
 
 const UINT SHADOW_WIDTH = 1024;
@@ -218,11 +218,13 @@ void jkBackendRendererGL::StartUp()
 
 }
 
-RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh)
+RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh, const MAT4& worldMat)
 {
 	//if(!mesh->m_pShader) 
 	GLRenderData* pRenderData = new GLRenderData();
 	pRenderData->pOriginMesh = mesh;
+
+	pRenderData->worldMat = worldMat;
 
 	if(mesh->m_pShader)
 		pRenderData->pShader = mesh->m_pShader;
@@ -722,7 +724,7 @@ void jkBackendRendererGL::mPrepareGBuffer()
 void jkBackendRendererGL::mGetGBuffer(GLRenderData* pData)
 {
 	mGBufferShader->use();
-	mModelMatrix = pData->pOriginMesh->GetWorldMatrx();
+	mModelMatrix = pData->worldMat;
 	mGBufferShader->setMat4("model", mModelMatrix);
 
 	glActiveTexture(GL_TEXTURE2);
@@ -837,7 +839,7 @@ void jkBackendRendererGL::mGetDepthMap()
 		mDepthShader->use();
 		mDepthShader->setMat4("lightSpaceMatrix", mLightSpaceMatrix);
 
-		mCalcDepth(data, mDepthShader);
+		mCalcDepth(static_cast<GLRenderData*>(data), mDepthShader);
 	}
 
 	for (auto instance : mInstanceRenderDatas)
@@ -890,7 +892,7 @@ void jkBackendRendererGL::mGetDepthCubemap()
 
 	for (auto data : mRenderDatas)
 	{
-		mCalcDepth(data, mOMDepthShader);
+		mCalcDepth(static_cast<GLRenderData*>(data), mOMDepthShader);
 	}
 
 	glCullFace(GL_BACK);
@@ -898,12 +900,12 @@ void jkBackendRendererGL::mGetDepthCubemap()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void jkBackendRendererGL::mCalcDepth(RenderData* pData, glShader* depthShader)
+void jkBackendRendererGL::mCalcDepth(GLRenderData* pData, glShader* depthShader)
 {
 	depthShader->use();
 
 	//Set model matrix.
-	mModelMatrix = pData->pOriginMesh->GetWorldMatrx();
+	mModelMatrix = pData->worldMat;
 	depthShader->setMat4("model", mModelMatrix);
 
 	//Set far plane for omnidirection shadowing.
@@ -942,7 +944,7 @@ void jkBackendRendererGL::mRenderNormal(GLRenderData* pData)
 	}
 	
 	// Set model matrix.
-	mModelMatrix = pData->pOriginMesh->GetWorldMatrx();
+	mModelMatrix = pData->worldMat;
 	mNormalShader->setMat4("model", mModelMatrix);
 
 	glBindVertexArray(pData->VAO);
@@ -1092,7 +1094,7 @@ void jkBackendRendererGL::mRender(GLRenderData* pData)
 	pData->pShader->use();
 
 	// Set model matrix.
-	mModelMatrix = pData->pOriginMesh->GetWorldMatrx();
+	mModelMatrix = pData->worldMat;
 	pData->pShader->setMat4("model", mModelMatrix);
 
 	//pData->pShader->setVec3("viewPos", mViewPos);

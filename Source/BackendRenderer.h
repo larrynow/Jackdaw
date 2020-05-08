@@ -4,6 +4,7 @@
 
 #include"Types.h"
 #include"Mesh.h"
+#include"Entity.h"
 #include "Light.h"
 #include<unordered_map>
 
@@ -28,12 +29,33 @@ public:
 
 	virtual void StartUp() = 0;
 
+	inline void LoadMesh(jkMesh& mesh)
+	{
+		LoadMesh(&mesh);
+	}
+
+	inline void LoadMesh(jkMesh& mesh, const MAT4& worldMat)
+	{
+		auto data = mProcessMesh(&mesh, worldMat);
+		mRenderDatas.push_back(data);
+		mRenderDataMap.insert(std::make_pair(&mesh, data));
+	}
+
 	inline void LoadMesh(jkMesh* mesh) 
 	{ 
 		auto data = mProcessMesh(mesh);
 		mRenderDatas.push_back(data);
 		mRenderDataMap.insert(std::make_pair(mesh, data));
 	};
+
+	inline void LoadEnity(jkEntity* e)
+	{
+		for (auto me : e->GetModel()->mMeshes)
+		{
+			std::cout << e->GetTransform().GetPosition() << std::endl;
+			LoadMesh(*me, e->GetTransform().GetWorldMatrix());
+		}
+	}
 
 	inline void LoadInstanceData(jkMesh* instanceMesh, std::vector<MAT4>& modelMatrices)
 	{
@@ -82,7 +104,7 @@ protected:
 
 	COLOR3 mClearColor;
 
-	virtual RenderData* mProcessMesh(jkMesh* mesh) = 0;
+	virtual RenderData* mProcessMesh(jkMesh* mesh, const MAT4& worldMat =MAT4()) = 0;
 
 	virtual InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4>& modelMatrices) = 0;
 

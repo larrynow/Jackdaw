@@ -25,6 +25,9 @@ Setting up a content for game.
 Select both frontend and backend devices.
 */
 
+#define pTimer jkContent::GetInstancePtr()->m_pTimer// Content's mian Timer.
+#define iContent jkContent::GetInstance()// Content.
+
 class jkContent : public jkSingleton<jkContent>
 {
 
@@ -38,6 +41,8 @@ public:
 	void SelectMapWild(jkMap* map);
 
 	void SelectMapIndoor(jkMap* map);
+
+	void SelectMapNew(jkMap* map);
 
 	void Init(UINT width, UINT height);
 

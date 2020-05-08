@@ -3,75 +3,36 @@
 #define JKMODEL
 
 #include"Mesh.h"
+#include"Transform.h"
+#include<memory>
 #include<unordered_map>
+
+// jkModel : resource for rendering, loaded by ResourceManager.
 
 class jkModel
 {
+	friend class jkBackendRenderer;
 	friend class jkContent;
 	friend class jkResourceManager;
 	friend class jkAnimator;
 
 public:
 
-	jkModel(const VEC3& position) { mTransform.position = position; }
-	jkModel() : jkModel({ 0.f, 0.f, 0.f }) {}
+	jkModel(const std::string& modelPath) : mModelPath(modelPath) {}
+	jkModel() : jkModel(std::string()) {}
 
-	inline void SetPosition(const VEC3& pos) {
-		mTransform.position = pos; 
-		for (auto pMesh : mMeshes)
-			pMesh->MoveTo(pos);
-	}
-
-	// Model space rotation.
-	inline void Rotate(const VEC3& rotation)
+	jkModel(std::shared_ptr<jkMesh> mesh)
 	{
-		mTransform.mRotationPitch += rotation.x;
-		mTransform.mRotationYaw += rotation.y;
-		mTransform.mRotationRoll += rotation.z;
-
-		for (auto pMesh : mMeshes)
-		{
-			pMesh->RotatePitch(rotation.x);
-			pMesh->RotateYaw(rotation.y);
-			pMesh->RotateRoll(rotation.z);
-		}
+		mMeshes.push_back(mesh);
 	}
 
-	inline void RotatePitch(const float v)
-	{
-		mTransform.mRotationPitch += v;
+	virtual ~jkModel() {}
 
-		for (auto pMesh : mMeshes)
-		{
-			pMesh->RotatePitch(v);
-		}
-	}
-	inline void RotateYaw(const float v)
-	{
-		mTransform.mRotationYaw += v;
-
-		for (auto pMesh : mMeshes)
-		{
-			pMesh->RotateYaw(v);
-		}
-	}
-	inline void RotateRoll(const float v)
-	{
-		mTransform.mRotationRoll += v;
-
-		for (auto pMesh : mMeshes)
-		{
-			pMesh->RotateRoll(v);
-		}
-	}
-
-private:
+protected:
 
 	std::string mModelPath;
 
-	Transform mTransform;
-
-	std::vector<jkMesh*> mMeshes;
+	std::vector<std::shared_ptr<jkMesh>> mMeshes;
 
 	/////////////////////////////////
 	// Skeletal animations.
@@ -81,7 +42,7 @@ private:
 	std::vector<MAT4> mBoneMatrices;//Current bone matrices (with animation adjust).
 
 	std::vector<Animation> mAnimations;
-	//TODO : a animation name.
+	std::unordered_map<std::string, int> mAnimationNameMap; //TODO : a animation name.
 
 };
 

@@ -137,6 +137,7 @@
     <ClCompile Include="Source\Transform.cpp">
       <Filter>Core\GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SkeletalMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Actor.h">
@@ -247,5 +248,6 @@
     <ClInclude Include="Source\Transform.h">
       <Filter>Core\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Source\SkeletalMesh.h" />
   </ItemGroup>
 </Project>

@@ -56,6 +56,7 @@ namespace jkMath
 
 	struct VEC3
 	{
+		// Zero vecor.
 		VEC3() : x(0), y(0), z(0) {};
 		VEC3(const VEC3& _vec) :x(_vec.x), y(_vec.y), z(_vec.z) {};
 		VEC3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {};

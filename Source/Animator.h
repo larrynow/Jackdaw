@@ -1,19 +1,19 @@
 #pragma once
 
-#include "Model.h"
+#include "SkeletalMesh.h"
 #include<algorithm>
 
 class jkAnimator
 {
 public:
 	 
-	//Update a model's bone matrices.
-	static inline void UpdateBoneMatrices(jkModel* model, const Animation& animation, const double tick)
+	//Update a mesh's bone matrices.
+	static inline void UpdateBoneMatrices(jkSkeletalMesh* mesh, const Animation& animation, const double tick)
 	{
-		RecurUpdateBoneMatrix(model, tick, animation.pRootAnimationNode, MAT4());
+		RecurUpdateBoneMatrix(mesh, tick, animation.pRootAnimationNode, MAT4());
 	}
 
-	static void RecurUpdateBoneMatrix(jkModel* model, const double tick,
+	static void RecurUpdateBoneMatrix(jkSkeletalMesh* mesh, const double tick,
 		const NodeAnimation* curNode, const MAT4& parentTransform);
 
 	static MAT4 InterpolateTranslationMatrix(const double tick,

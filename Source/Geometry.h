@@ -3,15 +3,26 @@
 #define JKGEOMETRY_H_
 #include"Types.h"
 #include"Mesh.h"
+#include"Model.h"
+#include"Entity.h"
 
 class jkGeometry
 {
 public:
-
 	
-	inline static void MakeCubeMesh(jkMesh* mesh, const float width = 1.f) 
-	{ mCreateCube(width, mesh->mVertexBuffer, mesh->mIndexBuffer); };
+	// Geometry model which has only one mesh.
 
+	/*inline jkEntity* GetStaticMesh() {
+		return new jkEntity();
+	}*/
+
+	///////////////////////////////////
+	// Functions to create meshes.
+
+	inline static void MakeCubeMesh(jkMesh* mesh, const float width = 1.f) { 
+		mCreateCube(width, mesh->mVertexBuffer, mesh->mIndexBuffer); 
+	}
+	
 	// Return a cube's vertex positions.
 	static float* CreateCubeVertices();
 
@@ -31,6 +42,38 @@ public:
 	inline static void MakeSphereMesh(jkMesh* mesh, const VEC3& color, const float radius = 0.5f)
 	{
 		mCreateSphere(radius, color, mesh->mVertexBuffer, mesh->mIndexBuffer);
+	}
+
+	///////////////////////////////////////////////
+	// Functions to create entity with mesh.
+
+	inline static jkEntity* GetCubeEntity(const VEC3& pos, const float width = 1.f)
+	{
+		auto mesh = std::make_shared<jkMesh>();
+		mCreateCube(width, mesh->mVertexBuffer, mesh->mIndexBuffer);
+		std::shared_ptr<jkModel> model(new jkModel(mesh));
+
+		return new jkEntity(pos, model);
+	}
+	
+	inline static jkEntity* GetSphereEntity(const VEC3& pos, const VEC3& color = VEC3(1.f), const float radius = 0.5f)
+	{
+		auto mesh = std::make_shared<jkMesh>();
+		mCreateSphere(radius, color, mesh->mVertexBuffer, mesh->mIndexBuffer);
+		std::shared_ptr<jkModel> model(new jkModel(mesh));
+
+		return new jkEntity(pos, model);
+	}
+
+	inline static jkEntity* GetPlaneEnity(const VEC3& pos, 
+		const float width, const float height,
+		UINT m, UINT n, const float meshDensity = 1.0f)
+	{
+		auto mesh = std::make_shared<jkMesh>();
+		mCreateGrid(width, height, m, n, mesh->mVertexBuffer, mesh->mIndexBuffer, meshDensity);
+		std::shared_ptr<jkModel> model(new jkModel(mesh));
+
+		return new jkEntity(pos, model);
 	}
 
 private:

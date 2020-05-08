@@ -122,6 +122,9 @@ struct Animation
 {
 	Animation(int i) :animationID(i), pRootAnimationNode(nullptr){};
 	Animation() :Animation(0) {};
+
+	~Animation(){}//Should manage animation resource correctly.
+
 	int animationID;
 
 	NodeAnimation* pRootAnimationNode;
@@ -199,19 +202,5 @@ struct Material
 };
 
 struct Light;
-
-////////////////////////////////////////////////
-// Types for entity.
-
-struct Transform
-{
-	VEC3 position;
-	float scaleX;
-	float scaleY;
-	float scaleZ;
-
-	float mRotationPitch, mRotationYaw, mRotationRoll;// Angle.
-	//TODO: Latter for rotation
-};
 
 #endif // !JKTYPES_H_

@@ -1,36 +1,31 @@
 #include "Actor.h"
-#include "Jackdaw.h"
-
-void jkActor::AddMovement(const VEC3& direction, float movement)
-{
-	// Move actor position and its camera.
-	mTransform.Translate(direction, movement);
-	//mPosition = mPosition + (direction * movement);
-	m_pCamera->MoveCamera(direction, movement);
-}
+#include "Content.h"
 
 void jkActor::Move(const VEC3& direction, float speed)
 {
-	AddMovement(direction, speed * pTimer->GetDeltaTime());
+	AddMovement(direction, speed* pTimer->GetDeltaTime());
+}
+
+void jkActor::AddMovement(const VEC3& direction, float movement)
+{
+	mTransform.Translate(direction, movement);
+	m_pCamera->GetTransform().Translate(direction, movement);
 }
 
 void jkActor::RotatePitch(float value)
 {
-	mTransform.RotatePitch(value);
-	//m_pModel->RotatePitch(value); 
-	m_pCamera->RotatePitch(value * mMoveSpeed * pTimer->GetDeltaTime());
+	mTransform.RotatePitch(value * mMoveSpeed * pTimer->GetDeltaTime());
+	m_pCamera->GetTransform().RotatePitch(value * mMoveSpeed * pTimer->GetDeltaTime());
 }
 
 void jkActor::RotateYaw(float value)
 {
-	mTransform.RotateYaw(value);
-	//m_pModel->RotateYaw(value); 
-	m_pCamera->RotateYaw(value * mMoveSpeed * pTimer->GetDeltaTime());
+	mTransform.RotateYaw(value * mMoveSpeed * pTimer->GetDeltaTime());
+	m_pCamera->GetTransform().RotateYaw(value * mMoveSpeed * pTimer->GetDeltaTime());
 }
 
 void jkActor::RotateRoll(float value)
 {
-	mTransform.RotateRoll(value);
-	//m_pModel->RotateRoll(value); 
-	m_pCamera->RotateRoll(value * mMoveSpeed * pTimer->GetDeltaTime());
+	mTransform.RotateRoll(value * mMoveSpeed * pTimer->GetDeltaTime());
+	m_pCamera->GetTransform().RotateRoll(value * mMoveSpeed * pTimer->GetDeltaTime());
 }

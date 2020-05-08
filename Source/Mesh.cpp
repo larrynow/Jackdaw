@@ -73,6 +73,7 @@ void jkMesh::CalcTangentSpace(bool mirror)
 	}
 }
 
+/*
 void jkMesh::mFunction_UpdateRotateMatrix()
 {
 	mRotateMatrix = 
@@ -98,3 +99,4 @@ void jkMesh::mFunction_UpdateWorldMatrix()
 {
 	mWorldMatrix = mScaleTranslateMatrix * mRotateMatrix;//First rotate then translate.
 }
+*/
