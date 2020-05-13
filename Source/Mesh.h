@@ -11,7 +11,7 @@ namespace jkTerrain {
 
 class jkMesh
 {
-	friend class jkFrontendRenderer;
+	friend class jkDeviceWindow;
 	friend class jkBackendRenderer;
 	friend class jkBackendRendererGL;
 	friend class jkResourceManager;

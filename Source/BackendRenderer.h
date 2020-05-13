@@ -29,11 +29,6 @@ public:
 
 	virtual void StartUp() = 0;
 
-	inline void LoadMesh(jkMesh& mesh)
-	{
-		LoadMesh(&mesh);
-	}
-
 	inline void LoadMesh(jkMesh& mesh, const MAT4& worldMat)
 	{
 		auto data = mProcessMesh(&mesh, worldMat);
@@ -41,18 +36,10 @@ public:
 		mRenderDataMap.insert(std::make_pair(&mesh, data));
 	}
 
-	inline void LoadMesh(jkMesh* mesh) 
-	{ 
-		auto data = mProcessMesh(mesh);
-		mRenderDatas.push_back(data);
-		mRenderDataMap.insert(std::make_pair(mesh, data));
-	};
-
 	inline void LoadEnity(jkEntity* e)
 	{
 		for (auto me : e->GetModel()->mMeshes)
 		{
-			std::cout << e->GetTransform().GetPosition() << std::endl;
 			LoadMesh(*me, e->GetTransform().GetWorldMatrix());
 		}
 	}

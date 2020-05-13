@@ -120,13 +120,14 @@ struct NodeAnimation
 
 struct Animation
 {
-	Animation(int i) :animationID(i), pRootAnimationNode(nullptr){};
+	Animation(int i) :animationID(i), maxTime(0), pRootAnimationNode(nullptr){};
 	Animation() :Animation(0) {};
 
 	~Animation(){}//Should manage animation resource correctly.
 
 	int animationID;
 
+	double maxTime;
 	NodeAnimation* pRootAnimationNode;
 
 	//std::vector<NodeAnimation> nodeAnimations;

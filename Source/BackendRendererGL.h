@@ -9,18 +9,15 @@ struct GLRenderData : public RenderData
 {
 	GLRenderData() : RenderData(), VAO(0), VBO(0), EBO(0), 
 		difffuseTex(0), specularTex(0), normalTex(0),heightTex(0),
+		shininess(32),
 		pShader(nullptr){}
+
 	~GLRenderData() 
 	{
 		glDeleteVertexArrays(1, &VAO);
 		glDeleteBuffers(1, &VBO);
 		glDeleteBuffers(1, &EBO);
 
-		//for (auto tex : TexID)
-		{
-			//glDeleteTextures(1, &tex);
-			//TODO : texture should be delete at the time when no mesh is bind with.
-		}
 	}
 
 	UINT VAO, VBO, EBO;
@@ -29,7 +26,7 @@ struct GLRenderData : public RenderData
 	UINT normalTex;
 	UINT heightTex;
 	int shininess;
-	//std::vector<UINT> TexID;
+
 	glShader* pShader;
 
 	MAT4 worldMat;

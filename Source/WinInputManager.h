@@ -5,7 +5,7 @@
 #include"InputManager.h"
 #include<Windows.h>
 
-class jkWinInputManager : public jkInputManager
+class jkWinInputManager : public jkSysInputManager
 {
 public:
 
@@ -20,7 +20,7 @@ public:
 		SetCursorPos(pos.Width, pos.Height);
 	}
 
-	int MapKey(jkInput input) override;
+	int MapKey(jkSysInput input) override;
 
 };
 

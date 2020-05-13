@@ -1,5 +1,5 @@
 #include"Content.h"
-#include"FreeCamera.h"
+#include"CharacterExample.h"
 
 int main()
 {
@@ -8,18 +8,18 @@ int main()
 	content.SelectBackendDevice();
 	content.Init(800, 600);
 
-	content.RegisterInput(jkInput::KEY_W, "forward");
-	content.RegisterInput(jkInput::KEY_S, "backward");
-	content.RegisterInput(jkInput::KEY_A, "left");
-	content.RegisterInput(jkInput::KEY_D, "right");
-	content.RegisterInput(jkInput::KEY_SPACE, "up");
-	content.RegisterInput(jkInput::KEY_CTRL, "down");
+	content.RegisterInput(jkSysInput::KEY_W, "forward");
+	content.RegisterInput(jkSysInput::KEY_S, "backward");
+	content.RegisterInput(jkSysInput::KEY_A, "left");
+	content.RegisterInput(jkSysInput::KEY_D, "right");
+	content.RegisterInput(jkSysInput::KEY_SPACE, "up");
+	content.RegisterInput(jkSysInput::KEY_CTRL, "down");
 
-	content.RegisterInput(jkInput::MOUSE_LEFT, "attack");
-	content.RegisterInput(jkInput::MOUSE_RIGHT, "defend");
-	content.RegisterInput(jkInput::MOUSE_WHEEL, "zoom");
-	content.RegisterInput(jkInput::MOUSE_X, "turn");
-	content.RegisterInput(jkInput::MOUSE_Y, "lookup");
+	content.RegisterInput(jkSysInput::MOUSE_LEFT, "attack");
+	content.RegisterInput(jkSysInput::MOUSE_RIGHT, "defend");
+	//content.RegisterInput(jkSysInput::MOUSE_WHEEL, "zoom");
+	content.RegisterInput(jkSysInput::MOUSE_X, "turn");
+	content.RegisterInput(jkSysInput::MOUSE_Y, "lookup");
 
 	content.SetMouseSensi(0.4f);
 
@@ -31,7 +31,7 @@ int main()
 	//pEntity->MeshPath = "./Asset/model-triangulated.obj";
 	//pMap->AddEntity(pEntity);
 
-	auto pFreeCamera = new jkFreeCamera();
+	auto pFreeCamera = new jkExample::FPS::jkCharacterExample();
 	pFreeCamera->GetCamera()->SetFarPlane(300.f);
 	pMap->AddEntity(pFreeCamera);
 	pMap->ControllCharacter(pFreeCamera);

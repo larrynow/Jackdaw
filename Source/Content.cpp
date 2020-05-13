@@ -24,12 +24,12 @@ void jkContent::Init(UINT width, UINT height)
 	switch (mContentFrontendDevice)
 	{
 	case jkFrontendDevice::WIN_32:
-		m_pFrontendRenderer = new jkFrontendRendererWin32();
+		m_pDeviceWindow = new jkDeviceWindowWin32();
 		m_pInputManager = new jkWinInputManager();
 		m_pTimer = jkClockWin32::GetInstancePtr();
 		break;
 	default:
-		m_pFrontendRenderer = new jkFrontendRendererWin32();
+		m_pDeviceWindow = new jkDeviceWindowWin32();
 		m_pInputManager = new jkWinInputManager();
 		m_pTimer = jkClockWin32::GetInstancePtr();
 		break;
@@ -47,7 +47,7 @@ void jkContent::Init(UINT width, UINT height)
 
 	m_pTimer->Init();
 
-	m_pFrontendRenderer->Init(width, height, mContentBackendDevice);
+	m_pDeviceWindow->Init(width, height, mContentBackendDevice);
 
 	m_pBackendRenderer->StartUp();
 	m_pBackendRenderer->SetClearColor();
@@ -83,30 +83,39 @@ void jkContent::StartUp()
 
 		//////////////////////////////////
 		// Input.
-		for (auto it = m_pInputManager->input_name_map.begin(); it != m_pInputManager->input_name_map.end(); ++it)
+		for (auto it = m_pInputManager->input_map.begin(); it != m_pInputManager->input_map.end(); ++it)
 		{
-			auto input = (*it).first;
-			auto input_id = m_pInputManager->MapKey(input);// Note only key.
-			auto input_name = (*it).second;
+			auto sys_input = (*it).first;
+			auto input_id = m_pInputManager->MapKey(sys_input);// Note only key.
+			auto jk_input = (*it).second;// Note. this input WITHOUT a valide value.
 
 			//if (input_id != -1 && *(m_pInputManager->KeyStatus + input_id) == 1)
-			if (m_pInputManager->CheckInput(input))
+			if (m_pInputManager->CheckInput(sys_input))// Check if this input is actived.
 			{
 				//TODO:check global inputs.
-				if (m_pControlledCharacter->input_op_map.count(input_name))
+				//if (m_pControlledCharacter && m_pControlledCharacter->input_op_map.count(input_name))
+				//{
+				//	if (m_pControlledCharacter)// Check if character is still exist in content.
+				//	{
+				//		auto op = m_pControlledCharacter->input_op_map.at(input_name);
+				//		op(m_pInputManager->GetInputValue(input));
+				//		//PRINT(input);
+				//	}
+				//}
+				if (m_pControlledCharacter)
 				{
-					if (m_pControlledCharacter)// Check if character is still exist in content.
-					{
-						auto op = m_pControlledCharacter->input_op_map.at(input_name);
-						op(m_pInputManager->GetInputValue(input));
-						//PRINT(input);
-					}
+					m_pControlledCharacter->HandleInput(jk_input);
 				}
 				
 			}
 		}
 		
 		m_pInputManager->ResetMouseInput();
+
+		for (auto e : m_pCurrentMap->mEntities)
+		{
+			e->Update(m_pTimer->GetDeltaTime());
+		}
 
 		////////////////////////////////
 		// Fixed update.
@@ -123,7 +132,7 @@ void jkContent::StartUp()
 
 		if (m_pTerrainTileManager->GetTile())
 		{
-			m_pTerrainTileManager->TileUpdate(m_pControlledCharacter->GetCamera()->GetTransform().GetPosition(), MAT4());
+			m_pTerrainTileManager->TileUpdate(m_pCurrentCamera->GetTransform().GetPosition(), MAT4());
 
 			m_pBackendRenderer->ChangeDataIndices(m_pTerrainTileManager->GetMesh(),
 				m_pTerrainTileManager->GetTerrainData());
@@ -145,7 +154,7 @@ void jkContent::StartUp()
 
 		//m_pBackendRenderer->RenderGrass({2.0f, 0.0f, 0.0f});
 
-		m_pFrontendRenderer->Display();
+		m_pDeviceWindow->Display();
 
 		assert(m_pInputManager);
 		m_pInputManager->Listen();
@@ -160,13 +169,13 @@ void jkContent::ChangeView()
 
 bool jkContent::mShouldFinish()
 {
-	return jkInputManager::ExitStatus;
+	return jkSysInputManager::ExitStatus;
 }
 
 void jkContent::mPrepareBackendRenderer()
 {
 	// Set View and projection matrices.
-	m_pControlledCharacter->GetCamera()->MakeViewMatrix(m_pBackendRenderer->GetViewMatrix());
+	m_pCurrentCamera->MakeViewMatrix(m_pBackendRenderer->GetViewMatrix());
 	auto pCamera = m_pControlledCharacter->GetCamera();
 	if(mContentBackendDevice == jkBackendDevice::OPENGL)
 		MakePerspectiveMatrix_GL(m_pBackendRenderer->GetProjMatrix(), GetRadian(pCamera->GetFOV()/2), 
@@ -586,6 +595,7 @@ void jkContent::SelectMapNew(jkMap* map)
 {
 	m_pCurrentMap = map;
 	m_pControlledCharacter = map->GetControlledCharacter();
+	m_pCurrentCamera = m_pControlledCharacter->GetCamera();
 
 	jkResourceManager::ImportShader("simple", "./Shaders/shader.vs",
 		"./Shaders/shader.fs");
@@ -596,7 +606,7 @@ void jkContent::SelectMapNew(jkMap* map)
 
 	// A test cube mesh.
 	auto cube = jkGeometry::GetCubeEntity({ 0.f, 0.0f, 0.f });
-	std::cout << cube->mTransform.GetPosition() << std::endl;
+	//std::cout << cube->mTransform.GetPosition() << std::endl;
 	//cube->GetTransform().RotateRoll(90.f);//rotate with x.
 	//cube->GetTransform().RotateYaw(90.f);//rotate with y.
 	auto cubeMesh = cube->GetModel()->mMeshes[0];
@@ -608,7 +618,7 @@ void jkContent::SelectMapNew(jkMap* map)
 	m_pBackendRenderer->LoadEnity(cube);
 	cube->GetTransform().MoveTo({ 0.f, 0.f, 10.f });
 	m_pBackendRenderer->LoadEnity(cube);
-
+	map->AddEntity(cube);
 
 	/*jkModel* arthur_model = new jkModel(VEC3(-5.f, 0.f, -18.f));
 	jkResourceManager::LoadModel("./Asset/Arthur/arthur_attack_01.FBX", arthur_model);
@@ -618,6 +628,8 @@ void jkContent::SelectMapNew(jkMap* map)
 	{
 		m_pBackendRenderer->LoadMesh(mesh);
 	}*/
+
+
 
 	m_pBackendRenderer->SetUpLight(new DirectionLight({ -10.f, -10.f, 10.f }));
 

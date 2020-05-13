@@ -153,7 +153,7 @@ private:
 	{
 		MakeTranslateMatrix(mScaleTranslateMatrix, mPosition);
 	}
-	inline MAT4 mUpdateWorldMatrix()
+	inline void mUpdateWorldMatrix()
 	{
 		//Update world matrix from updated scaleTranslateMat and rotateMat.
 		mWorldMatrix = mScaleTranslateMatrix * mRotateMatrix;

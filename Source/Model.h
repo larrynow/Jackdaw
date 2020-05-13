@@ -28,6 +28,8 @@ public:
 
 	virtual ~jkModel() {}
 
+	inline bool WithAnimation() { return mAnimations.size() == 0; }
+
 protected:
 
 	std::string mModelPath;
@@ -42,7 +44,7 @@ protected:
 	std::vector<MAT4> mBoneMatrices;//Current bone matrices (with animation adjust).
 
 	std::vector<Animation> mAnimations;
-	std::unordered_map<std::string, int> mAnimationNameMap; //TODO : a animation name.
+	std::unordered_map<std::string, int> mAnimationNameMap;
 
 };
 

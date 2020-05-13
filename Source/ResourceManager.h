@@ -43,16 +43,6 @@ public:
 
 	static inline void FreeTexture(Texture* pTexture) { pTexture->~Texture(); }
 
-	/*static inline jkMesh* ImportMesh(const std::string& modelFile)
-	{
-
-	}
-
-	static inline void LoadMesh(const std::string& modelFile, jkMesh* mesh)
-	{
-
-	}*/
-
 	static void ImportCubeMap(std::vector<unsigned char*>& faces, ImageFormat& textureFormat, 
 		const std::string& cubeMapFolder, const std::string& formatName = ".jpg");
 

@@ -2,14 +2,15 @@
 #ifndef JKFRONDRENDERERWIN32_H_
 #define JKFRONDRENDERERWIN32_H_
 
-#include "FrontendRenderer.h"
-#define NOMINMAX // Disable max, min macro.
+#include "DeviceWindow.h"
+
 #include<Windows.h>
+#define NOMINMAX // Disable max, min macro.
 #include"Devices.h"
 
 #define BOX(msg) ::MessageBoxA(0, msg, 0, 0);
 
-class jkFrontendRendererWin32 : public jkFrontendRenderer
+class jkDeviceWindowWin32 : public jkDeviceWindow
 {
 public:
 

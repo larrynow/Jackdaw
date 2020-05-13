@@ -1,11 +1,6 @@
 #include "Actor.h"
 #include "Content.h"
 
-void jkActor::Move(const VEC3& direction, float speed)
-{
-	AddMovement(direction, speed* pTimer->GetDeltaTime());
-}
-
 void jkActor::AddMovement(const VEC3& direction, float movement)
 {
 	mTransform.Translate(direction, movement);

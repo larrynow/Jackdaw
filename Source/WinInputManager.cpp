@@ -1,6 +1,6 @@
 #include "WinInputManager.h"
 #include "Content.h"
-#include "FrontendRenderer.h"
+#include "DeviceWindow.h"
 
 void jkWinInputManager::Listen(void)
 {
@@ -17,7 +17,7 @@ void jkWinInputManager::ResetMouseInput()
 {
 	//Reset mouse to Center of window.
 	MouseMove = false;
-	auto pos = jkContent::GetInstance().m_pFrontendRenderer->GetScreenPosition(
+	auto pos = jkContent::GetInstance().m_pDeviceWindow->GetScreenPosition(
 		{ jkContent::GetInstance().mWidth / 2, jkContent::GetInstance().mHeight / 2 });
 	
 	SetCursorPos(pos.Width, pos.Height);
@@ -27,25 +27,25 @@ void jkWinInputManager::ResetMouseInput()
 }
 
 // Windows inputMap, from VK to BFInput.
-int jkWinInputManager::MapKey(jkInput input)
+int jkWinInputManager::MapKey(jkSysInput input)
 {
 	int ret = -1;
-	if (input >= jkInput::KEY_A && input <= jkInput::KEY_Z)
+	if (input >= jkSysInput::KEY_A && input <= jkSysInput::KEY_Z)
 	{
 		//  Key A to Z is ascii code of 'A' to 'Z'.
-		ret = int(input) - int(jkInput::KEY_A) + 65;
+		ret = int(input) - int(jkSysInput::KEY_A) + 65;
 	}
 	else
 	{
 		switch (input)
 		{
-		case(jkInput::KEY_SPACE):
+		case(jkSysInput::KEY_SPACE):
 			ret = VK_SPACE;
 			break;
-		case(jkInput::KEY_SHIFT):
+		case(jkSysInput::KEY_SHIFT):
 			ret = VK_SHIFT;
 			break;
-		case(jkInput::KEY_CTRL):
+		case(jkSysInput::KEY_CTRL):
 			ret = VK_CONTROL;
 			break;
 		default:

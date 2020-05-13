@@ -9,9 +9,9 @@
 #include"Clock.h"
 #include"Map.h"
 
-class jkFrontendRenderer;
+class jkDeviceWindow;
 class jkBackendRenderer;
-class jkInputManager;
+class jkSysInputManager;
 class jkResourceManager;
 namespace jkTerrain {
 	class jkTerrainManager;
@@ -50,7 +50,7 @@ public:
 
 	void StartUp();
 
-	inline void RegisterInput(jkInput input, std::string input_name) { m_pInputManager->RegisterInput(input, input_name); };
+	inline void RegisterInput(jkSysInput input, std::string input_name) { m_pInputManager->RegisterInput(input, input_name); };
 
 	inline void SetMouseSensi(float value) { m_pInputManager->SetMouseSensitivity(value); }
 
@@ -64,14 +64,16 @@ public:
 	jkFrontendDevice mContentFrontendDevice;
 	jkBackendDevice mContentBackendDevice;
 
-	jkFrontendRenderer* m_pFrontendRenderer;
+	jkDeviceWindow* m_pDeviceWindow;
 	jkBackendRenderer* m_pBackendRenderer;
 
 	jkMap* m_pCurrentMap;
 
 	jkCharacter* m_pControlledCharacter;
 	
-	jkInputManager* m_pInputManager;
+	jkCamera* m_pCurrentCamera;
+
+	jkSysInputManager* m_pInputManager;
 
 	jkClock* m_pTimer;
 

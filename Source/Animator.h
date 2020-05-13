@@ -1,19 +1,27 @@
 #pragma once
 
-#include "SkeletalMesh.h"
+#include "Types.h"
+#include "Model.h"
 #include<algorithm>
 
 class jkAnimator
 {
 public:
-	 
+	
+	// From model get animation.
+	jkAnimator(jkModel& model) :
+		m_rModel(model),
+		m_rAnimations(model.mAnimations), m_rAnimationNameMap(model.mAnimationNameMap) {}
+
+	void Play(std::string anim_name);
+
 	//Update a mesh's bone matrices.
-	static inline void UpdateBoneMatrices(jkSkeletalMesh* mesh, const Animation& animation, const double tick)
+	static inline void UpdateBoneMatrices(jkModel& model, const Animation& animation, const double tick)
 	{
-		RecurUpdateBoneMatrix(mesh, tick, animation.pRootAnimationNode, MAT4());
+		RecurUpdateBoneMatrix(model, tick, animation.pRootAnimationNode, MAT4());
 	}
 
-	static void RecurUpdateBoneMatrix(jkSkeletalMesh* mesh, const double tick,
+	static void RecurUpdateBoneMatrix(jkModel& model, const double tick,
 		const NodeAnimation* curNode, const MAT4& parentTransform);
 
 	static MAT4 InterpolateTranslationMatrix(const double tick,
@@ -28,6 +36,12 @@ public:
 	template<typename ValueT>
 	static ValueT InterpolateKeyInfo(const double tick,
 		const std::vector<KeyInfo<ValueT>>& KeyInfos);
+
+private:
+
+	jkModel& m_rModel;
+	std::vector<Animation>& m_rAnimations;
+	std::unordered_map<std::string, int>& m_rAnimationNameMap;
 
 };
 

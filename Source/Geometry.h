@@ -10,40 +10,12 @@ class jkGeometry
 {
 public:
 	
-	// Geometry model which has only one mesh.
-
-	/*inline jkEntity* GetStaticMesh() {
-		return new jkEntity();
-	}*/
-
-	///////////////////////////////////
-	// Functions to create meshes.
-
-	inline static void MakeCubeMesh(jkMesh* mesh, const float width = 1.f) { 
-		mCreateCube(width, mesh->mVertexBuffer, mesh->mIndexBuffer); 
-	}
-	
 	// Return a cube's vertex positions.
 	static float* CreateCubeVertices();
-
-	inline static void MakePlaneMesh(jkMesh* gridMesh, const float width, const float height,
-		UINT m, UINT n, const float meshDensity = 1.0f)
-	{
-		mCreateGrid(width, height, m, n, gridMesh->mVertexBuffer, gridMesh->mIndexBuffer, meshDensity);
-	};
 
 	static void MakeHeightMapMesh(const float width, const float height,
 		UINT m, UINT n, const std::vector<float>& heightInfo, jkMesh* gridMesh, const float meshScale=0.1f);
 	
-	inline static void MakeCuboidMesh(jkMesh* mesh,
-		const float length, const float width, const float height)
-	{}
-
-	inline static void MakeSphereMesh(jkMesh* mesh, const VEC3& color, const float radius = 0.5f)
-	{
-		mCreateSphere(radius, color, mesh->mVertexBuffer, mesh->mIndexBuffer);
-	}
-
 	///////////////////////////////////////////////
 	// Functions to create entity with mesh.
 
@@ -77,6 +49,9 @@ public:
 	}
 
 private:
+
+	//////////////////////////////////////
+	// Functions to create meshe vertices.
 
 	static void mCreateCube(const float width,
 		std::vector<Vertex>& vertices, std::vector<UINT>& indices);// Create a Cube's vertices and indices.

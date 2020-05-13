@@ -163,6 +163,8 @@
     <None Include="Shaders\skybox.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CharacterExample.cpp" />
+    <ClCompile Include="Source\CharacterState.cpp" />
     <ClCompile Include="Source\SkeletalMesh.cpp" />
     <ClCompile Include="Source\Animator.cpp" />
     <ClCompile Include="Source\Actor.cpp" />
@@ -174,7 +176,6 @@
     <ClCompile Include="Source\Content.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\EntityFactory.cpp" />
-    <ClCompile Include="Source\FrontendRenderer.cpp" />
     <ClCompile Include="Source\FrontendRendererWin32.cpp" />
     <ClCompile Include="Source\Geometry.cpp" />
     <ClCompile Include="Source\glad.c" />
@@ -194,6 +195,8 @@
     <ClCompile Include="Source\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\jkInput.h" />
+    <ClInclude Include="Source\CharacterState.h" />
     <ClInclude Include="Source\SkeletalMesh.h" />
     <ClInclude Include="Source\Animator.h" />
     <ClInclude Include="Source\Actor.h" />
@@ -208,8 +211,8 @@
     <ClInclude Include="Source\Devices.h" />
     <ClInclude Include="Source\Entity.h" />
     <ClInclude Include="Source\EntityFactory.h" />
-    <ClInclude Include="Source\FreeCamera.h" />
-    <ClInclude Include="Source\FrontendRenderer.h" />
+    <ClInclude Include="Source\CharacterExample.h" />
+    <ClInclude Include="Source\DeviceWindow.h" />
     <ClInclude Include="Source\FrontendRendererWin32.h" />
     <ClInclude Include="Source\Geometry.h" />
     <ClInclude Include="Source\GLShader.h" />

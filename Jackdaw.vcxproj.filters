@@ -10,9 +10,6 @@
     <Filter Include="Thread">
       <UniqueIdentifier>{84e567d7-c6fa-454b-afe2-a9b33a4ed358}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Input">
-      <UniqueIdentifier>{37c4dc7e-631d-43a8-980a-bf164d12a8c4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\GameObject">
       <UniqueIdentifier>{e5321753-40b7-4d0e-867f-125551244aac}</UniqueIdentifier>
     </Filter>
@@ -24,6 +21,9 @@
     </Filter>
     <Filter Include="Core\Component">
       <UniqueIdentifier>{c301e7e0-e14d-4681-8ea3-59bbd09c050b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\SysInput">
+      <UniqueIdentifier>{37c4dc7e-631d-43a8-980a-bf164d12a8c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -72,14 +72,11 @@
     <ClCompile Include="Source\Entity.cpp">
       <Filter>Core\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="Source\FrontendRenderer.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="Source\FrontendRendererWin32.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="Source\WinInputManager.cpp">
-      <Filter>Core\Input</Filter>
+      <Filter>Core\SysInput</Filter>
     </ClCompile>
     <ClCompile Include="Source\JobList.cpp">
       <Filter>Thread</Filter>
@@ -88,7 +85,7 @@
       <Filter>Thread</Filter>
     </ClCompile>
     <ClCompile Include="Source\InputManager.cpp">
-      <Filter>Core\Input</Filter>
+      <Filter>Core\SysInput</Filter>
     </ClCompile>
     <ClCompile Include="Source\Mesh.cpp">
       <Filter>Core\GameObject</Filter>
@@ -138,6 +135,8 @@
       <Filter>Core\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Source\SkeletalMesh.cpp" />
+    <ClCompile Include="Source\CharacterState.cpp" />
+    <ClCompile Include="Source\CharacterExample.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Actor.h">
@@ -155,14 +154,11 @@
     <ClInclude Include="Source\Character.h">
       <Filter>Core\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="Source\FrontendRenderer.h">
-      <Filter>Render</Filter>
-    </ClInclude>
     <ClInclude Include="Source\FrontendRendererWin32.h">
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Source\WinInputManager.h">
-      <Filter>Core\Input</Filter>
+      <Filter>Core\SysInput</Filter>
     </ClInclude>
     <ClInclude Include="Source\Jackdaw.h">
       <Filter>Common</Filter>
@@ -174,7 +170,7 @@
       <Filter>Core\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Source\InputManager.h">
-      <Filter>Core\Input</Filter>
+      <Filter>Core\SysInput</Filter>
     </ClInclude>
     <ClInclude Include="Source\JobList.h">
       <Filter>Thread</Filter>
@@ -236,9 +232,6 @@
     <ClInclude Include="Source\Singleton.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Source\FreeCamera.h">
-      <Filter>Core\GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Light.h">
       <Filter>Render</Filter>
     </ClInclude>
@@ -249,5 +242,15 @@
       <Filter>Core\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Source\SkeletalMesh.h" />
+    <ClInclude Include="Source\DeviceWindow.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CharacterState.h" />
+    <ClInclude Include="Source\jkInput.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CharacterExample.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

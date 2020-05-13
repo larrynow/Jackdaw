@@ -18,7 +18,8 @@ public:
 		float moveSpeed = 10.f, float rotateSpeed = 1.f)
 		: jkEntity(actorPosition),
 		m_pCamera(new jkCamera(cameraPosition)), m_bIsPitchRestricted(true),
-		mMoveSpeed(moveSpeed), mRotateSpeed(rotateSpeed)
+		mMoveSpeed(moveSpeed), mRotateSpeed(rotateSpeed),
+		mMoveDirection()
 	{
 		//Also adjust camera direction to entity front direction.
 		m_pCamera->LookAt(m_pCamera->GetTransform().GetPosition()+mTransform.GetFront());
@@ -31,10 +32,11 @@ public:
 	// Move both actor and its camera.
 
 	virtual void AddMovement(const VEC3& direction, float movement);
+
+	// Move with current direction and speed.
+	virtual inline void UpdateMovement(const double delta_time) { AddMovement(mMoveDirection, mMoveSpeed*delta_time); }
 	
-	virtual void Move(const VEC3& direction, float speed);
-	
-	inline virtual void MoveForward(float scaling=1.f) { 
+	/*inline virtual void MoveForward(float scaling=1.f) { 
 		Move(m_pCamera->GetTransform().GetFront(), scaling*mMoveSpeed); 
 	}
 	inline virtual void MoveBack(float scaling=1.f) { 
@@ -51,7 +53,7 @@ public:
 	}
 	inline virtual void MoveDown(float scaling=1.f) { 
 		Move(-m_pCamera->GetTransform().GetUp(), scaling*mMoveSpeed); 
-	}
+	}*/
 
 	virtual void RotatePitch(float scaling = 1.f);
 	virtual void RotateYaw(float scaling = 1.f);
@@ -68,14 +70,19 @@ public:
 
 	inline virtual void ZoomUp(float value) { m_pCamera->SetFOV(m_pCamera->GetFOV()*value); }
 
+	inline VEC3& GetMovingDirection() { return mMoveDirection; }
+
+	inline void ChangeMovingDirection(const VEC3& new_dir) { mMoveDirection = new_dir; }
+
+	virtual void Update(const double delta_time) {};
+
 private:
 
 	/////////////////////////////////////
 	// Actor status.
 
-	//VEC3 mPosition;
-
 	float mMoveSpeed;
+	VEC3 mMoveDirection;
 
 	float mRotateSpeed;
 

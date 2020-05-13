@@ -5,17 +5,18 @@
 #include"Types.h"
 #include"Devices.h"
 #include"Mesh.h"
-#include"InputManager.h"
 
 /*
-jkFrontRenderer : device renderer, sharing buffers with BackendRenderer.
+jkWindow : device window setting, sharing buffers with BackendRenderer.
 */
 
-class jkFrontendRenderer
+class jkSysInputManager;
+
+class jkDeviceWindow
 {
 public:
 
-	virtual ~jkFrontendRenderer() {};
+	virtual ~jkDeviceWindow() {};
 
 	// Init a window.
 	virtual void Init(UINT bufferWidth, UINT bufferHeight, jkBackendDevice backendDevice)=0;
@@ -23,8 +24,6 @@ public:
 	virtual void Display() = 0;
 
 	virtual Rect<UINT> GetScreenPosition(Rect<UINT> window_pos) = 0;
-
-	void PushToBackend(class BackendRenderer*);
 
 protected:
 
@@ -36,7 +35,7 @@ protected:
 
 	std::vector<RenderData> mRenderDataList;
 
-	jkInputManager* m_pInputManager;
+	jkSysInputManager* m_pInputManager;
 
 };
 

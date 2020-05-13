@@ -13,6 +13,9 @@
 std::vector<Texture*> jkResourceManager::mTextures = std::vector<Texture*>();
 std::unordered_map<std::string, glShader*> jkResourceManager::mShaderMap = 
 	std::unordered_map<std::string, glShader*>();
+std::unordered_map<std::string, jkModel*> jkResourceManager::mModelMap =
+	std::unordered_map<std::string, jkModel*>();
+
 
 void jkResourceManager::LoadModel(const std::string& modelFile, jkModel* model,
 	bool withAnim)
@@ -164,13 +167,14 @@ void jkResourceManager::ProcessAnim(const aiScene* scene, jkModel* model)
 		model->mAnimations[i].animationID = i;
 		model->mAnimations[i].pRootAnimationNode = nullptr;
 
+		double max_time = 0.0;
+
 		//Collect channels in an animation.
 		model->mAnimations[i].nodeAnimationMap.reserve(ai_animation->mNumChannels);
 		for (int j = 0; j < ai_animation->mNumChannels; j++)
 		{
 			//Each channel affect a node.
 			auto channel = ai_animation->mChannels[j];
-
 
 			NodeAnimation nodeAnim(channel->mNodeName.C_Str());
 			nodeAnim.positionKeys.reserve(channel->mNumPositionKeys);
@@ -195,10 +199,17 @@ void jkResourceManager::ProcessAnim(const aiScene* scene, jkModel* model)
 					KeyInfo<VEC3>(channel->mScalingKeys[i].mTime,
 						VEC3FromAiVector(channel->mScalingKeys[i].mValue)));
 			}
+			auto pos_max_time = channel->mPositionKeys[channel->mNumPositionKeys - 1].mTime;
+			auto rot_max_time = channel->mRotationKeys[channel->mNumRotationKeys - 1].mTime;
+			auto sca_max_time = channel->mScalingKeys[channel->mNumScalingKeys - 1].mTime;
+
+			auto max_in_3 = std::max(std::max(pos_max_time, rot_max_time), sca_max_time);
+			max_time = std::max(max_in_3, max_time);
 
 			model->mAnimations[i].nodeAnimationMap.insert(
 				std::make_pair(channel->mNodeName.C_Str(), nodeAnim));
 		}
+		model->mAnimations[i].maxTime = max_time;
 
 		RecurLinkNodeAnim(scene->mRootNode, scene, nullptr, model->mAnimations[i]);
 	}

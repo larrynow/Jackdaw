@@ -1,6 +1,8 @@
 #include "Animator.h"
+#include "Model.h"
+#include "Content.h"
 
-void jkAnimator::RecurUpdateBoneMatrix(jkSkeletalMesh* mesh,
+void jkAnimator::RecurUpdateBoneMatrix(jkModel& model,
 	const double tick, const NodeAnimation* curNode, const MAT4& parentTransform)
 {
 	MAT4 translatMatrix = InterpolateTranslationMatrix(tick, curNode->positionKeys);
@@ -10,13 +12,13 @@ void jkAnimator::RecurUpdateBoneMatrix(jkSkeletalMesh* mesh,
 	MAT4 current_transform =
 		translatMatrix * rotationMatrix * scalingMatrix;
 
-	auto id = mesh->mBoneIDMap.at(curNode->nodeName);
-	mesh->mBoneMatrices[id] = parentTransform * current_transform 
-		* mesh->mBoneOffsetMatrices[id];
+	auto id = model.mBoneIDMap.at(curNode->nodeName);
+	model.mBoneMatrices[id] = parentTransform * current_transform
+		* model.mBoneOffsetMatrices[id];
 
 	for (auto pChild : curNode->childNodeAnims)
 	{
-		RecurUpdateBoneMatrix(mesh, tick, pChild,
+		RecurUpdateBoneMatrix(model, tick, pChild,
 			parentTransform * current_transform);
 	}
 }
@@ -61,4 +63,17 @@ MAT4 jkAnimator::InterpolateScalingMatrix(const double tick,
 	MakeScaleMatrix(ret, scaleVec);
 
 	return ret;
+}
+
+void jkAnimator::Play(std::string anim_name)
+{
+	static double tick = 0.0;
+	if (m_rAnimationNameMap.count(anim_name))
+	{
+		auto& anim = m_rModel.mAnimations[m_rModel.mAnimationNameMap[anim_name]];
+		UpdateBoneMatrices(m_rModel, anim, tick);
+
+		tick += jkContent::GetInstance().m_pTimer->GetDeltaTime();
+		if (tick >= anim.maxTime) tick = 0.0;// In circulation way.
+	}
 }

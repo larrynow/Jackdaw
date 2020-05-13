@@ -8,52 +8,52 @@
 #include "imm.h"
 #pragma comment(lib, "imm32.lib")
 
-LRESULT jkFrontendRendererWin32::mEventsHandler(HWND hWnd, UINT msg,
+LRESULT jkDeviceWindowWin32::mEventsHandler(HWND hWnd, UINT msg,
 	WPARAM wParam, LPARAM lParam) 
 {
 	switch (msg) 
 	{
 	case WM_CLOSE: 
-		jkInputManager::ExitStatus = 1;
+		jkSysInputManager::ExitStatus = 1;
 		break;
 	case WM_KEYDOWN:
-		jkInputManager::KeyStatus[wParam & 511] = 1;
+		jkSysInputManager::KeyStatus[wParam & 511] = 1;
 		break;
 	case WM_KEYUP:
-		jkInputManager::KeyStatus[wParam & 511] = 0;
+		jkSysInputManager::KeyStatus[wParam & 511] = 0;
 		break;
 	case WM_MOUSEMOVE:
 	{
-		jkInputManager::MouseMove = true;
+		jkSysInputManager::MouseMove = true;
 		//jkInputManager::LastMousePosX = jkInputManager::MousePosX;
 		//jkInputManager::LastMousePosY = jkInputManager::MousePosY;
-		jkInputManager::MousePosX = LOWORD(lParam);
-		jkInputManager::MousePosY = HIWORD(lParam);
+		jkSysInputManager::MousePosX = LOWORD(lParam);
+		jkSysInputManager::MousePosY = HIWORD(lParam);
 		break;
 	}
 	case WM_LBUTTONDOWN:
 	{
-		jkInputManager::MouseLeftButton = 1;
+		jkSysInputManager::MouseLeftButton = 1;
 		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
-		jkInputManager::MouseRightButton = 1;
+		jkSysInputManager::MouseRightButton = 1;
 		break;
 	}
 	case WM_LBUTTONUP:
 	{
-		jkInputManager::MouseLeftButton = 0;
+		jkSysInputManager::MouseLeftButton = 0;
 		break;
 	}
 	case WM_RBUTTONUP:
 	{
-		jkInputManager::MouseRightButton = 0;
+		jkSysInputManager::MouseRightButton = 0;
 		break;
 	}
 	case WM_MOUSEWHEEL:
 	{
-		jkInputManager::MouseWheel = HIWORD(wParam);
+		jkSysInputManager::MouseWheel = HIWORD(wParam);
 	}
 	default: 
 		return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -62,7 +62,7 @@ LRESULT jkFrontendRendererWin32::mEventsHandler(HWND hWnd, UINT msg,
 	return 0;
 }
 
-void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight, jkBackendDevice backendDevice)
+void jkDeviceWindowWin32::Init(UINT bufferWidth, UINT bufferHeight, jkBackendDevice backendDevice)
 {
 	{
 		////////////////////////////////
@@ -121,14 +121,14 @@ void jkFrontendRendererWin32::Init(UINT bufferWidth, UINT bufferHeight, jkBacken
 	}
 }
 
-void jkFrontendRendererWin32::Display()
+void jkDeviceWindowWin32::Display()
 {
 	auto hdc = GetDC(m_hWindowHandle);
 	SwapBuffers(hdc);
 	ReleaseDC(m_hWindowHandle, hdc);
 }
 
-Rect<UINT> jkFrontendRendererWin32::GetScreenPosition(Rect<UINT> window_pos)
+Rect<UINT> jkDeviceWindowWin32::GetScreenPosition(Rect<UINT> window_pos)
 {
 	POINT window_point;
 	window_point.x = window_pos.Width;
@@ -139,7 +139,7 @@ Rect<UINT> jkFrontendRendererWin32::GetScreenPosition(Rect<UINT> window_pos)
 	return { (UINT)window_point.x, (UINT)window_point.y };
 }
 
-bool jkFrontendRendererWin32::mCreateGLContext(HWND hWnd)
+bool jkDeviceWindowWin32::mCreateGLContext(HWND hWnd)
 {
 	// Get window DC.
 	HDC hDC = GetDC(hWnd);
@@ -187,7 +187,7 @@ bool jkFrontendRendererWin32::mCreateGLContext(HWND hWnd)
 	return true;
 }
 
-void jkFrontendRendererWin32::mDestroyGLContext()
+void jkDeviceWindowWin32::mDestroyGLContext()
 {
 	if (m_hGLRC)
 	{
