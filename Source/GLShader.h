@@ -145,6 +145,11 @@ public:
 	{
 		glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 	}
+	void setMat4Vector(const std::string& name, const std::vector<MAT4>& mat_vec)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 
+			mat_vec.size(), GL_TRUE, &(mat_vec[0].m[0][0]));
+	}
 
 private:
 	void checkCompileError(unsigned int shader, std::string type)

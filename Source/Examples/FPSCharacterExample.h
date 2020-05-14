@@ -1,5 +1,5 @@
 #pragma once
-#include "Character.h"
+#include "../Character.h"
 
 namespace jkExample
 {

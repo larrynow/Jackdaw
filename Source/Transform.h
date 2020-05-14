@@ -22,16 +22,18 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	// Change position.
 
-	inline void MoveTo(const VEC3& _pos) 
+	inline jkTransform* MoveTo(const VEC3& _pos)
 	{ 
-		if (_pos == mPosition) return;
+		if (_pos == mPosition) return this;
 		mPosition = _pos; 
 		mUpdateTranslateMatrix(); 
 		mUpdateWorldMatrix();
+
+		return this;
 	}
-	inline void Translate(const VEC3& _direction, float _distance)
+	inline jkTransform* Translate(const VEC3& _direction, float _distance)
 	{
-		MoveTo(mPosition + (_direction * _distance));
+		return MoveTo(mPosition + (_direction * _distance));
 	}
 
 	/////////////////////////////////////////////////////////////////////

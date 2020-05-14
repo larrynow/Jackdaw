@@ -33,9 +33,9 @@ public:
 	jkEntity(const VEC3& position, std::shared_ptr <jkModel> model) :
 		m_pModel(model), mTransform(position), m_pAnimator(nullptr)
 	{
-		if (m_pModel->WithAnimation())
+		if (m_pModel->IsWithAnimation())
 		{
-			jkAnimator* m_pAnimator = new jkAnimator(*model);
+			m_pAnimator = new jkAnimator(*model);
 		}
 	}
 

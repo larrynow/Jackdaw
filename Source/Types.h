@@ -70,7 +70,7 @@ struct Vertex
 		int i;
 		for (i = 0; i < MaxBoneNum; i++)
 		{
-			if (boneWeigths[i] == 0)//Find index to add bone info.
+			if (boneWeigths[i] == 0.0)//Find index to add bone info.
 			{
 				break;
 			}
@@ -104,37 +104,44 @@ struct KeyInfo
 
 };
 
-//Animation for one node.
-struct NodeAnimation
+struct NodeAnimationKeys
 {
-	NodeAnimation(std::string name) :nodeName(name) {};
-
-	std::string nodeName;
-	std::vector<NodeAnimation*> childNodeAnims;
-
-	//Key Frame animations.
+	//Key Frame animations for one node.
 	std::vector<KeyInfo<VEC3>> positionKeys;
-	std::vector<KeyInfo<VEC4>> rotationKeys;
+	std::vector<KeyInfo<Quaternion>> rotationKeys;
 	std::vector<KeyInfo<VEC3>> scalingKeys;
 };
 
+//One node in an Animation.
+struct AnimationNode
+{
+	AnimationNode(std::string name) :nodeName(name), pAnimationKeys(nullptr){};
+
+	std::string nodeName;
+	std::vector<AnimationNode*> childNodeAnims;
+
+	NodeAnimationKeys* pAnimationKeys;
+
+	//Have a transform with parent if node is not a bone.
+	MAT4 transformWithParent;
+};
+
+typedef AnimationNode* AnimationTree;
+
 struct Animation
 {
-	Animation(int i) :animationID(i), maxTime(0), pRootAnimationNode(nullptr){};
+	Animation(int i) :animationID(i), maxTime(0), tickPerSec(1.0), pRoot(nullptr){};
 	Animation() :Animation(0) {};
 
 	~Animation(){}//Should manage animation resource correctly.
 
 	int animationID;
 
-	double maxTime;
-	NodeAnimation* pRootAnimationNode;
+	double maxTime;// Max tick.
+	double tickPerSec;
 
-	//std::vector<NodeAnimation> nodeAnimations;
-	std::unordered_map<std::string, NodeAnimation> nodeAnimationMap;
+	AnimationTree pRoot;
 
-	//BoneMatrices at each tick.
-	//std::vector<std::vector<MAT4>> TickBoneMatrices;
 };
 
 class jkMesh;
@@ -142,10 +149,11 @@ class jkMesh;
 struct RenderData
 {
 	// Backend Renderer load Mesh as RenderData.
-	RenderData() : pOriginMesh(nullptr){}
+	RenderData() : pOriginMesh(nullptr), pBoneMatrices(nullptr), IndexSize(0){}
 	virtual ~RenderData() {}
 
 	jkMesh* pOriginMesh;
+	const std::vector<MAT4>* pBoneMatrices;
 	UINT IndexSize;
 };
 

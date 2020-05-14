@@ -16,9 +16,24 @@ std::unordered_map<std::string, glShader*> jkResourceManager::mShaderMap =
 std::unordered_map<std::string, jkModel*> jkResourceManager::mModelMap =
 	std::unordered_map<std::string, jkModel*>();
 
+// Helper from aiMat4 to MAT4.
+auto aiMat4_to_Mat4 = [](const aiMatrix4x4& aimat)
+{
+	MAT4 mat;
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			mat[i][j] = aimat[i][j];
+		}
+	}
+
+	return mat;
+};
 
 void jkResourceManager::LoadModel(const std::string& modelFile, jkModel* model,
-	bool withAnim)
+	const std::vector<std::string>& anima_names)
 {
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(modelFile, 
@@ -33,8 +48,8 @@ void jkResourceManager::LoadModel(const std::string& modelFile, jkModel* model,
 	}
 
 	RecurProcessNode(scene->mRootNode, scene, model);
-	if(withAnim)
-		ProcessAnim(scene, model);
+	if(anima_names.size()!=0)
+		ProcessAnim(scene, model, anima_names);
 }
 
 void jkResourceManager::RecurProcessNode(aiNode* node, const aiScene* scene, jkModel* model)
@@ -42,7 +57,7 @@ void jkResourceManager::RecurProcessNode(aiNode* node, const aiScene* scene, jkM
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		model->mMeshes.push_back(ProcessMesh(mesh, scene));
+		model->mMeshes.push_back(ProcessMesh(mesh, scene, model));
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -51,11 +66,11 @@ void jkResourceManager::RecurProcessNode(aiNode* node, const aiScene* scene, jkM
 	}
 }
 
-std::shared_ptr<jkMesh> jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+std::shared_ptr<jkMesh> jkResourceManager::ProcessMesh(aiMesh* mesh, const aiScene* scene, jkModel* model)
 {
 	//Resource new.
 	//auto ret = new jkMesh();
-	auto ret = std::make_shared<jkSkeletalMesh>();
+	auto ret = std::make_shared<jkMesh>();
 		//new jkSkeletalMesh();
 
 	std::vector<Vertex>& vertices = ret->mVertexBuffer;
@@ -108,47 +123,35 @@ std::shared_ptr<jkMesh> jkResourceManager::ProcessMesh(aiMesh* mesh, const aiSce
 		for (unsigned int j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
-		
-	// Skeletal animations.
-	std::vector<MAT4>& bone_offset = ret->mBoneOffsetMatrices;
-	bone_offset.resize(mesh->mNumBones);
 
-	// Helper from aiMat4 to MAT4.
-	auto aiMat4_to_Mat4 = [](const aiMatrix4x4& aimat)
-	{
-		MAT4 mat;
+	std::vector<MAT4>& bone_offset = model->mBoneOffsetMatrices;
+	bone_offset.reserve(mesh->mNumBones);
 
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				mat[i][j] = aimat[i][j];
-			}
-		}
+	auto& bone_mat = model->mBoneMatrices;
+	bone_mat.resize(mesh->mNumBones);
 
-		return mat;
-	};
+	
 
 	for (int i = 0; i < mesh->mNumBones; i++)
 	{
 		auto bone = mesh->mBones[i];
 		bone_offset.push_back(aiMat4_to_Mat4(bone->mOffsetMatrix));
-		auto id = bone_offset.size() - 1;
-		ret->mBoneIDMap.insert(
-			std::make_pair(bone->mName.C_Str(), id));
+		model->mBoneIDMap.insert(
+			std::make_pair(bone->mName.C_Str(), i));
 
 		for (int j = 0; j < bone->mNumWeights; j++)
 		{
 			auto weight = bone->mWeights[j];
 			//Let bone influence vertex.
-			vertices[weight.mVertexId].AddBone(id, weight.mWeight);
+			vertices[weight.mVertexId].AddBone(i, weight.mWeight);
 		}
 	}
 
 	return ret;
 }
 
-void jkResourceManager::ProcessAnim(const aiScene* scene, jkModel* model)
+void jkResourceManager::ProcessAnim(const aiScene* scene, jkModel* model, 
+	const std::vector<std::string>& anima_names)
 {
 	auto VEC3FromAiVector = [](const aiVector3D& aVec3)
 	{
@@ -157,45 +160,52 @@ void jkResourceManager::ProcessAnim(const aiScene* scene, jkModel* model)
 
 	auto VEC4FromAiQuaternion = [](const aiQuaternion& aQuat)
 	{
-		return VEC4(aQuat.x, aQuat.y, aQuat.z, aQuat.w);
+		return VEC4(aQuat.w, aQuat.x, aQuat.y, aQuat.z);
 	};
 
 	model->mAnimations.resize(scene->mNumAnimations);
 	for (int i = 0; i < scene->mNumAnimations; i++)
 	{
+		if (i > anima_names.size()) break;
+
 		auto ai_animation = scene->mAnimations[i];
+		double tick_per_sec = ai_animation->mTicksPerSecond;
+
+		model->mAnimationNameMap.insert(std::make_pair(anima_names[i], i));
 		model->mAnimations[i].animationID = i;
-		model->mAnimations[i].pRootAnimationNode = nullptr;
+		model->mAnimations[i].pRoot = nullptr;
+		model->mAnimations[i].tickPerSec = tick_per_sec;
 
 		double max_time = 0.0;
 
-		//Collect channels in an animation.
-		model->mAnimations[i].nodeAnimationMap.reserve(ai_animation->mNumChannels);
+		std::unordered_map<std::string, NodeAnimationKeys*> node_key_anim_map;
+		node_key_anim_map.reserve(ai_animation->mNumChannels);
+
+		//Collect channels in an animation(node which changes in this animation).
 		for (int j = 0; j < ai_animation->mNumChannels; j++)
 		{
 			//Each channel affect a node.
 			auto channel = ai_animation->mChannels[j];
-
-			NodeAnimation nodeAnim(channel->mNodeName.C_Str());
-			nodeAnim.positionKeys.reserve(channel->mNumPositionKeys);
-			nodeAnim.rotationKeys.reserve(channel->mNumRotationKeys);
-			nodeAnim.scalingKeys.reserve(channel->mNumScalingKeys);
+			NodeAnimationKeys* nodeAnimKeys = new NodeAnimationKeys();
+			nodeAnimKeys->positionKeys.reserve(channel->mNumPositionKeys);
+			nodeAnimKeys->rotationKeys.reserve(channel->mNumRotationKeys);
+			nodeAnimKeys->scalingKeys.reserve(channel->mNumScalingKeys);
 
 			for (int i = 0; i < channel->mNumPositionKeys; i++)
 			{
-				nodeAnim.positionKeys.push_back(
+				nodeAnimKeys->positionKeys.push_back(
 					KeyInfo<VEC3>(channel->mPositionKeys[i].mTime,
 						VEC3FromAiVector(channel->mPositionKeys[i].mValue)));
 			}
 			for (int i = 0; i < channel->mNumRotationKeys; i++)
 			{
-				nodeAnim.rotationKeys.push_back(
-					KeyInfo<VEC4>(channel->mRotationKeys[i].mTime,
+				nodeAnimKeys->rotationKeys.push_back(
+					KeyInfo<Quaternion>(channel->mRotationKeys[i].mTime,
 						VEC4FromAiQuaternion(channel->mRotationKeys[i].mValue)));
 			}
 			for (int i = 0; i < channel->mNumScalingKeys; i++)
 			{
-				nodeAnim.scalingKeys.push_back(
+				nodeAnimKeys->scalingKeys.push_back(
 					KeyInfo<VEC3>(channel->mScalingKeys[i].mTime,
 						VEC3FromAiVector(channel->mScalingKeys[i].mValue)));
 			}
@@ -206,38 +216,37 @@ void jkResourceManager::ProcessAnim(const aiScene* scene, jkModel* model)
 			auto max_in_3 = std::max(std::max(pos_max_time, rot_max_time), sca_max_time);
 			max_time = std::max(max_in_3, max_time);
 
-			model->mAnimations[i].nodeAnimationMap.insert(
-				std::make_pair(channel->mNodeName.C_Str(), nodeAnim));
+			node_key_anim_map.insert(
+				std::make_pair(channel->mNodeName.C_Str(), nodeAnimKeys));
 		}
 		model->mAnimations[i].maxTime = max_time;
 
-		RecurLinkNodeAnim(scene->mRootNode, scene, nullptr, model->mAnimations[i]);
+		model->mAnimations[i].pRoot = RecurLinkNodeAnim(scene->mRootNode, scene, nullptr, model->mAnimations[i], node_key_anim_map);
 	}
 }
 
-void jkResourceManager::RecurLinkNodeAnim(const aiNode* node,
-	const aiScene* scene, NodeAnimation* parent_node_anim, Animation& anim)
+AnimationNode* jkResourceManager::RecurLinkNodeAnim(const aiNode* node, const aiScene* scene,
+	AnimationNode* parent_node_anim, Animation& anim,
+	std::unordered_map<std::string, NodeAnimationKeys*>& node_key_anim_map)
 {
-	auto& rNodeAnimMap = anim.nodeAnimationMap;
-	auto it = rNodeAnimMap.find(node->mName.C_Str());
-	if (it != rNodeAnimMap.end())
+	AnimationNode* pCurAnimNode = new AnimationNode(node->mName.C_Str());
+	auto it = node_key_anim_map.find(node->mName.C_Str());
+	if (it != node_key_anim_map.end())//This node is changes in this animation.
 	{
-		auto pCurAnimNode = &(it->second);
-		pCurAnimNode->nodeName = node->mName.C_Str();
-		//First as root.
-		if (anim.pRootAnimationNode == nullptr)
-			anim.pRootAnimationNode = pCurAnimNode;
-
-		//Connect with parent.
-		if(parent_node_anim)
-			parent_node_anim->childNodeAnims.push_back(pCurAnimNode);
-
-		for (unsigned int i = 0; i < node->mNumChildren; i++)
-		{
-			RecurLinkNodeAnim(node->mChildren[i], scene, pCurAnimNode, anim);
-		}
-		
+		pCurAnimNode->pAnimationKeys = (it->second);
 	}
+	else//This node is not changes in this animation, only record transform with parent.
+	{
+		pCurAnimNode->transformWithParent = aiMat4_to_Mat4(node->mTransformation);
+	}
+
+	for (unsigned int i = 0; i < node->mNumChildren; i++)
+	{
+		pCurAnimNode->childNodeAnims.push_back(
+			RecurLinkNodeAnim(node->mChildren[i], scene, pCurAnimNode, anim, node_key_anim_map));
+	}
+
+	return pCurAnimNode;
 }
 
 void jkResourceManager::ImportCubeMap(std::vector<unsigned char*>& faces, ImageFormat& imgFormat,

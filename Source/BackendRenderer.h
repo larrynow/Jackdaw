@@ -29,18 +29,36 @@ public:
 
 	virtual void StartUp() = 0;
 
-	inline void LoadMesh(jkMesh& mesh, const MAT4& worldMat)
+	inline void LoadMesh(jkMesh& mesh, const MAT4& worldMat, jkModel* pOriginModel)
 	{
-		auto data = mProcessMesh(&mesh, worldMat);
+		auto data = mProcessMesh(&mesh, worldMat, pOriginModel);
 		mRenderDatas.push_back(data);
 		mRenderDataMap.insert(std::make_pair(&mesh, data));
 	}
 
+	inline void LoadSkeletalMesh(jkMesh& mesh, const MAT4& worldMat, jkModel* pOriginModel)
+	{
+		auto data = mProcessMesh(&mesh, worldMat, pOriginModel);
+		data->pBoneMatrices = &(pOriginModel->GetBoneMatrices());
+		mRenderDatas.push_back(data);
+		mRenderDataMap.insert(std::make_pair(&mesh, data));
+	}
+
+	virtual void ChangeVertexs(jkMesh* p_mesh, std::vector<UINT>& indices) = 0;
+
+
 	inline void LoadEnity(jkEntity* e)
 	{
-		for (auto me : e->GetModel()->mMeshes)
+		for (auto me : e->GetModel()->GetMeshes())
 		{
-			LoadMesh(*me, e->GetTransform().GetWorldMatrix());
+			if (e->m_pAnimator)// Have animation.
+			{
+				auto& boneMatrices = e->GetModel()->GetBoneMatrices();
+				LoadSkeletalMesh(*me, e->GetTransform().GetWorldMatrix(), e->GetModel().get());
+
+			}
+			else
+				LoadMesh(*me, e->GetTransform().GetWorldMatrix(), e->GetModel().get());
 		}
 	}
 
@@ -91,7 +109,7 @@ protected:
 
 	COLOR3 mClearColor;
 
-	virtual RenderData* mProcessMesh(jkMesh* mesh, const MAT4& worldMat =MAT4()) = 0;
+	virtual RenderData* mProcessMesh(jkMesh* mesh, const MAT4& worldMat, jkModel* pOriginodel) = 0;
 
 	virtual InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4>& modelMatrices) = 0;
 

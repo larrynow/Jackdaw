@@ -163,7 +163,7 @@
     <None Include="Shaders\skybox.vs" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CharacterExample.cpp" />
+    <ClCompile Include="Source\Examples\FPSCharacterExample.cpp" />
     <ClCompile Include="Source\CharacterState.cpp" />
     <ClCompile Include="Source\SkeletalMesh.cpp" />
     <ClCompile Include="Source\Animator.cpp" />
@@ -193,6 +193,7 @@
     <ClCompile Include="Source\tinyxml2.cpp" />
     <ClCompile Include="Source\WinInputManager.cpp" />
     <ClCompile Include="Source\Transform.cpp" />
+    <ClCompile Include="Source\Examples\TPSCharacterExample.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\jkInput.h" />
@@ -211,7 +212,7 @@
     <ClInclude Include="Source\Devices.h" />
     <ClInclude Include="Source\Entity.h" />
     <ClInclude Include="Source\EntityFactory.h" />
-    <ClInclude Include="Source\CharacterExample.h" />
+    <ClInclude Include="Source\Examples\FPSCharacterExample.h" />
     <ClInclude Include="Source\DeviceWindow.h" />
     <ClInclude Include="Source\FrontendRendererWin32.h" />
     <ClInclude Include="Source\Geometry.h" />
@@ -234,6 +235,7 @@
     <ClInclude Include="Source\Types.h" />
     <ClInclude Include="Source\WinInputManager.h" />
     <ClInclude Include="Source\Transform.h" />
+    <ClInclude Include="Source\Examples\TPSCharacterExample.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

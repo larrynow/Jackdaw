@@ -36,6 +36,7 @@ public:
 
 	inline void BindTexture(Texture* pTexture) 
 	{ 
+		if (!pTexture) return;
 		switch (pTexture->Type)
 		{
 		case TextureType::Diffuse:

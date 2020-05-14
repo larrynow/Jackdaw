@@ -114,6 +114,7 @@ void jkContent::StartUp()
 
 		for (auto e : m_pCurrentMap->mEntities)
 		{
+			//if(e.Active())
 			e->Update(m_pTimer->GetDeltaTime());
 		}
 
@@ -593,9 +594,13 @@ void jkContent::SelectMapIndoor(jkMap* map)
 
 void jkContent::SelectMapNew(jkMap* map)
 {
+
 	m_pCurrentMap = map;
 	m_pControlledCharacter = map->GetControlledCharacter();
 	m_pCurrentCamera = m_pControlledCharacter->GetCamera();
+
+	///////////////////////////////////
+	// Shader setting.
 
 	jkResourceManager::ImportShader("simple", "./Shaders/shader.vs",
 		"./Shaders/shader.fs");
@@ -604,30 +609,59 @@ void jkContent::SelectMapNew(jkMap* map)
 	//auto shader = jkResourceManager::GetShader("simple");
 	auto shader = jkResourceManager::GetShader("heightMapping");
 
-	// A test cube mesh.
+	//////////////////////////////////
+	// Cube setting.
+	// Test pass.
+
+	// A test cube entity.
 	auto cube = jkGeometry::GetCubeEntity({ 0.f, 0.0f, 0.f });
-	//std::cout << cube->mTransform.GetPosition() << std::endl;
-	//cube->GetTransform().RotateRoll(90.f);//rotate with x.
-	//cube->GetTransform().RotateYaw(90.f);//rotate with y.
-	auto cubeMesh = cube->GetModel()->mMeshes[0];
+
 	Texture* texure = new Texture();
 	jkResourceManager::LoadTexture("./Asset/awesomeface.bmp", texure, true);
+
+	auto cubeMesh = cube->GetModel()->GetMesh(0);
 	cubeMesh->BindTexture(texure);
 	cubeMesh->BindShader(shader);
-	//m_pBackendRenderer->LoadMesh(*cubeMesh);
+
 	m_pBackendRenderer->LoadEnity(cube);
+
 	cube->GetTransform().MoveTo({ 0.f, 0.f, 10.f });
 	m_pBackendRenderer->LoadEnity(cube);
 	map->AddEntity(cube);
 
-	/*jkModel* arthur_model = new jkModel(VEC3(-5.f, 0.f, -18.f));
-	jkResourceManager::LoadModel("./Asset/Arthur/arthur_attack_01.FBX", arthur_model);
-	jkEntity* arthur = new jkEntity(VEC3(-5.f, 0.f, -18.f), std::shared_ptr<jkModel>(arthur_model));
+	//////////////////////////////////
+	// Model setting.
+	// Testing.
 
-	for (auto mesh : arthur_model->mMeshes)
+	class Arthur : public jkEntity
 	{
-		m_pBackendRenderer->LoadMesh(mesh);
-	}*/
+	public:
+		// Constructor with a model.
+		Arthur(const VEC3& position, std::shared_ptr <jkModel> model) :
+			jkEntity(position, model) {}
+
+		void Update(const double delta_time) override
+		{
+			jkEntity::Update(delta_time);
+
+			PlayAnimation("attack");
+		}
+	};
+
+	auto arthurModel = jkResourceManager::ImportModel("./Asset/Arthur/arthur_attack_01.FBX", {"attack"});
+	Arthur* arthur = new Arthur(VEC3(5.f, 0.f, 0.f), arthurModel);
+	arthur->GetTransform().MoveTo({ 5.f, 0.f, 0.f })
+		->RotateYaw(-90.f);// ->RotateRoll(-90.f);
+
+	Texture* arthur_texure = new Texture();
+	jkResourceManager::LoadTexture("./Asset/Arthur/arthur_01.png", arthur_texure);
+
+	auto arthurMesh = arthurModel->GetMesh(0);
+	arthurMesh->BindTexture(arthur_texure);
+
+	map->AddEntity(arthur);
+
+	m_pBackendRenderer->LoadEnity(arthur);
 
 
 

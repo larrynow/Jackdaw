@@ -26,6 +26,7 @@ public:
 	}
 
 	jkActor() : jkActor({ 0.f, 0.f, 0.f }, { 0.f, 0.f, 0.f }) {};// Default actor camera position is actor pos.
+
 	~jkActor() { delete m_pCamera; };
 
 	/////////////////////////////////////////

@@ -218,7 +218,7 @@ void jkBackendRendererGL::StartUp()
 
 }
 
-RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh, const MAT4& worldMat)
+RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh, const MAT4& worldMat, jkModel* pOriginModel)
 {
 	//if(!mesh->m_pShader) 
 	GLRenderData* pRenderData = new GLRenderData();
@@ -267,6 +267,15 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh, const MAT4& worldMat
 
 	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
 	glEnableVertexAttribArray(5);
+
+	if (pOriginModel->GetBoneMatrices().size()!=0)//If includes bone matrices.
+	{
+		glEnableVertexAttribArray(6);
+		glVertexAttribIPointer(6, Vertex::MaxBoneNum, GL_INT, sizeof(Vertex), (void*)(offsetof(Vertex, boneIDs)));
+
+		glEnableVertexAttribArray(7);
+		glVertexAttribPointer(7, Vertex::MaxBoneNum, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, boneWeigths)));
+	}
 
 	glBindVertexArray(0);
 
@@ -570,6 +579,16 @@ void jkBackendRendererGL::ChangeSurrounding(std::vector<VEC3>& positions)
 	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(VEC3), &positions[0], GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
+}
+
+void jkBackendRendererGL::ChangeVertexs(jkMesh* p_mesh, std::vector<UINT>& indices)
+{
+	GLRenderData* data = (GLRenderData*)mRenderDataMap.at(p_mesh);
+	glBindVertexArray(data->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, data->VBO);
+	glBufferData(GL_ARRAY_BUFFER, p_mesh->mVertexBuffer.size() * sizeof(Vertex), &p_mesh->mVertexBuffer[0], GL_STATIC_DRAW);
+
 }
 
 void jkBackendRendererGL::mPostRendering(UINT color_buffer)
@@ -1091,85 +1110,95 @@ UINT jkBackendRendererGL::mCreateTexture(Texture* pTexture)
 
 void jkBackendRendererGL::mRender(GLRenderData* pData)
 {
-	pData->pShader->use();
+	auto dataShader = pData->pShader;
+	dataShader->use();
 
 	// Set model matrix.
 	mModelMatrix = pData->worldMat;
-	pData->pShader->setMat4("model", mModelMatrix);
+	dataShader->setMat4("model", mModelMatrix);
 
-	//pData->pShader->setVec3("viewPos", mViewPos);
+	// Skeletal animation.
+	if (pData->pBoneMatrices)
+	{
+		dataShader->setBool("bWithSkeletalAnimation", true);
+		dataShader->setMat4Vector("boneMatrices", *pData->pBoneMatrices);
+	}
+	else
+	{
+		dataShader->setBool("bWithSkeletalAnimation", false);
+	}
 
 	if (pData->pOriginMesh->m_bLighting)//Enable lighting or not.
 	{
-		pData->pShader->setBool("lighting", true);
+		dataShader->setBool("lighting", true);
 		mEnableLighting(pData);
 	}
 	else
 	{
-		pData->pShader->setBool("lighting", false);
+		dataShader->setBool("lighting", false);
 	}
 
 	if (pData->pOriginMesh->m_bShinning)//Enable blooming or not.
 	{
-		pData->pShader->setBool("shinning", true);
+		dataShader->setBool("shinning", true);
 	}
 	else
 	{
-		pData->pShader->setBool("shinning", false);
+		dataShader->setBool("shinning", false);
 	}
 	//for (size_t i = 0; i < pData->TexID.size(); i++)
 	//{
 	//	glActiveTexture(GL_TEXTURE0 + i);
 	//	glBindTexture(GL_TEXTURE_2D, pData->TexID.at(i));
 	//	auto tex_name = std::string("texture") + (char)('0'+i);
-	//	pData->pShader->setInt(tex_name, i);
+	//	dataShader->setInt(tex_name, i);
 	//}
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mDepthMap);
-	pData->pShader->setInt("shadowMap", 0);
+	dataShader->setInt("shadowMap", 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, mDepthCubemap);
-	pData->pShader->setInt("depthCubemap", 1);
+	dataShader->setInt("depthCubemap", 1);
 
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, pData->difffuseTex);
-	pData->pShader->setInt("material.diffuseMap", 2);
+	dataShader->setInt("material.diffuseMap", 2);
 
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, pData->specularTex);
-	pData->pShader->setInt("material.specularMap", 3);
+	dataShader->setInt("material.specularMap", 3);
 	
 	if (pData->normalTex)
 	{
 		glActiveTexture(GL_TEXTURE4);
 		glBindTexture(GL_TEXTURE_2D, pData->normalTex);
-		pData->pShader->setInt("material.normalMap", 4);
-		pData->pShader->setInt("bUseNormalMap", 1);
+		dataShader->setInt("material.normalMap", 4);
+		dataShader->setInt("bUseNormalMap", 1);
 	}
 	else
 	{
-		pData->pShader->setInt("bUseNormalMap", 0);
+		dataShader->setInt("bUseNormalMap", 0);
 	}
 
 	if (pData->heightTex)
 	{
 		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_2D, pData->heightTex);
-		pData->pShader->setInt("material.heightMap", 5);
-		pData->pShader->setInt("bUseHeightMap", 1);
+		dataShader->setInt("material.heightMap", 5);
+		dataShader->setInt("bUseHeightMap", 1);
 	}
 	else
 	{
-		pData->pShader->setInt("bUseHeightMap", 0);
+		dataShader->setInt("bUseHeightMap", 0);
 	}
 
-	pData->pShader->setMat4("lightSpaceMatrix", mLightSpaceMatrix);
+	dataShader->setMat4("lightSpaceMatrix", mLightSpaceMatrix);
 
-	pData->pShader->setFloat("material.shininess", (float)pData->shininess);
+	dataShader->setFloat("material.shininess", (float)pData->shininess);
 
-	pData->pShader->setFloat("time", pTimer->GetTime());
+	dataShader->setFloat("time", pTimer->GetTime());
 
 	glBindVertexArray(pData->VAO);
 	glDrawElements(GL_TRIANGLES, pData->IndexSize, GL_UNSIGNED_INT, 0);

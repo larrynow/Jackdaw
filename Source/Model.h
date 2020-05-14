@@ -11,8 +11,6 @@
 
 class jkModel
 {
-	friend class jkBackendRenderer;
-	friend class jkContent;
 	friend class jkResourceManager;
 	friend class jkAnimator;
 
@@ -28,7 +26,16 @@ public:
 
 	virtual ~jkModel() {}
 
-	inline bool WithAnimation() { return mAnimations.size() == 0; }
+	inline bool IsWithAnimation() { return mAnimations.size() != 0; }
+
+	inline jkMesh* GetMesh(size_t id) const { 
+		if (id < mMeshes.size()) return mMeshes[id].get();
+		else return nullptr; 
+	}
+	inline size_t GetMeshNum() const { return mMeshes.size(); }
+	inline auto& GetMeshes() const { return mMeshes; }
+
+	inline auto& GetBoneMatrices() const { return mBoneMatrices; }
 
 protected:
 
@@ -38,6 +45,7 @@ protected:
 
 	/////////////////////////////////
 	// Skeletal animations.
+	// currently only handle one mesh animations in a model(may contains many meshes).
 
 	std::unordered_map<std::string, int> mBoneIDMap;//From bone name to id(in mBoneOffsetMatrices).
 	std::vector<MAT4> mBoneOffsetMatrices;//From model space position to bone space position.

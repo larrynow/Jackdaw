@@ -72,6 +72,8 @@ public:
 
 	void ChangeSurrounding(std::vector<VEC3>& positions) override;
 
+	void ChangeVertexs(jkMesh* p_mesh, std::vector<UINT>& indices) override;
+
 private:
 
 	UINT mLightPosUBO;
@@ -131,7 +133,7 @@ private:
 
 	MAT4 mLightSpaceMatrix;
 
-	RenderData* mProcessMesh(jkMesh* mesh, const MAT4& worldMat = MAT4()) override;
+	RenderData* mProcessMesh(jkMesh* mesh, const MAT4& worldMat, jkModel* pOriginModel) override;
 
 	InstanceRenderData* mProcessInstanceData(jkMesh* instanceMesh, std::vector<MAT4>& modelMatrices) override;
 

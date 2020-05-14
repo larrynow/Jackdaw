@@ -136,7 +136,8 @@
     </ClCompile>
     <ClCompile Include="Source\SkeletalMesh.cpp" />
     <ClCompile Include="Source\CharacterState.cpp" />
-    <ClCompile Include="Source\CharacterExample.cpp" />
+    <ClCompile Include="Source\Examples\FPSCharacterExample.cpp" />
+    <ClCompile Include="Source\Examples\TPSCharacterExample.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Actor.h">
@@ -249,8 +250,9 @@
     <ClInclude Include="Source\jkInput.h">
       <Filter>Core\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CharacterExample.h">
+    <ClInclude Include="Source\Examples\FPSCharacterExample.h">
       <Filter>Core\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Examples\TPSCharacterExample.h" />
   </ItemGroup>
 </Project>

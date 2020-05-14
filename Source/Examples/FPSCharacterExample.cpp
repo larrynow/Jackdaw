@@ -1,4 +1,4 @@
-#include "CharacterExample.h"
+#include "FPSCharacterExample.h"
 
 jkCharacterState* jkExample::FPS::jkStandingState::HandleInput(jkCharacter& character, jkInput& input)
 {

@@ -255,6 +255,11 @@ namespace jkMath
 			return VEC4(x / scaleFactor, y / scaleFactor, z / scaleFactor, w / scaleFactor);
 		}
 
+		float DotProduct(const VEC4& _vec) const
+		{
+			return _vec.x * x + _vec.y * y + _vec.z * z + _vec.w * w;
+		}
+
 		union {
 			struct{ float x, y, z, w; };
 			struct{ float r, g, b, a; };
@@ -262,6 +267,8 @@ namespace jkMath
 		};
 
 	};
+
+	typedef VEC4 Quaternion;
 
 	struct MAT4
 	{
@@ -425,16 +432,80 @@ namespace jkMath
 
 	template<typename T>
 	inline T Clamp(const T& val, const T& min, const T& max){ if (val > max)return max; else if (val < min) return min; else return val; }
-	/*inline float Clamp(float val, float min, float max) { if (val > max)return max; else if (val < min) return min; else return val; };
-	inline float Clamp(float val, UINT min, UINT max) { return Clamp(val, float(min), float(max)); };*/
-
+	
 	template<typename T>
 	inline float Fraction(const T left, const T right, const T value) { return right==left?0:(value - left) / (right - left); }
 
 	template<typename T>
 	inline T Lerp(const T& start, const T& end, const float fraction) { return start + (end - start) * fraction; };
-	/*inline float Lerp(const float start, const float end, const float fraction) { return start + (end - start)*fraction; };
-	inline VEC2 Lerp(const VEC2& start, const VEC2& end, float fraction) { return VEC2(Lerp(start.x, end.x, fraction), Lerp(start.y, end.y, fraction)); };*/
+	
+
+	inline Quaternion QuaternionSlerp(const Quaternion& q1, const Quaternion& q2, const float fraction)
+	{
+		if (fraction == 0.f) return q1;
+		else if (fraction == 0.f) return q2;
+		if (q1 == q2) return q1;
+
+		float halfY, alpha, beta;
+		float u, f1, f2a, f2b;
+		float ratio1, ratio2;
+		float halfSecHalfTheta, versHalfTheta;
+		float sqNotU, sqU;
+
+		float cosTheta = q1.DotProduct(q2);
+
+		// As usual in all slerp implementations, we fold theta.
+		alpha = cosTheta >= 0 ? 1.0f : -1.0f;
+		halfY = 1.0f + alpha * cosTheta;
+
+		// Here we bisect the interval, so we need to fold t as well.
+		f2b = fraction - 0.5f;
+		u = f2b >= 0 ? f2b : -f2b;
+		f2a = u - f2b;
+		f2b += u;
+		u += u;
+		f1 = 1.0f - u;
+
+		// One iteration of Newton to get 1-cos(theta / 2) to good accuracy.
+		halfSecHalfTheta = 1.09f - (0.476537f - 0.0903321f * halfY) * halfY;
+		halfSecHalfTheta *= 1.5f - halfY * halfSecHalfTheta * halfSecHalfTheta;
+		versHalfTheta = 1.0f - halfY * halfSecHalfTheta;
+
+		// Evaluate series expansions of the coefficients.
+		sqNotU = f1 * f1;
+		ratio2 = 0.0000440917108f * versHalfTheta;
+		ratio1 = -0.00158730159f + (sqNotU - 16.0f) * ratio2;
+		ratio1 = 0.0333333333f + ratio1 * (sqNotU - 9.0f) * versHalfTheta;
+		ratio1 = -0.333333333f + ratio1 * (sqNotU - 4.0f) * versHalfTheta;
+		ratio1 = 1.0f + ratio1 * (sqNotU - 1.0f) * versHalfTheta;
+
+		sqU = u * u;
+		ratio2 = -0.00158730159f + (sqU - 16.0f) * ratio2;
+		ratio2 = 0.0333333333f + ratio2 * (sqU - 9.0f) * versHalfTheta;
+		ratio2 = -0.333333333f + ratio2 * (sqU - 4.0f) * versHalfTheta;
+		ratio2 = 1.0f + ratio2 * (sqU - 1.0f) * versHalfTheta;
+
+		// Perform the bisection and resolve the folding done earlier.
+		f1 *= ratio1 * halfSecHalfTheta;
+		f2a *= ratio2;
+		f2b *= ratio2;
+		alpha *= f1 + f2a;
+		beta = f1 + f2b;
+
+		// Apply final coefficients to a and b as usual.
+		float w = alpha * q1.m[0] + beta * q2.m[0];
+		float x = alpha * q1.m[1] + beta * q2.m[1];
+		float y = alpha * q1.m[2] + beta * q2.m[2];
+		float z = alpha * q1.m[3] + beta * q2.m[3];
+
+		// This final adjustment to the quaternion's length corrects for
+		// any small constraint error in the inputs q1 and q2 But as you
+		// can see, it comes at the cost of 9 additional multiplication
+		// operations. If this error-correcting feature is not required,
+		// the following code may be removed.
+		f1 = 1.5f - 0.5f * (w * w + x * x + y * y + z * z);
+		return Quaternion(w, x, y, z) * f1;
+	}
 
 	inline VEC3 Reflect(const VEC3& direction, const VEC3& normal)
 	{
@@ -590,10 +661,10 @@ namespace jkMath
 
 	inline void MakeRotationMatrix_Quaternion(MAT4& ret, const VEC4& quaternion)
 	{
-		auto& x = quaternion.x;
-		auto& y = quaternion.y;
-		auto& z = quaternion.z;
-		auto& w = quaternion.w;
+		auto& w = quaternion.m[0];
+		auto& x = quaternion.m[1];
+		auto& y = quaternion.m[2];
+		auto& z = quaternion.m[3];
 
 		ret.m[0][0] = 1.f - 2.f* (y* y + z * z);
 		ret.m[0][1] = 2.f* (x* y - z * w);
