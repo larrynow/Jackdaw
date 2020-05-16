@@ -34,6 +34,7 @@ Mesh, Texture等渲染资源在jkContent中统一处理，发送至jkBackendRend
 ## jkTransform组件管理形态数据
 游戏物体以单独的jkTransform组件，管理实体的方向，位置，缩放信息。
 ## State设计模式更新物体状态
-使用了有限状态机判断更新物体的状态。
+使用了有限状态机判断更新物体的状态。<br>
+![状态机](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/state_pattern.jpg)<br>
 ## 系统输入处理
 系统输入被包装为jkInput的enum class，在SysInputManager中更新输入状态。在jkCharacter类中注册过的输入可以在各个状态中处理，并进行状态转换等。
