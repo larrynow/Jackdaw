@@ -26,7 +26,9 @@ Mesh, Texture等渲染资源在jkContent中统一处理，发送至jkBackendRend
 ## 几何体Mesh构建
 球形，立方体，平面Mesh的生成。
 ## 骨骼动画的计算渲染
+![骨骼动画](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/skeletal_anim.gif)
 骨骼动画以动画结点组成的树状结构表示，动画播放时以递归方式更新骨骼矩阵，在GL渲染管线中渲染动画。
+![骨骼动画程序流程图](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/骨骼动画程序流程图.jpg)
 ## 游戏Object的继承体系
 分别以jkEntity表示静态物体，jkActor表示可移动物体，jkCharacter表示可控物体。
 ## jkTransform组件管理形态数据
