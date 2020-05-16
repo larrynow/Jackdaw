@@ -9,11 +9,11 @@
 Mesh, Texture等渲染资源在jkContent中统一处理，发送至jkBackendRenderer按不同渲染方式（simple mesh, instance data, cubemap, geometry shader）包装，
 供opengl渲染使用。不同渲染对象使用一组接口即可方便导入渲染器中进行渲染。
 ## 基于Block管理的动态地形
-![动态地形](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/display_1.jpg)
+![动态地形](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/display_1.jpg)<br>
 动态地形由地形mesh（由高度图动态生成），instance obejects（石块等），几何渲染器（植被），共同实现。根据viewpos动态调整各个block网格精度，环境渲染精细
 程度等。
 ## 基于blinn-Phong光照模型的渲染管线
-![渲染效果](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/display_2.jpg)
+![渲染效果](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/display_2.jpg)<br>
 标准的渲染管线分为以下几个阶段：计算更新VBO，EBO等，设定光源，shadow mapping计算阴影，利用unifrom block，uniform变量更新相关参数，渲染，利用帧缓冲进行后处理（泛光，
 伽马矫正）。<br>
 具备深度测试、面剔除、混合、立方体贴图、实例化渲染、帧缓冲、离屏MSAA等基本功能。<br>
@@ -26,8 +26,8 @@ Mesh, Texture等渲染资源在jkContent中统一处理，发送至jkBackendRend
 ## 几何体Mesh构建
 球形，立方体，平面Mesh的生成。
 ## 骨骼动画的计算渲染
-![骨骼动画](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/skeletal_anim.gif)
-骨骼动画以动画结点组成的树状结构表示，动画播放时以递归方式更新骨骼矩阵，在GL渲染管线中渲染动画。
+![骨骼动画](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/skeletal_anim.gif)<br>
+骨骼动画以动画结点组成的树状结构表示，动画播放时以递归方式更新骨骼矩阵，在GL渲染管线中渲染动画。<br>
 ![骨骼动画程序流程图](https://github.com/larrynow/Jackdaw/blob/master/Asset/dispaly/骨骼动画程序流程图.jpg)
 ## 游戏Object的继承体系
 分别以jkEntity表示静态物体，jkActor表示可移动物体，jkCharacter表示可控物体。
