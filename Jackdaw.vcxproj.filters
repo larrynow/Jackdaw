@@ -254,5 +254,14 @@
       <Filter>Core\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Source\Examples\TPSCharacterExample.h" />
+    <ClInclude Include="Source\Vector2.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vector3.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vector4.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

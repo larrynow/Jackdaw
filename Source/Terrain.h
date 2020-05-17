@@ -8,10 +8,12 @@ namespace jkTerrain
 {
 	struct Block
 	{
+		enum{MAX_LOD_LEVEL = 5};
 		int blockIdX;
 		int blockIdY;
-		std::vector<UINT> blockLODIndices[5];//5 levels
+		std::vector<UINT> blockLODIndices[MAX_LOD_LEVEL];
 		std::vector<Block*> adjacentBlocks;
+		VEC3 Position;
 		VEC2 XBoundary;
 		VEC2 YBoundary;
 		UINT LOD;
@@ -39,6 +41,20 @@ namespace jkTerrain
 		UINT vertexNumY;
 	};
 
+	// Load terrain height info from a image.
+	void LoadHeightInfo(const std::string& heightMapFile, ImageFormat& format,
+		std::vector<float>& heightInfo, const float heightScale);
+
+	// Create a tile-terrain from a heightmap image.
+	void LoadTerrain(const std::string& heightMapFile, const VEC3& terrainSize,
+		Tile* terrainTile, const VEC3& centerPosition = { 0.f, 0.f, 0.f });
+
+	// Create grass positions in terrain.
+	void CreateTurf(Tile* terrainTile);
+
+	// Create vegetation.
+	void CreateVegetation(Tile* terrainTile);
+
 	class jkTerrainManager
 	{
 	public:
@@ -51,14 +67,20 @@ namespace jkTerrain
 
 		void InitializeBlocks(UINT blockNumX, UINT blockNumY);
 
-		void CreateTile() { mTile = new Tile(); }
+		inline void CreateTile() 
+		{ 
+			mTile = new Tile(); 
+		}
 
 		Tile* GetTile() { return mTile; }
 
 		void TileUpdate(const VEC3& viewPos, const MAT4& frustum);
 
-		void CreateTerrain(const std::string& heightMapFile, const VEC3& terrainSize,
-			const VEC3& centerPosition = { 0.f, 0.f, 0.f });
+		inline void CreateTerrain(const std::string& heightMapFile, const VEC3& terrainSize,
+			const VEC3& centerPosition = { 0.f, 0.f, 0.f })
+		{
+			LoadTerrain(heightMapFile, terrainSize, mTile, centerPosition);
+		}
 		
 		void CreateInstances();//Create instances positions in every block(matrice format).
 
@@ -79,23 +101,11 @@ namespace jkTerrain
 
 		Texture* mTerrainBlendTex;
 
-		void mUpdateBlockLOD();//Update all the blocks LOD;
+		void mUpdateBlockLOD(const VEC3& viewPos);//Update all the blocks LOD;
 
 	};
 
-	// Load terrain height info from a image.
-	void LoadHeightInfo(const std::string& heightMapFile, ImageFormat& format,
-		std::vector<float>& heightInfo, const float& heightScale);
-
-	// Create a tile-terrain from a heightmap image.
-	void LoadTerrain(const std::string& heightMapFile, const VEC3& terrainSize,
-		Tile* terrainTile, const VEC3& centerPosition = { 0.f, 0.f, 0.f });
-
-	// Create grass positions in terrain.
-	void CreateTurf(Tile* terrainTile);
-
-	// Create vegetation.
-	void CreateVegetation(Tile* terrainTile);
+	
 };
 
 #endif // !JKTERRAIN

@@ -15,7 +15,7 @@ void jkCamera::LookAt(const VEC3& lookAtPoint)
 
 void jkCamera::MakeViewMatrix(MAT4& mat) const
 {
-	MakeLookAtMatrix(mat, mTransform.GetPosition(), mTransform.GetFront(), {0.f, 1.f, 0.f});
+	MakeLookAtMatrix(mat, mTransform.GetPosition(), mTransform.GetFront(), mTransform.GetUp());
 }
 
 void jkCamera::mMakeEulerFromFront(const VEC3& nFront)

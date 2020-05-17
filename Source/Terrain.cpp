@@ -7,7 +7,7 @@
 using namespace jkTerrain;
 
 void jkTerrain::LoadHeightInfo(const std::string& heightMapFile, ImageFormat& format,
-	std::vector<float>& heightInfo, const float& heightScale)
+	std::vector<float>& heightInfo, const float heightScale)
 {
 	/*
 	* LoadHeightInfo
@@ -50,7 +50,8 @@ void jkTerrain::LoadTerrain(const std::string& heightMapFile,
 	LoadHeightInfo(heightMapFile, format, heightInfo, terrainSize.y);
 
 	jkGeometry::MakeHeightMapMesh(terrainSize.x, terrainSize.z, 
-		format.width, format.height, heightInfo, terrainTile->pFullTerrainMesh);
+		format.width, format.height,
+		heightInfo, terrainTile->pFullTerrainMesh, 0.01f);
 	
 	terrainTile->size.x = terrainSize.x;
 	terrainTile->size.y = terrainSize.z;
@@ -125,9 +126,14 @@ void jkTerrainManager::InitializeBlocks(UINT blockNumX, UINT blockNumY)
 		block->YBoundary.y = (mTile->yBoundary.y - mTile->yBoundary.x) / blockNumY * (block->blockIdY+1)
 			+ mTile->yBoundary.x;
 
+		//Calculate block position.
+		block->Position.x = (block->XBoundary.x + block->XBoundary.y) / 2.f;
+		block->Position.z = (block->YBoundary.x + block->YBoundary.y) / 2.f;
+		block->Position.y = mTile->center.y;
+
 		//Select indices for each LOD.
 		int step = 1;
-		for (size_t lod = 0; lod < 3; lod++)
+		for (size_t lod = 0; lod < Block::MAX_LOD_LEVEL; lod++)
 		{
 			block->blockLODIndices[lod].reserve(blockIndicesNumX * blockIndicesNumY * 6);
 
@@ -198,7 +204,7 @@ void jkTerrain::jkTerrainManager::TileUpdate(const VEC3& viewPos, const MAT4& fr
 
 	if (m_pCurrentBlock)
 	{
-		mUpdateBlockLOD();
+		mUpdateBlockLOD(viewPos);
 	}
 	mCurrentIndices.clear();
 	for (auto aBlock : mTile->mBlocks)
@@ -209,10 +215,11 @@ void jkTerrain::jkTerrainManager::TileUpdate(const VEC3& viewPos, const MAT4& fr
 	}
 }
 
-void jkTerrain::jkTerrainManager::CreateTerrain(const std::string& heightMapFile, const VEC3& terrainSize, const VEC3& centerPosition)
-{
-	LoadTerrain(heightMapFile, terrainSize, mTile, centerPosition);
-}
+//void jkTerrain::jkTerrainManager::CreateTerrain(const std::string& heightMapFile, 
+//	const VEC3& terrainSize, const VEC3& centerPosition, const float meshDensity)
+//{
+//	LoadTerrain(heightMapFile, terrainSize, mTile, centerPosition, meshDensity);
+//}
 
 void jkTerrain::jkTerrainManager::CreateInstances()
 {
@@ -222,7 +229,7 @@ void jkTerrain::jkTerrainManager::CreateInstances()
 	{
 		std::vector<UINT> ids;
 		//Use a low LOD meshes to select all triangles.
-		for (int i = 0; i < block->blockLODIndices[2].size();i+=3)
+		for (int i = 0; i < block->blockLODIndices[Block::MAX_LOD_LEVEL-1].size();i+=3)
 		{
 			ids.push_back(i);
 		}
@@ -233,9 +240,9 @@ void jkTerrain::jkTerrainManager::CreateInstances()
 		for (auto id : selected_id)
 		{
 			//Sample from triangle.
-			auto p1 = mTile->pFullTerrainMesh->mVertexBuffer.at(block->blockLODIndices[2].at(id)).pos;
-			auto p2 = mTile->pFullTerrainMesh->mVertexBuffer.at(block->blockLODIndices[2].at(id+1)).pos;
-			auto p3 = mTile->pFullTerrainMesh->mVertexBuffer.at(block->blockLODIndices[2].at(id+2)).pos;
+			auto p1 = mTile->pFullTerrainMesh->mVertexBuffer.at(block->blockLODIndices[Block::MAX_LOD_LEVEL - 1].at(id)).pos;
+			auto p2 = mTile->pFullTerrainMesh->mVertexBuffer.at(block->blockLODIndices[Block::MAX_LOD_LEVEL - 1].at(id+1)).pos;
+			auto p3 = mTile->pFullTerrainMesh->mVertexBuffer.at(block->blockLODIndices[Block::MAX_LOD_LEVEL - 1].at(id+2)).pos;
 			auto sample_pos = jkAlgorithm::RandomSampleFromTriangle(p1, p2, p3);
 			//sample_pos = p1;
 			MAT4 model;
@@ -303,15 +310,24 @@ std::vector<VEC3>& jkTerrain::jkTerrainManager::GetPositions()
 
 
 
-void jkTerrain::jkTerrainManager::mUpdateBlockLOD()
+void jkTerrain::jkTerrainManager::mUpdateBlockLOD(const VEC3& viewPos)
 {
 	m_pCurrentBlock->LOD = 0;//Highest level.
-	for (auto block : mTile->mBlocks)
+	/*for (auto block : mTile->mBlocks)
 	{
 		block->LOD = 2;
 	}
 	for (auto block : m_pCurrentBlock->adjacentBlocks)
 	{
 		block->LOD = 1;
+	}*/
+
+	for (auto block : mTile->mBlocks)
+	{
+		auto distance = (block->Position - viewPos).Length();
+		if (distance > 100.f)
+			block->LOD = Block::MAX_LOD_LEVEL - 1;
+		else
+			block->LOD = 0;
 	}
 }

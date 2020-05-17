@@ -125,8 +125,13 @@ float* jkGeometry::CreateCubeVertices()
 }
 
 void jkGeometry::mCreateGrid(const float width, const float height, UINT m, UINT n, 
-	std::vector<Vertex>& vertices, std::vector<UINT>& indices, const float meshDensity)
+	std::vector<Vertex>& vertices, std::vector<UINT>& indices, const float textureDensity)
 {
+	/*
+	* width, height : mesh size.
+	* m, n : grid size.
+	* textureDensity : density to cover mesh to grid.
+	*/
 	float stepW = width / (m - 1);
 	float stepH = height / (n - 1);
 
@@ -139,7 +144,7 @@ void jkGeometry::mCreateGrid(const float width, const float height, UINT m, UINT
 		{
 			float w = (j * stepW) - (width / 2);
 			vertices[i * m + j].pos = { w, 0.f, h };
-			vertices[i * m + j].texcoord = {stepH*i * meshDensity, stepW*j * meshDensity };
+			vertices[i * m + j].texcoord = {stepH*i * textureDensity, stepW*j * textureDensity };
 			vertices[i * m + j].normal = { 0.f, 1.f, 0.f };
 		}
 	}
@@ -235,22 +240,26 @@ void jkGeometry::mCreateSphere(const float radius, const VEC3& color,
 
 
 void jkGeometry::MakeHeightMapMesh(const float width, const float height, UINT m, UINT n, 
-	const std::vector<float>& heightInfo, jkMesh* gridMesh, const float meshScale)
+	const std::vector<float>& heightInfo, jkMesh* gridMesh, const float textureDensity)
 {
 	/*
 	* width, height : mesh size to create.
 	* m, n : mesh grid size.
 	* heightInfo : mesh height values.
+	* textureDensity : density to cover mesh.
 	* gridMesh : return created mesh.
 	*/
 
 	if (heightInfo.size() != m * n)// Height map size don't match grid size, do nothing.
 		return;
-	mCreateGrid(width, height, m, n, gridMesh->mVertexBuffer, gridMesh->mIndexBuffer, meshScale);
+
+	mCreateGrid(width, height, m, n, gridMesh->mVertexBuffer, gridMesh->mIndexBuffer, textureDensity);
+
 	for (size_t i = 0; i < heightInfo.size(); i++)
 	{
 		gridMesh->mVertexBuffer.at(i).pos.y = heightInfo.at(i);
 	}
+
 	for (size_t i = 0; i+2 < gridMesh->mIndexBuffer.size(); i+=3)
 	{
 		auto i1 = gridMesh->mIndexBuffer.at(i);

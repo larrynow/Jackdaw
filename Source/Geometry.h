@@ -14,7 +14,7 @@ public:
 	static float* CreateCubeVertices();
 
 	static void MakeHeightMapMesh(const float width, const float height,
-		UINT m, UINT n, const std::vector<float>& heightInfo, jkMesh* gridMesh, const float meshScale=0.1f);
+		UINT m, UINT n, const std::vector<float>& heightInfo, jkMesh* gridMesh, const float textureDensity=0.1f);
 	
 	///////////////////////////////////////////////
 	// Functions to create entity with mesh.
@@ -39,10 +39,10 @@ public:
 
 	inline static jkEntity* GetPlaneEnity(const VEC3& pos, 
 		const float width, const float height,
-		UINT m, UINT n, const float meshDensity = 1.0f)
+		UINT m, UINT n, const float textureDensity = 1.0f)
 	{
 		auto mesh = std::make_shared<jkMesh>();
-		mCreateGrid(width, height, m, n, mesh->mVertexBuffer, mesh->mIndexBuffer, meshDensity);
+		mCreateGrid(width, height, m, n, mesh->mVertexBuffer, mesh->mIndexBuffer, textureDensity);
 		std::shared_ptr<jkModel> model(new jkModel(mesh));
 
 		return new jkEntity(pos, model);
@@ -57,7 +57,7 @@ private:
 		std::vector<Vertex>& vertices, std::vector<UINT>& indices);// Create a Cube's vertices and indices.
 
 	static void mCreateGrid(const float width, const float height, UINT m, UINT n,
-		std::vector<Vertex>& vertices, std::vector<UINT>& indices, const float meshDensity);
+		std::vector<Vertex>& vertices, std::vector<UINT>& indices, const float textureDensity);
 
 	static void mCreateSphere(const float radius, const VEC3& color,
 		std::vector<Vertex>& vertices, std::vector<UINT>& indices);

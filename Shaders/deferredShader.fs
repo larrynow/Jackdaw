@@ -6,6 +6,16 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 
+struct LightColor{
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+struct DirLight {
+    vec3 direction;
+    LightColor color;
+};
+
 struct PointLight {
     vec3 position;
     float constant;
@@ -21,6 +31,11 @@ layout (std140, binding = 1) uniform VP{vec3 viewPos;};
 const int NR_LIGHTS = 32;
 uniform int pointLightNum;
 uniform PointLight pointLights[NR_LIGHTS];
+
+uniform DirLight dirLight;//One direction light.
+
+vec3 CalcDirLight(DirLight light, vec3 lightDir, vec3 normal, 
+    vec3 viewDir, vec2 texC, float shadow);
 
 void main()
 {             
@@ -49,5 +64,23 @@ void main()
         specular *= attenuation;
         lighting += diffuse + specular;
     }    
+    lighting += CalcDirLight(dirLight, normalize(dirLight.direction), Normal, viewDir, TexCoords, 0.f);
+
     FragColor = vec4(lighting, 1.0);
+}
+
+vec3 CalcDirLight(DirLight light, vec3 tangentLightDir, vec3 normal, vec3 viewDir, vec2 texCoords, float shadow)
+{
+    vec3 lightDir = normalize(tangentLightDir);
+    vec3 reflectDir = reflect(lightDir, normal);
+    vec3 halfwayDir = normalize(-lightDir + viewDir);
+
+    float diff = max(dot(normal, -lightDir), 0.0);
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);//Blinn-Phong.
+    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+
+    vec3 diffuse = light.color.diffuse * diff * texture(gAlbedoSpec, texCoords).rgb;
+    vec3 specular = light.color.specular * spec * texture(gAlbedoSpec, texCoords).a;
+    
+    return (diffuse+specular);
 }

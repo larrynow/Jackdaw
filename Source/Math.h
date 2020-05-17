@@ -5,268 +5,16 @@
 #include<math.h>
 #include<iostream>
 
+#include"Vector2.h"
+#include"Vector3.h"
+#include"Vector4.h"
+
 typedef unsigned int UINT;
 typedef unsigned long long U64;
 
 namespace jkMath
 {
 	const float PI = 3.141592653f;
-
-	struct VEC2;
-	struct VEC3;
-	struct VEC4;
-
-	struct VEC2
-	{
-		VEC2() { x = y = 0.0f; };
-		VEC2(float _x, float _y) :x(_x), y(_y) {};
-
-		bool operator==(const VEC2& _vec) const
-		{
-			return (x == _vec.x && y == _vec.y);
-		}
-
-		VEC2 operator+(const VEC2& _vec) const
-		{
-			return VEC2(x + _vec.x, y + _vec.y);
-		}
-
-		VEC2 operator-(const VEC2& _vec) const
-		{
-			return VEC2(x - _vec.x, y - _vec.y);
-		}
-
-		VEC2 operator*(const float scaleFactor) const
-		{
-			return VEC2(x*scaleFactor, y*scaleFactor);
-		}
-
-		friend VEC2 operator*(const float scaleFactor, VEC2 _vec)
-		{
-			return _vec * scaleFactor;
-		}
-
-		VEC2 operator/(const float scaleFactor) const
-		{
-			return VEC2(x / scaleFactor, y / scaleFactor);
-		}
-
-		float x, y;
-	};
-
-	struct VEC3
-	{
-		// Zero vecor.
-		VEC3() : x(0), y(0), z(0) {};
-		VEC3(const VEC3& _vec) :x(_vec.x), y(_vec.y), z(_vec.z) {};
-		VEC3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {};
-		VEC3(const float column[3])
-		{
-			x = column[0];
-			y = column[1];
-			z = column[2];
-		}
-		explicit VEC3(float _v) : VEC3(_v, _v, _v) {};
-		VEC3(const VEC2& _vec2, float _z) : VEC3(_vec2.x, _vec2.y, _z) {};
-
-		float Length() const
-		{
-			return sqrt(x*x + y * y + z * z);
-		}
-
-		VEC3 Normalize() const
-		{
-			float length = this->Length();
-			if (length == 0)
-			{
-				return VEC3(0, 0, 0);
-			}
-			else
-			{
-				return VEC3(x / length, y / length, z / length);
-			}
-		}
-
-		bool operator==(const VEC3& _vec) const
-		{
-			return (x == _vec.x && y == _vec.y && z == _vec.z);
-		}
-
-		const VEC3 operator+(const VEC3& _vec) const
-		{
-			return VEC3(x + _vec.x, y + _vec.y, z + _vec.z);
-		}
-
-		VEC3& operator+=(const VEC3& _vec)
-		{
-			x += _vec.x;
-			y += _vec.y;
-			z += _vec.z;
-
-			return *this;
-		}
-
-		VEC3 operator-(const VEC3& _vec) const
-		{
-			return VEC3(x - _vec.x, y - _vec.y, z - _vec.z);
-		}
-
-		VEC3 operator-()const
-		{
-			return VEC3(-x, -y, -z);
-		}
-
-		VEC3 operator*(const float scaleFactor) const
-		{
-			return VEC3(x*scaleFactor, y*scaleFactor, z*scaleFactor);
-		}
-
-		friend VEC3 operator*(const float scaleFactor, const VEC3 _vec)
-		{
-			return _vec * scaleFactor;
-		}
-
-		VEC3 operator*(const VEC3& _vec) const
-		{
-			return VEC3(x*_vec.x, y*_vec.y, z*_vec.z);
-		}
-
-		VEC3& operator*=(const float scaleFactor)
-		{
-			x *= scaleFactor;
-			y *= scaleFactor;
-			z *= scaleFactor;
-
-			return *this;
-		}
-
-		VEC3 operator/(const float scaleFactor) const
-		{
-			return VEC3(x / scaleFactor, y / scaleFactor, z / scaleFactor);
-		}
-
-		VEC3 CrossProduct(const VEC3& _vec) const
-		{
-			return VEC3(_vec.z*y - _vec.y*z, _vec.x*z - _vec.z*x, _vec.y*x - _vec.x*y);
-		}
-
-		float DotProduct(const VEC3& _vec) const
-		{
-			return _vec.x*x + _vec.y*y + _vec.z*z;
-		}
-
-		float CosineValue(const VEC3& _vec) const
-		{
-			return (*this).Normalize().DotProduct(_vec.Normalize());
-		}
-
-		friend std::ostream& operator<<(std::ostream& os, const VEC3 _vec)
-		{
-			return os << _vec.x << "," << _vec.y << "," << _vec.z << std::endl;
-		}
-
-		union {
-			struct { float x, y, z; };
-			//struct { float r, g, b; };
-			float m[3];
-		};
-	};
-
-	struct VEC4
-	{
-		VEC4() :x(0), y(0), z(0), w(0) {};
-		VEC4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {};
-		VEC4(float _v) :x(_v), y(_v), z(_v), w(_v) {};
-		VEC4(const VEC3& _vec3, float _w) : x(_vec3.x), y(_vec3.y), z(_vec3.z), w(_w) {};
-		VEC4(const float column[4])
-		{
-			x = column[0];
-			y = column[1];
-			z = column[2];
-			w = column[3];
-		}
-
-		const float(&GetValue() const)[4]
-		{
-			float array[4] = { x, y, z, w };
-			return array;
-		}
-
-			VEC3 xyz() const
-		{
-			return VEC3(x, y, z);
-		}
-
-		float Length() const
-		{
-			return sqrt(x*x + y * y + z * z + w * w);
-		}
-
-		VEC4& Normalize()
-		{
-			float length = this->Length();
-			if (length == 0)
-			{
-				x = y = z = w = 0.0f;
-			}
-			else
-			{
-				x /= length;
-				y /= length;
-				z /= length;
-				w /= length;
-			}
-
-			return *this;
-		}
-
-		bool operator==(const VEC4& _vec) const
-		{
-			return (x == _vec.x && y == _vec.y && z == _vec.z && w == _vec.w);
-		}
-
-		VEC4 operator+(const VEC4& _vec) const
-		{
-			return VEC4(x + _vec.x, y + _vec.y, z + _vec.z, w + _vec.w);
-		}
-
-		VEC4 operator-(const VEC4& _vec) const
-		{
-			return VEC4(x - _vec.x, y - _vec.y, z - _vec.z, w - _vec.w);
-		}
-
-		VEC4 operator*(const float scaleFactor) const
-		{
-			return VEC4(x*scaleFactor, y*scaleFactor, z*scaleFactor, w*scaleFactor);
-		}
-
-		friend VEC4 operator*(const float scaleFactor, VEC4 _vec)
-		{
-			return _vec * scaleFactor;
-		}
-
-		float operator*(const VEC4 _vec) const
-		{
-			return (x*_vec.x + y * _vec.y + z * _vec.z + w * _vec.w);
-		}
-
-		VEC4 operator/(const float scaleFactor) const
-		{
-			return VEC4(x / scaleFactor, y / scaleFactor, z / scaleFactor, w / scaleFactor);
-		}
-
-		float DotProduct(const VEC4& _vec) const
-		{
-			return _vec.x * x + _vec.y * y + _vec.z * z + _vec.w * w;
-		}
-
-		union {
-			struct{ float x, y, z, w; };
-			struct{ float r, g, b, a; };
-			float m[4];
-		};
-
-	};
 
 	typedef VEC4 Quaternion;
 
@@ -327,7 +75,7 @@ namespace jkMath
 			{
 				for (size_t i = 0; i < 4; i++)
 				{
-					m[i][col] = newCol.m[i];
+					m[i][col] = newCol[i];
 				}
 			}
 		}
@@ -371,17 +119,6 @@ namespace jkMath
 		const MAT4 operator*(const MAT4& mat4) const
 		{
 			MAT4 retMat;
-			// Right matrix cols.
-			//auto col1 = this->operator*(mat4.GetColumn(0));
-			//auto col2 = this->operator*(mat4.GetColumn(1));
-			//auto col3 = this->operator*(mat4.GetColumn(2));
-			//auto col4 = this->operator*(mat4.GetColumn(3));
-
-			//retMat.SetColumn(0, col1);
-			//retMat.SetColumn(1, col2);
-			//retMat.SetColumn(2, col3);
-			//retMat.SetColumn(3, col4);
-
 
 			// Left matrix rows.
 			auto row1 = GetRow(0);
@@ -417,12 +154,6 @@ namespace jkMath
 			return retMat;
 		}
 
-		/*MAT4 Inv() const
-		{
-			MAT4 retMat;
-
-		}*/
-
 		union {
 			struct { float _11, _12, _13, _14, _21, _22, _23, _24, _31, _32, _33, _34, _41, _42, _43, _44; };
 			float m[4][4];
@@ -434,7 +165,7 @@ namespace jkMath
 	inline T Clamp(const T& val, const T& min, const T& max){ if (val > max)return max; else if (val < min) return min; else return val; }
 	
 	template<typename T>
-	inline float Fraction(const T left, const T right, const T value) { return right==left?0:(value - left) / (right - left); }
+	inline T Fraction(const T left, const T right, const T value) { return right==left?0:(value - left) / (right - left); }
 
 	template<typename T>
 	inline T Lerp(const T& start, const T& end, const float fraction) { return start + (end - start) * fraction; };
@@ -493,10 +224,10 @@ namespace jkMath
 		beta = f1 + f2b;
 
 		// Apply final coefficients to a and b as usual.
-		float w = alpha * q1.m[0] + beta * q2.m[0];
-		float x = alpha * q1.m[1] + beta * q2.m[1];
-		float y = alpha * q1.m[2] + beta * q2.m[2];
-		float z = alpha * q1.m[3] + beta * q2.m[3];
+		float w = alpha * q1[0] + beta * q2[0];
+		float x = alpha * q1[1] + beta * q2[1];
+		float y = alpha * q1[2] + beta * q2[2];
+		float z = alpha * q1[3] + beta * q2[3];
 
 		// This final adjustment to the quaternion's length corrects for
 		// any small constraint error in the inputs q1 and q2 But as you
@@ -661,10 +392,10 @@ namespace jkMath
 
 	inline void MakeRotationMatrix_Quaternion(MAT4& ret, const VEC4& quaternion)
 	{
-		auto& w = quaternion.m[0];
-		auto& x = quaternion.m[1];
-		auto& y = quaternion.m[2];
-		auto& z = quaternion.m[3];
+		const auto& w = quaternion[0];
+		const auto& x = quaternion[1];
+		const auto& y = quaternion[2];
+		const auto& z = quaternion[3];
 
 		ret.m[0][0] = 1.f - 2.f* (y* y + z * z);
 		ret.m[0][1] = 2.f* (x* y - z * w);

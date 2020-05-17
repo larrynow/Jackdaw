@@ -103,6 +103,7 @@ void main()
         texCoords = ParallaxMapping(TexCoord, viewDir);
     else
         texCoords = TexCoord;
+        texCoords = TexCoord;//Disable ParallaxMapping.
 
     vec3 normal = texture(material.normalMap, texCoords).rgb;
     if(bUseNormalMap == 1)
@@ -142,6 +143,7 @@ void main()
 
 vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
 {
+    float scale = 0.01f;
     const float minLayers = 8;
     const float maxLayers = 32;
     float numLayers = mix(maxLayers, minLayers, 
@@ -151,8 +153,10 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
     float currentDepth = 0.f;
 	float depth = 1.f - texture(material.heightMap, texCoords).r;
 
-	float scale = 0.01f;
+    if(viewDir.z == 0.0)
+        return vec2(0.0, 0.0);
     vec2 p = viewDir.xy/viewDir.z * scale;
+
     vec2 deltaTexCoords = p/numLayers;
 
     vec2 currentTexCoords = texCoords;

@@ -75,7 +75,7 @@ MAT4 jkAnimator::InterpolateScalingMatrix(const double tick,
 void jkAnimator::Play(std::string anim_name)
 {
 	static double tick = 0.0;
-	std::cout << "play at tick : "<< tick << std::endl;
+	//std::cout << "play at tick : "<< tick << std::endl;
 	if (m_rAnimationNameMap.count(anim_name))
 	{
 		auto& anim = m_rModel.mAnimations[m_rModel.mAnimationNameMap.at(anim_name)];

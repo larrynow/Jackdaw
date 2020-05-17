@@ -76,10 +76,12 @@ void jkContent::StartUp()
 	while (!mShouldFinish())
 	{
 		m_pTimer->Tick();
-		//PRINT(m_pTimer->GetFPS());
+		PRINT(m_pTimer->GetFPS());
 		/*::SetConsoleTitleA(fpsStr.c_str());
 		renderer->Clear();*/
 		m_pBackendRenderer->Clear();
+
+		assert(m_pCurrentCamera);
 
 		//////////////////////////////////
 		// Input.
@@ -93,15 +95,6 @@ void jkContent::StartUp()
 			if (m_pInputManager->CheckInput(sys_input))// Check if this input is actived.
 			{
 				//TODO:check global inputs.
-				//if (m_pControlledCharacter && m_pControlledCharacter->input_op_map.count(input_name))
-				//{
-				//	if (m_pControlledCharacter)// Check if character is still exist in content.
-				//	{
-				//		auto op = m_pControlledCharacter->input_op_map.at(input_name);
-				//		op(m_pInputManager->GetInputValue(input));
-				//		//PRINT(input);
-				//	}
-				//}
 				if (m_pControlledCharacter)
 				{
 					m_pControlledCharacter->HandleInput(jk_input);
@@ -115,7 +108,8 @@ void jkContent::StartUp()
 		for (auto e : m_pCurrentMap->mEntities)
 		{
 			//if(e.Active())
-			e->Update(m_pTimer->GetDeltaTime());
+			//e->Update(m_pTimer->GetDeltaTime());
+			e->Update(1.f/30.f);
 		}
 
 		////////////////////////////////
@@ -133,16 +127,19 @@ void jkContent::StartUp()
 
 		if (m_pTerrainTileManager->GetTile())
 		{
-			m_pTerrainTileManager->TileUpdate(m_pCurrentCamera->GetTransform().GetPosition(), MAT4());
+			/*m_pTerrainTileManager->TileUpdate(m_pCurrentCamera->GetTransform().GetPosition(), MAT4());
 
 			m_pBackendRenderer->ChangeDataIndices(m_pTerrainTileManager->GetMesh(),
-				m_pTerrainTileManager->GetTerrainData());
+				m_pTerrainTileManager->GetTerrainData());*/
 
 			// Get instance matrices by Terrain update.
-			m_pBackendRenderer->ChangeInstances(m_pCurrentMap->m_InstanceMeshes_temp[0],
-				m_pTerrainTileManager->GetInstanceMatrices());
+			for (auto ist_mesh : m_pCurrentMap->m_InstanceMeshes_temp)
+			{
+				m_pBackendRenderer->ChangeInstances(ist_mesh.get(),
+					m_pTerrainTileManager->GetInstanceMatrices());
+			}
 
-			m_pBackendRenderer->ChangeSurrounding(m_pTerrainTileManager->GetPositions());
+			//m_pBackendRenderer->ChangeSurrounding(m_pTerrainTileManager->GetPositions());
 		}
 
 		////////////////////////////////
@@ -597,7 +594,7 @@ void jkContent::SelectMapNew(jkMap* map)
 
 	m_pCurrentMap = map;
 	m_pControlledCharacter = map->GetControlledCharacter();
-	m_pCurrentCamera = m_pControlledCharacter->GetCamera();
+	m_pCurrentCamera = m_pControlledCharacter->GetCamera();// FPS.
 
 	///////////////////////////////////
 	// Shader setting.
@@ -608,6 +605,37 @@ void jkContent::SelectMapNew(jkMap* map)
 		"./Shaders/heightMapping.fs");
 	//auto shader = jkResourceManager::GetShader("simple");
 	auto shader = jkResourceManager::GetShader("heightMapping");
+
+	///////////////////////////////////////////////
+	// Load skybox.
+
+	std::vector<unsigned char*> skyBoxFaces;
+	ImageFormat skyboxTexFormat;
+	jkResourceManager::ImportCubeMap(skyBoxFaces, skyboxTexFormat, "./Asset/skyBox/bluecloud", ".jpg");
+	m_pBackendRenderer->SetUpSkybox(skyBoxFaces, skyboxTexFormat);
+
+	// Free origin data.
+	for (unsigned int i = 0; i < skyBoxFaces.size(); i++)
+	{
+		free(skyBoxFaces[i]);
+		skyBoxFaces[i] = nullptr;
+	}
+
+	/////////////////////////////////////////////////////
+	// Terrain.
+
+	m_pTerrainTileManager->CreateTile();
+	m_pTerrainTileManager->CreateTerrain("./Asset/height_map.png", { 1024, 30, 1024 }, VEC3());//Terrain mesh from height map.
+	m_pTerrainTileManager->InitializeBlocks(2, 2);
+
+	auto grd_tex = jkResourceManager::ImportTexture("./Asset/rock_mossy_albedo.png");
+	auto grd_normal_tex = jkResourceManager::ImportTexture("./Asset/rock_mossy_normal.png", TextureType::Normal);
+	auto grd_height_tex = jkResourceManager::ImportTexture("./Asset/rock_mossy_height.png", TextureType::Height);
+
+	m_pTerrainTileManager->GetMesh()->BindMaterial(2);
+	m_pTerrainTileManager->GetMesh()->BindTextures({ grd_tex, grd_normal_tex, grd_height_tex });
+	m_pTerrainTileManager->GetMesh()->BindShader(shader);
+	m_pBackendRenderer->LoadMesh(*m_pTerrainTileManager->GetMesh(), MAT4(), nullptr);
 
 	//////////////////////////////////
 	// Cube setting.
@@ -650,7 +678,7 @@ void jkContent::SelectMapNew(jkMap* map)
 
 	auto arthurModel = jkResourceManager::ImportModel("./Asset/Arthur/arthur_attack_01.FBX", {"attack"});
 	Arthur* arthur = new Arthur(VEC3(5.f, 0.f, 0.f), arthurModel);
-	arthur->GetTransform().MoveTo({ 5.f, 0.f, 0.f })
+	arthur->GetTransform().MoveTo({ 5.f, 35.f, 0.f })
 		->RotateYaw(-90.f);// ->RotateRoll(-90.f);
 
 	Texture* arthur_texure = new Texture();

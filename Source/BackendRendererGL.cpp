@@ -268,7 +268,7 @@ RenderData* jkBackendRendererGL::mProcessMesh(jkMesh* mesh, const MAT4& worldMat
 	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
 	glEnableVertexAttribArray(5);
 
-	if (pOriginModel->GetBoneMatrices().size()!=0)//If includes bone matrices.
+	if (pOriginModel && pOriginModel->GetBoneMatrices().size()!=0)//If includes bone matrices.
 	{
 		glEnableVertexAttribArray(6);
 		glVertexAttribIPointer(6, Vertex::MaxBoneNum, GL_INT, sizeof(Vertex), (void*)(offsetof(Vertex, boneIDs)));
@@ -409,7 +409,7 @@ void jkBackendRendererGL::StartRender()
 	if (mPointLights.size())
 		mGetDepthCubemap();//?
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glViewport(0, 0, jkContent::GetInstance().mWidth, jkContent::GetInstance().mHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -596,14 +596,14 @@ void jkBackendRendererGL::mPostRendering(UINT color_buffer)
 	// Blit multisampled color buffer into normal colorbuffer.
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, mHDRFBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	glReadBuffer(GL_COLOR_ATTACHMENT1);//Read high color.
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mAuxFBOs[2]);
 	glBlitFramebuffer(0, 0, jkContent::GetInstance().mWidth
 		, jkContent::GetInstance().mHeight, 0, 0, 
 		jkContent::GetInstance().mWidth, jkContent::GetInstance().mHeight, 
-		GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		GL_COLOR_BUFFER_BIT, GL_NEAREST);//From high color in hdrFBO to AuxFBO[2].
 
-	mPostRenderingShader->use();
+	//mPostRenderingShader->use();
 
 	// Bloom effect.
 	float bloom = true;
@@ -624,7 +624,7 @@ void jkBackendRendererGL::mPostRendering(UINT color_buffer)
 	glBlitFramebuffer(0, 0, jkContent::GetInstance().mWidth
 		, jkContent::GetInstance().mHeight, 0, 0,
 		jkContent::GetInstance().mWidth, jkContent::GetInstance().mHeight,
-		GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		GL_COLOR_BUFFER_BIT, GL_NEAREST);//From color result in hdrFBO to AuxFBO[2].
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, mAuxColorBuffers[2]);
@@ -660,6 +660,7 @@ UINT jkBackendRendererGL::mBlurRendering(UINT color_buffer)
 		mRenderQuad();
 		horizontal = !horizontal;
 	}
+	//Final result is AuxColorBuffer[1] in AuxFBO[1].
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -799,6 +800,13 @@ void jkBackendRendererGL::mRenderWithGBuffer()
 	}
 
 	mDeferredShader->setInt("pointLightNum", mPointLights.size());
+
+	mDeferredShader->setVec3(std::string("lightDir"), mDirLight->Direction);
+
+	mDeferredShader->setVec3("dirLight.direction", mDirLight->Direction);
+	mDeferredShader->setVec3("dirLight.color.ambient", mDirLight->AmbientColor);
+	mDeferredShader->setVec3("dirLight.color.diffuse", mDirLight->DiffuseColor);
+	mDeferredShader->setVec3("dirLight.color.specular", mDirLight->SpecularColor);
 
 	mRenderQuad();
 
@@ -999,8 +1007,6 @@ CubeMapData* jkBackendRendererGL::mProcessCubeMap(std::vector<unsigned char*>& f
 	glCmData->VBO = cubeMapVBO;
 	glCmData->VAO = cubeMapVAO;
 
-	//delete cubeMapVertices;
-
 	///////////////////////////////////////////////
 	// Texture.
 
@@ -1020,7 +1026,6 @@ CubeMapData* jkBackendRendererGL::mProcessCubeMap(std::vector<unsigned char*>& f
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, 
 			textureFormat.width, textureFormat.height, 0, format, GL_UNSIGNED_BYTE, faces.at(i));
-		stbi_image_free(faces.at(i));
 	}
 
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -1029,11 +1034,7 @@ CubeMapData* jkBackendRendererGL::mProcessCubeMap(std::vector<unsigned char*>& f
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-	//glCmData->TexID.push_back(textureID);
 	glCmData->difffuseTex = textureID;
-
-	/*glCmData->pShader->use();
-	glCmData->pShader->setInt("skybox", 0);*/
 
 	return glCmData;
 }

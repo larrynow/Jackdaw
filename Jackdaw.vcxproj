@@ -236,6 +236,9 @@
     <ClInclude Include="Source\WinInputManager.h" />
     <ClInclude Include="Source\Transform.h" />
     <ClInclude Include="Source\Examples\TPSCharacterExample.h" />
+    <ClInclude Include="Source\Vector2.h" />
+    <ClInclude Include="Source\Vector3.h" />
+    <ClInclude Include="Source\Vector4.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -32,6 +32,7 @@ int main()
 	//pMap->AddEntity(pEntity);
 
 	auto pFreeCamera = new jkExample::FPS::jkCharacterExample();
+	pFreeCamera->GetCamera()->GetTransform().Translate({0, 1.f, 0}, 50.f)->RotatePitch(-45.f)->RotateYaw(45.f);
 	pFreeCamera->GetCamera()->SetFarPlane(300.f);
 	pMap->AddEntity(pFreeCamera);
 	pMap->ControllCharacter(pFreeCamera);

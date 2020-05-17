@@ -36,7 +36,7 @@ private:
 
 	std::vector<jkMesh*> m_Meshes_temp;
 
-	std::vector<jkMesh*> m_InstanceMeshes_temp;
+	std::vector < std::shared_ptr<jkMesh>> m_InstanceMeshes_temp;
 
 	//std::unordered_map<std::string, jkEntity*> mEntityPtrMap;// From an entity name to an entity.
 };

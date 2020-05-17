@@ -17,7 +17,7 @@ class jkCharacter : public jkActor
 	friend class jkContent;
 public:
 
-	jkCharacter() : jkActor()
+	jkCharacter() : jkActor(), m_pCurrentState(nullptr)
 	{
 		// Register input in derived classes : SetUpInput().
 	}
