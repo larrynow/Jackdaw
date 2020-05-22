@@ -196,6 +196,7 @@
     <ClCompile Include="Source\Examples\TPSCharacterExample.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="Source\jkInput.h" />
     <ClInclude Include="Source\CharacterState.h" />
     <ClInclude Include="Source\SkeletalMesh.h" />

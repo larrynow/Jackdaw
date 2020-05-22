@@ -263,5 +263,8 @@
     <ClInclude Include="Source\Vector4.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectPool.h">
+      <Filter>Core\GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

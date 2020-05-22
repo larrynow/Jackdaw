@@ -235,7 +235,7 @@ void jkTerrain::jkTerrainManager::CreateInstances()
 		}
 
 		std::vector<UINT> selected_id;//Select a triangle.
-		jkAlgorithm::RandomSelect(ids, selected_id, (int)ids.size() * 0.05);
+		jkAlgorithm::RandomSelect(ids, selected_id, (int)ids.size() * 0.05f);
 
 		for (auto id : selected_id)
 		{

@@ -13,7 +13,7 @@ namespace jkAlgorithm
 		res.assign(arr.size(), T());
 		copy(arr.begin(), arr.end(), res.begin());
 		int k;
-		for (int i = 0; i < arr.size(); ++i)
+		for (unsigned int i = 0; i < arr.size(); ++i)
 		{
 			//srand((unsigned)time(NULL));
 			k = rand() % (i + 1);
@@ -73,7 +73,7 @@ namespace jkAlgorithm
 		
 	}*/
 
-	inline float GetArea(const VEC3& a, const VEC3& b, const VEC3& c)
+	inline float GetTriangleArea(const VEC3& a, const VEC3& b, const VEC3& c)
 	{
 		VEC3 a_b = b - a;
 		VEC3 a_c = c - a;
@@ -81,7 +81,7 @@ namespace jkAlgorithm
 		return a_b.CrossProduct(a_c).Length() / 2;
 	}
 
-	inline bool IfPointInTaiangle_SameArea(const VEC3& a, const VEC3& b, const VEC3& c, const VEC3& p)
+	bool IfPointInTriangle_SameArea(const VEC3& a, const VEC3& b, const VEC3& c, const VEC3& p)
 	{
 		VEC3 a_b = b - a;
 		VEC3 a_p = p - a;
@@ -109,6 +109,23 @@ namespace jkAlgorithm
 		}
 
 		return true;
+	}
+
+	bool IfIntersect_Rect2D(const VEC2& a_top_left, const VEC2& a_right_down,
+		const VEC2& b_top_left, const VEC2& b_right_down)
+	{
+		// Top left for O, right for X-positive, down for Y-positive.
+
+		// Down right corner for two top-left points.
+		VEC2 p_dr(std::max(a_top_left.x, b_top_left.x), std::max(a_top_left.y, b_top_left.y));
+
+		// Top left corner for two down-right points.
+		VEC2 p_tl(std::max(a_top_left.x, b_top_left.x), std::max(a_top_left.y, b_top_left.y));
+
+		if (p_dr.x <= p_tl.x && p_dr.y <= p_tl.y)
+			return true;
+		else
+			return false;
 	}
 
 	template<typename T>
