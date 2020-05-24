@@ -1,6 +1,7 @@
 #pragma once
 #ifndef JACKDAW
 //#include"Content.h"
+#include<iostream>
 #include<string>
 #include <assert.h>
 
@@ -15,9 +16,14 @@ inline const char* ToCStr(T value)// WRONG£¡ return array error.
 	return s.c_str();
 }
 
-#define PRINT(msg) std::cout<<msg<<std::endl
+inline void PRINT() { std::cout << std::endl; }
 
-
+template< typename First, typename ... Rest>
+inline void PRINT(First&& first, Rest&& ... rest)
+{
+	std::cout << std::forward<First>(first);
+	PRINT(std::forward<Rest>(rest)...);
+}
 
 // A macro to disallow the copy constructor and operator= functions.
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \

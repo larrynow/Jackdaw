@@ -7,7 +7,7 @@
 using namespace jkTerrain;
 
 void jkTerrain::LoadHeightInfo(const std::string& heightMapFile, ImageFormat& format,
-	std::vector<float>& heightInfo, const float heightScale)
+	std::vector< std::vector<float>>& heightInfo, const float heightScale)
 {
 	/*
 	* LoadHeightInfo
@@ -18,39 +18,45 @@ void jkTerrain::LoadHeightInfo(const std::string& heightMapFile, ImageFormat& fo
 	auto imgData = jkResourceManager::ImportImage(heightMapFile, format);
 	int imgDataSize = std::strlen((const char*)imgData);
 
-	int heightInfoCount = format.height * format.width;
-	heightInfo.resize(heightInfoCount);
-
-	for (int i = 0; i < heightInfoCount; i++)
+	heightInfo.resize(format.height);
+	// 2D array.
+	for (int i = 0; i < format.height; i++)
 	{
-		float gray;
-		if (format.channels == 3 || format.channels == 4)
+		for (int j = 0; j < format.width; j++)
 		{
-			UINT b, g, r;
-			r = imgData[i * format.channels];
-			g = imgData[i * format.channels + 1];
-			b = imgData[i * format.channels + 2];
+			float gray;
+			if (format.channels == 3 || format.channels == 4)//RGB\ RGBA file.
+			{
+				UINT b, g, r;
+				r = imgData[i * format.channels];
+				g = imgData[i * format.channels + 1];
+				b = imgData[i * format.channels + 2];
 
-			gray = RGB2Gray(r, g, b);
+				gray = RGB2Gray(r, g, b);
+			}
+			heightInfo[i].push_back(gray / 255.f * heightScale);
 		}
-
-		heightInfo[i] = gray / 255.f * heightScale;
 	}
 
 	delete imgData;
 }
 
 void jkTerrain::LoadTerrain(const std::string& heightMapFile, 
-	const VEC3& terrainSize, Tile* terrainTile, const VEC3& centerPosition)
+	const VEC3& terrainSize, const Rect<UINT>& tileDensity,
+	Tile* terrainTile, const VEC3& centerPosition)
 {
 	// Load terrain height info(y-value).
-	std::vector<float> heightInfo;
 	ImageFormat format;
+	/*std::vector<float> heightInfo;
+	LoadHeightInfo(heightMapFile, format, heightInfo, terrainSize.y);*/
 
+	Array2D_f heightInfo;
 	LoadHeightInfo(heightMapFile, format, heightInfo, terrainSize.y);
 
+	UINT w = tileDensity.Width;
+	UINT h = tileDensity.Height;
 	jkGeometry::MakeHeightMapMesh(terrainSize.x, terrainSize.z, 
-		format.width, format.height,
+		w, h,
 		heightInfo, terrainTile->pFullTerrainMesh, 0.01f);
 	
 	terrainTile->size.x = terrainSize.x;

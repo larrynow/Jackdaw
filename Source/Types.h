@@ -15,6 +15,8 @@ struct Rect
 	T Height;
 };
 
+typedef std::vector<std::vector<float>> Array2D_f;
+
 //////////////////////////////////////////
 // Types for rendering.
 

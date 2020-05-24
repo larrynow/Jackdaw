@@ -276,3 +276,45 @@ void jkGeometry::MakeHeightMapMesh(const float width, const float height, UINT m
 		v3.normal = (v2.pos - v3.pos).CrossProduct(v1.pos - v3.pos);*/
 	}
 }
+
+void jkGeometry::MakeHeightMapMesh(const float width, const float height, UINT m, UINT n,
+	const Array2D_f& heightInfo, jkMesh* gridMesh, const float textureDensity)
+{
+	/*
+	* width, height : mesh size to create.
+	* m, n : mesh grid size.
+	* heightInfo : mesh height values.
+	* textureDensity : density to cover mesh.
+	* gridMesh : return created mesh.
+	*/
+	/*assert(m == heightInfo[0].size());
+	assert(n == heightInfo.size());*/
+
+	// Create grid mesh.
+	mCreateGrid(width, height, m, n, gridMesh->mVertexBuffer, gridMesh->mIndexBuffer, textureDensity);
+	int id = 0;
+	for (size_t i = 0; i < n; i++)
+	{
+		for (size_t j = 0; j < m; j++)
+		{
+			int hi = float(i) / n * heightInfo.size();
+			int hj = float(j) / m * heightInfo[i].size();
+			gridMesh->mVertexBuffer.at(id).pos.y = heightInfo.at(hi).at(hj);
+		}
+	}
+
+	// Calc normal.
+	for (size_t i = 0; i + 2 < gridMesh->mIndexBuffer.size(); i += 3)
+	{
+		auto i1 = gridMesh->mIndexBuffer.at(i);
+		auto i2 = gridMesh->mIndexBuffer.at(i + 1);
+		auto i3 = gridMesh->mIndexBuffer.at(i + 2);
+
+		auto v1 = gridMesh->mVertexBuffer.at(i1);
+		auto v2 = gridMesh->mVertexBuffer.at(i2);
+		auto v3 = gridMesh->mVertexBuffer.at(i3);
+
+		v1.normal = (v3.pos - v1.pos).CrossProduct(v2.pos - v1.pos);
+		v3.normal = v2.normal = v1.normal;
+	}
+}

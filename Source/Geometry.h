@@ -15,6 +15,9 @@ public:
 
 	static void MakeHeightMapMesh(const float width, const float height,
 		UINT m, UINT n, const std::vector<float>& heightInfo, jkMesh* gridMesh, const float textureDensity=0.1f);
+
+	static void MakeHeightMapMesh(const float width, const float height,
+		UINT m, UINT n, const Array2D_f& heightInfo, jkMesh* gridMesh, const float textureDensity = 0.1f);
 	
 	///////////////////////////////////////////////
 	// Functions to create entity with mesh.

@@ -76,7 +76,8 @@ void jkContent::StartUp()
 	while (!mShouldFinish())
 	{
 		m_pTimer->Tick();
-		PRINT(m_pTimer->GetFPS());
+
+		//PRINT(m_pTimer->GetFPS());
 		/*::SetConsoleTitleA(fpsStr.c_str());
 		renderer->Clear();*/
 		m_pBackendRenderer->Clear();
@@ -102,14 +103,13 @@ void jkContent::StartUp()
 				
 			}
 		}
-		
 		m_pInputManager->ResetMouseInput();
 
 		for (auto e : m_pCurrentMap->mEntities)
 		{
 			//if(e.Active())
-			//e->Update(m_pTimer->GetDeltaTime());
-			e->Update(1.f/30.f);
+			//e->Update(m_pTimer->GetDeltaTime()*1000);
+			e->Update(1.f/30.f);// Fixed delta time simulation.
 		}
 
 		////////////////////////////////
@@ -156,6 +156,7 @@ void jkContent::StartUp()
 
 		assert(m_pInputManager);
 		m_pInputManager->Listen();
+
 	}
 }
 
@@ -625,7 +626,7 @@ void jkContent::SelectMapNew(jkMap* map)
 	// Terrain.
 
 	m_pTerrainTileManager->CreateTile();
-	m_pTerrainTileManager->CreateTerrain("./Asset/height_map.png", { 1024, 30, 1024 }, VEC3());//Terrain mesh from height map.
+	m_pTerrainTileManager->CreateTerrain("./Asset/height_map.png", { 1024, 30, 1024 }, {30, 30}, VEC3());//Terrain mesh from height map.
 	m_pTerrainTileManager->InitializeBlocks(2, 2);
 
 	auto grd_tex = jkResourceManager::ImportTexture("./Asset/rock_mossy_albedo.png");

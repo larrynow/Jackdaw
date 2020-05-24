@@ -43,10 +43,11 @@ namespace jkTerrain
 
 	// Load terrain height info from a image.
 	void LoadHeightInfo(const std::string& heightMapFile, ImageFormat& format,
-		std::vector<float>& heightInfo, const float heightScale);
+		std::vector<std::vector<float>>& heightInfo, const float heightScale);
 
 	// Create a tile-terrain from a heightmap image.
-	void LoadTerrain(const std::string& heightMapFile, const VEC3& terrainSize,
+	void LoadTerrain(const std::string& heightMapFile, 
+		const VEC3& terrainSize, const Rect<UINT>& tileDensity,
 		Tile* terrainTile, const VEC3& centerPosition = { 0.f, 0.f, 0.f });
 
 	// Create grass positions in terrain.
@@ -67,6 +68,7 @@ namespace jkTerrain
 
 		void InitializeBlocks(UINT blockNumX, UINT blockNumY);
 
+		// Create a tile map.
 		inline void CreateTile() 
 		{ 
 			mTile = new Tile(); 
@@ -76,10 +78,16 @@ namespace jkTerrain
 
 		void TileUpdate(const VEC3& viewPos, const MAT4& frustum);
 
-		inline void CreateTerrain(const std::string& heightMapFile, const VEC3& terrainSize,
+		// Create terrain with current tile map.
+		inline void CreateTerrain(const std::string& heightMapFile, 
+			const VEC3& terrainSize, const Rect<UINT>& tileDensity,
 			const VEC3& centerPosition = { 0.f, 0.f, 0.f })
 		{
-			LoadTerrain(heightMapFile, terrainSize, mTile, centerPosition);
+			/*
+			* terrainSize : tile size.
+			* tileDensity : density to create grid.
+			*/
+			LoadTerrain(heightMapFile, terrainSize, tileDensity, mTile, centerPosition);
 		}
 		
 		void CreateInstances();//Create instances positions in every block(matrice format).
