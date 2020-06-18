@@ -30,4 +30,11 @@ inline void PRINT(First&& first, Rest&& ... rest)
   TypeName(const TypeName&) = delete;               \
   void operator=(const TypeName&) = delete
 
+// From a c-style array, get its size.
+template<typename T, std::size_t N>
+constexpr std::size_t ArraySize(T(&)[N]) noexcept
+{
+	return N;
+}
+
 #endif // !JACKDAW
